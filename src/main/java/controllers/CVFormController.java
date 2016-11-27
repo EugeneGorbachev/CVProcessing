@@ -3,8 +3,6 @@ package controllers;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -91,8 +89,8 @@ public class CVFormController implements Initializable {
     public ServoControl servoControl;
 
     private final String[] WindowsPortNames = {"COM4"};
-    private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
-    private final String[] MacOSPortNames = {"COM4"};
+    private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1"};
+    private final String[] MacOSPortNames = {"/dev/tty.usbserial-A9007UX1"};
 
     private ScheduledExecutorService timer;
     private VideoCapture videoCapture = new VideoCapture();
@@ -116,9 +114,8 @@ public class CVFormController implements Initializable {
                     break;
             }
             COMPortChooseBox.setDisable(false);
+            testConnectionButton.setDisable(false);
         });
-        COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) ->
-                tryConnectSerialPort((String) newValue)));
         /* Initialize servo settings */
 
         /* Binding slider and textfield value */
@@ -178,21 +175,11 @@ public class CVFormController implements Initializable {
         handleChangeEndRangeColor();
     }
 
-    private void logMessage(String message) {
-        Platform.runLater(() -> logTextArea.appendText(new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message));
-    }
-
-    private void tryConnectSerialPort(String portName) {
-        try {
-            servoControl.initialize(portName);
-            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                    servoControl.sendSingleByte((byte) servoAngleSlider.getValue()));
-            testConnectionButton.setDisable(false);
-            servoAngleSlider.setDisable(false);
-        } catch (Exception e) {
-            logMessage(e.getMessage());
-            testConnectionButton.setDisable(true);
-            servoAngleSlider.setDisable(true);
+    private void logMessage(boolean showTime, String message) {
+        if (showTime) {
+            Platform.runLater(() -> logTextArea.appendText(new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
+        } else {
+            Platform.runLater(() -> logTextArea.appendText(message + "\n"));
         }
     }
 
@@ -229,6 +216,27 @@ public class CVFormController implements Initializable {
         }
 
         return image;
+    }
+
+    public void handleTestConnectionToSerialPort() {
+        logMessage(false, "********** Connecting to COM port **********");
+        String portName = (String) COMPortChooseBox.getSelectionModel().getSelectedItem();
+        if (servoControl != null) {
+            servoControl.close();
+        }
+        try {
+            servoControl.initialize(portName);
+            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                byte val = newValue.byteValue();
+                logMessage(false, "Sending " + val);
+                servoControl.sendSingleByte(val);
+            });
+            servoAngleSlider.setDisable(false);
+            logMessage(false,"COM port '" + portName + "' found.");
+        } catch (Exception e) {
+            logMessage(false, e.getMessage());
+            servoAngleSlider.setDisable(true);
+        }
     }
 
     private void handleChangeStartRangeColor() {

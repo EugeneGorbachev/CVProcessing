@@ -52,7 +52,7 @@
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <Button fx:id="testConnectionButton" disable="true" mnemonicParsing="false" text="Test connection" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <Button fx:id="testConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleTestConnectionToSerialPort" text="Test connection" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
                         <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="127.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <GridPane.margin>
