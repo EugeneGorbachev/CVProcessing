@@ -20,11 +20,9 @@ public class Main extends Application {
         primaryStage.show();
 
         CVFormController cv = fxmlLoader.getController();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                cv.handleClose();
-            }
+        primaryStage.setOnCloseRequest(event -> {
+            cv.servoControl.close();
+            cv.handleClose();
         });
     }
 

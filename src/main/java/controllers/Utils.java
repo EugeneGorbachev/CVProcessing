@@ -17,12 +17,7 @@ import java.util.List;
 
 public final class Utils {
     public static <T> void onFXThread(final ObjectProperty<T> property, final T value) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                property.set(value);
-            }
-        });
+        Platform.runLater(() -> property.set(value));
     }
 
     /* Setting properties */

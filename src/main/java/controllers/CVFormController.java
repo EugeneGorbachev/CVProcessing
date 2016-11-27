@@ -1,12 +1,15 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -22,14 +25,19 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class CVFormController implements Initializable {
+    /* Central part*/
     @FXML
     private ImageView viewCamera;
+    /*Central part*/
+
+    /* Recognize by color pane */
     @FXML
     private ImageView viewMaskImage;
     @FXML
@@ -65,12 +73,55 @@ public class CVFormController implements Initializable {
     private Slider saturationRangeEndSlider;
     @FXML
     private Slider brightnessRangeEndSlider;
+    /* Recognize by color pane */
+
+    /* Servo connection settings */
+    @FXML
+    private ChoiceBox OSChooseBox;
+    @FXML
+    private ChoiceBox COMPortChooseBox;
+    @FXML
+    private Button testConnectionButton;
+    @FXML
+    private Slider servoAngleSlider;
+    @FXML
+    private TextArea logTextArea;
+    /* Servo connection settings */
+
+    public ServoControl servoControl;
+
+    private final String[] WindowsPortNames = {"COM4"};
+    private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
+    private final String[] MacOSPortNames = {"COM4"};
 
     private ScheduledExecutorService timer;
     private VideoCapture videoCapture = new VideoCapture();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+         servoControl = new ServoControl();
+
+        /* Initialize servo settings */
+        OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
+        OSChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            switch ((OperatingSystem) OSChooseBox.getSelectionModel().getSelectedItem()) {
+                case WINDOWS:
+                    COMPortChooseBox.setItems(FXCollections.observableArrayList(WindowsPortNames));
+                    break;
+                case LINUX:
+                    COMPortChooseBox.setItems(FXCollections.observableArrayList(LinuxPortNames));
+                    break;
+                case MACOS:
+                    COMPortChooseBox.setItems(FXCollections.observableArrayList(MacOSPortNames));
+                    break;
+            }
+            COMPortChooseBox.setDisable(false);
+        });
+        COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) ->
+                tryConnectSerialPort((String) newValue)));
+        /* Initialize servo settings */
+
+        /* Binding slider and textfield value */
         IntegerProperty hueRangeStartInteger = new SimpleIntegerProperty(0);
         hueRangeStartSlider.valueProperty().bindBidirectional(hueRangeStartInteger);
         hueRangeStartValue.textProperty().bind(hueRangeStartInteger.asString());
@@ -91,29 +142,28 @@ public class CVFormController implements Initializable {
         brightnessRangeEndSlider.valueProperty().bindBidirectional(brightnessRangeEndInteger);
         brightnessRangeEndValue.textProperty().bind(brightnessRangeEndInteger.asString());
 
-
         hueRangeStartSlider.valueProperty().addListener((observable, oldValue, newValue) -> handleChangeStartRangeColor());
         saturationRangeStartSlider.valueProperty().addListener((observable, oldValue, newValue) -> handleChangeStartRangeColor());
         brightnessRangeStartSlider.valueProperty().addListener((observable, oldValue, newValue) -> handleChangeStartRangeColor());
         hueRangeEndSlider.valueProperty().addListener((observable, oldValue, newValue) -> handleChangeEndRangeColor());
         saturationRangeEndSlider.valueProperty().addListener(((observable, oldValue, newValue) -> handleChangeEndRangeColor()));
         brightnessRangeEndSlider.valueProperty().addListener(((observable, oldValue, newValue) -> handleChangeEndRangeColor()));
+        /* Binding slider and textfield value */
 
+        /* Initialize views and start video capture */
         Utils.imageViewDimension(viewCamera, 600);
         Utils.imageViewDimension(viewMaskImage, 400);
         Utils.imageViewDimension(viewMorphImage, 400);
 
-        /* make a selector for different cameras instead 0
-        *
-        * */
+        /* make a selector for different cameras instead 0 */
         videoCapture.open(0);
         if (videoCapture.isOpened()) {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
-                Scalar lowerb = new Scalar(hueRangeStartSlider.getValue()*0.5d, saturationRangeStartSlider.getValue()*2.56d,
-                        brightnessRangeStartSlider.getValue()*2.56d);
-                Scalar upperb = new Scalar(hueRangeEndSlider.getValue()*0.5d, saturationRangeEndSlider.getValue()*2.56d,
-                        brightnessRangeEndSlider.getValue()*2.56d);
+                Scalar lowerb = new Scalar(hueRangeStartSlider.getValue() * 0.5d, saturationRangeStartSlider.getValue() * 2.56d,
+                        brightnessRangeStartSlider.getValue() * 2.56d);
+                Scalar upperb = new Scalar(hueRangeEndSlider.getValue() * 0.5d, saturationRangeEndSlider.getValue() * 2.56d,
+                        brightnessRangeEndSlider.getValue() * 2.56d);
                 Image image = grabFrame(lowerb, upperb);
                 viewCamera.setImage(image);
             };
@@ -122,9 +172,28 @@ public class CVFormController implements Initializable {
         } else {
             System.err.println("Can't open camera");
         }
+        /* Initialize views and start video capture */
 
         handleChangeStartRangeColor();
         handleChangeEndRangeColor();
+    }
+
+    private void logMessage(String message) {
+        Platform.runLater(() -> logTextArea.appendText(new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message));
+    }
+
+    private void tryConnectSerialPort(String portName) {
+        try {
+            servoControl.initialize(portName);
+            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+                    servoControl.sendSingleByte((byte) servoAngleSlider.getValue()));
+            testConnectionButton.setDisable(false);
+            servoAngleSlider.setDisable(false);
+        } catch (Exception e) {
+            logMessage(e.getMessage());
+            testConnectionButton.setDisable(true);
+            servoAngleSlider.setDisable(true);
+        }
     }
 
     private Image grabFrame(Scalar lowerb, Scalar upperb) {

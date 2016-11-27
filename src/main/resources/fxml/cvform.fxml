@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
@@ -17,123 +18,175 @@
     <children>
         <Label text="Video from camera:" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
         <ImageView fx:id="viewCamera" fitHeight="400.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-        <TitledPane prefHeight="800.0" prefWidth="200.0" text="Recognize by color" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            <content>
-                <GridPane prefWidth="386.0">
+      <Accordion GridPane.columnIndex="1" GridPane.rowSpan="2">
+        <panes>
+          <TitledPane text="Servo connection settings">
+               <content>
+                  <GridPane>
                     <columnConstraints>
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="50.0" />
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="150.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="200.0" valignment="CENTER" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
-                    <children>
-                        <Label text="Hue:" GridPane.rowIndex="2">
-                            <GridPane.margin>
-                                <Insets right="10.0" />
-                            </GridPane.margin>
+                     <children>
+                        <Label text="Choose your OS:">
+                           <GridPane.margin>
+                              <Insets right="10.0" />
+                           </GridPane.margin>
                         </Label>
-                        <Label text="Saturation:" GridPane.rowIndex="3">
-                            <GridPane.margin>
-                                <Insets right="10.0" />
-                            </GridPane.margin>
+                        <Label text="Choose COM port:" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets right="10.0" />
+                           </GridPane.margin>
                         </Label>
-                        <Label text="Brightness :" GridPane.rowIndex="4">
-                            <GridPane.margin>
-                                <Insets right="10.0" />
-                            </GridPane.margin>
+                        <ChoiceBox fx:id="OSChooseBox" prefWidth="150.0" GridPane.columnIndex="1" />
+                        <ChoiceBox fx:id="COMPortChooseBox" disable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Rotate servo:" GridPane.rowIndex="3">
+                           <GridPane.margin>
+                              <Insets right="10.0" />
+                           </GridPane.margin>
                         </Label>
-                        <TextField fx:id="hueRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <TextField fx:id="saturationRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <TextField fx:id="brightnessRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Slider fx:id="hueRangeStartSlider" blockIncrement="1.0" max="359.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
+                        <Button fx:id="testConnectionButton" disable="true" mnemonicParsing="false" text="Test connection" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+                        <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="127.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <GridPane.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </GridPane.margin>
                         </Slider>
-                        <Slider fx:id="saturationRangeStartSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Slider>
-                        <Slider fx:id="brightnessRangeStartSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="4">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Slider>
-                        <GridPane GridPane.columnSpan="3">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
-                            <children>
-                                <Label text="Mask image:" />
-                                <Label text="Morph image:" GridPane.columnIndex="1" />
-                                <ImageView fx:id="viewMaskImage" fitHeight="170.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" />
-                                <ImageView fx:id="viewMorphImage" fitHeight="170.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                            </children>
-                        </GridPane>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
-                            <children>
-                                <Label text="Range start color:" />
-                                <Pane fx:id="paneRangeStartColor" prefHeight="50.0" prefWidth="50.0" />
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5">
-                            <children>
-                                <Label text="Range start color:" />
-                                <Pane fx:id="paneRangeEndColor" prefHeight="50.0" prefWidth="50.0" />
-                            </children>
-                        </HBox>
-                        <Label text="Hue:" GridPane.rowIndex="6">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Label>
-                        <Label text="Saturation:" GridPane.rowIndex="7">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Label>
-                        <Label text="Brightness :" GridPane.rowIndex="8">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Label>
-                        <TextField fx:id="hueRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                        <TextField fx:id="saturationRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                        <TextField fx:id="brightnessRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                        <Slider fx:id="hueRangeEndSlider" blockIncrement="1.0" max="360.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="6">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Slider>
-                        <Slider fx:id="saturationRangeEndSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="7">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Slider>
-                        <Slider fx:id="brightnessRangeEndSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="8">
-                            <GridPane.margin>
-                                <Insets left="10.0" right="10.0" />
-                            </GridPane.margin>
-                        </Slider>
-                    </children>
-                </GridPane>
+                     </children>
+                  </GridPane>
+               </content>
+          </TitledPane>
+              <TitledPane prefHeight="800.0" prefWidth="200.0" text="Recognize by color">
+                  <content>
+                      <GridPane>
+                          <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="50.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="200.0" valignment="CENTER" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                          <children>
+                              <Label text="Hue:" GridPane.rowIndex="2">
+                                  <GridPane.margin>
+                                      <Insets right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <Label text="Saturation:" GridPane.rowIndex="3">
+                                  <GridPane.margin>
+                                      <Insets right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <Label text="Brightness :" GridPane.rowIndex="4">
+                                  <GridPane.margin>
+                                      <Insets right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <TextField fx:id="hueRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="saturationRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="brightnessRangeStartValue" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Slider fx:id="hueRangeStartSlider" blockIncrement="1.0" max="359.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                              <Slider fx:id="saturationRangeStartSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                              <Slider fx:id="brightnessRangeStartSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                              <GridPane GridPane.columnSpan="3">
+                                  <columnConstraints>
+                                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  </columnConstraints>
+                                  <rowConstraints>
+                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  </rowConstraints>
+                                  <children>
+                                      <Label text="Mask image:" />
+                                      <Label text="Morph image:" GridPane.columnIndex="1" />
+                                      <ImageView fx:id="viewMaskImage" fitHeight="170.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" />
+                                      <ImageView fx:id="viewMorphImage" fitHeight="170.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                  </children>
+                              </GridPane>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                  <children>
+                                      <Label text="Range start color:" />
+                                      <Pane fx:id="paneRangeStartColor" prefHeight="50.0" prefWidth="50.0" />
+                                  </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5">
+                                  <children>
+                                      <Label text="Range start color:" />
+                                      <Pane fx:id="paneRangeEndColor" prefHeight="50.0" prefWidth="50.0" />
+                                  </children>
+                              </HBox>
+                              <Label text="Hue:" GridPane.rowIndex="6">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <Label text="Saturation:" GridPane.rowIndex="7">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <Label text="Brightness :" GridPane.rowIndex="8">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Label>
+                              <TextField fx:id="hueRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <TextField fx:id="saturationRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                              <TextField fx:id="brightnessRangeEndValue" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                              <Slider fx:id="hueRangeEndSlider" blockIncrement="1.0" max="360.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                              <Slider fx:id="saturationRangeEndSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                              <Slider fx:id="brightnessRangeEndSlider" blockIncrement="1.0" max="100" min="0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                                  <GridPane.margin>
+                                      <Insets left="10.0" right="10.0" />
+                                  </GridPane.margin>
+                              </Slider>
+                          </children>
+                      </GridPane>
+                  </content>
+              </TitledPane>
+          <TitledPane animated="false" text="For rent">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
-        </TitledPane>
+          </TitledPane>
+        </panes>
+      </Accordion>
     </children>
 </GridPane>
