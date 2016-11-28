@@ -88,7 +88,7 @@ public class CVFormController implements Initializable {
 
     public ServoControl servoControl;
 
-    private final String[] WindowsPortNames = {"COM4"};
+    private final String[] WindowsPortNames = {"COM4", "COM6"};
     private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1"};
     private final String[] MacOSPortNames = {"/dev/tty.usbserial-A9007UX1"};
 
