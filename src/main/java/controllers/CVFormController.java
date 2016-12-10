@@ -1,5 +1,7 @@
 package controllers;
 
+import interfaces.CameraHolder;
+import interfaces.ServoMotorControl;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -26,6 +28,7 @@ import org.opencv.videoio.VideoCapture;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -88,7 +91,7 @@ public class CVFormController implements Initializable {
     private TextArea logTextArea;
     /* Servo connection settings */
 
-    public ServoControl servoControl;
+    public CameraHolder cameraHolder;
 
     private final String[] WindowsPortNames = {"COM4"};
     private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
@@ -99,7 +102,7 @@ public class CVFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-         servoControl = new ServoControl();
+         cameraHolder = new ServoMotorControl();
 
         /* Initialize servo settings */
         OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
@@ -182,11 +185,14 @@ public class CVFormController implements Initializable {
         Platform.runLater(() -> logTextArea.appendText(new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message));
     }
 
+    // convert "CameraHolder" to "ServoMotorControl" allowed because this method used only on "Servo connection settings" panel
     private void tryConnectSerialPort(String portName) {
         try {
-            servoControl.initialize(portName);
+            cameraHolder.setUpConnection(new HashMap<String,Object>() {{
+                put("portName", portName);
+            }});
             servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                    servoControl.sendSingleByte((byte) servoAngleSlider.getValue()));
+                    ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue()));
             testConnectionButton.setDisable(false);
             servoAngleSlider.setDisable(false);
         } catch (Exception e) {
