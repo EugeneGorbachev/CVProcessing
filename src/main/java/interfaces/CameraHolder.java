@@ -9,7 +9,7 @@ public abstract class CameraHolder {
 
     public abstract boolean setUpConnection(Map<String, Object> parameters) throws Exception;
 
-    public abstract void closeConnection() throws Exception;
+    public abstract void closeConnection();
 
     public boolean isConnected() {
         return connected;

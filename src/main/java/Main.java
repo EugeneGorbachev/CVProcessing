@@ -21,7 +21,7 @@ public class Main extends Application {
 
         CVFormController cv = fxmlLoader.getController();
         primaryStage.setOnCloseRequest(event -> {
-            cv.servoControl.close();
+            cv.cameraHolder.closeConnection();
             cv.handleClose();
         });
     }
