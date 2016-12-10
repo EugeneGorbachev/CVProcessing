@@ -3,13 +3,15 @@ package interfaces;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Map;
 
-public class ServoMotorControl extends CameraHolder {
+// todo delete implementing interface
+public class ServoMotorControl extends CameraHolder implements SerialPortEventListener {
     private static final int TIME_OUT = 2000;
     private static final int DATA_RATE = 9600;
 
@@ -20,6 +22,7 @@ public class ServoMotorControl extends CameraHolder {
 
 
     public ServoMotorControl() {
+        super(0, 179, 0, 0);
     }
 
     @Override
@@ -31,7 +34,7 @@ public class ServoMotorControl extends CameraHolder {
             throw new Exception("There is no 'portName' value in parameters.");
         }
 
-        // check does a port with obtained name exist
+        // check does a port with received name exist
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
         while (portEnum.hasMoreElements()) {
@@ -56,7 +59,7 @@ public class ServoMotorControl extends CameraHolder {
         inputStream = serialPort.getInputStream();
         outputStream = serialPort.getOutputStream();
         // add event listeners
-        serialPort.addEventListener(this::serialEvent);
+        serialPort.addEventListener(this::serialEvent);// TODO check is this require
         serialPort.notifyOnDataAvailable(true);
 
         connected = true;
@@ -71,7 +74,19 @@ public class ServoMotorControl extends CameraHolder {
         }
     }
 
-    public void sendSingleByte(byte myByte) {
+    @Override
+    public void setHorizontalAngle(int horizontalAngle) {
+        super.setHorizontalAngle(horizontalAngle);
+        sendSingleByte(mapIntToByteValue(horizontalAngle));
+    }
+
+    // todo check correct working
+    private byte mapIntToByteValue(int value) {
+        double convertedValue = ((double) (value + 1) * 128d) / 180d;
+        return (byte) (Math.round(convertedValue / 128) - 1);
+    }
+
+    private void sendSingleByte(byte myByte) {
         try {
             outputStream.write(myByte);
 //            outputStream.flush();// TODO discover why it lead to fatal error

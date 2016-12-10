@@ -185,14 +185,13 @@ public class CVFormController implements Initializable {
         Platform.runLater(() -> logTextArea.appendText(new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message));
     }
 
-    // convert "CameraHolder" to "ServoMotorControl" allowed because this method used only on "Servo connection settings" panel
     private void tryConnectSerialPort(String portName) {
         try {
             cameraHolder.setUpConnection(new HashMap<String,Object>() {{
                 put("portName", portName);
             }});
             servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                    ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue()));
+                    cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue()));
             testConnectionButton.setDisable(false);
             servoAngleSlider.setDisable(false);
         } catch (Exception e) {
