@@ -64,9 +64,11 @@ public class ServoMotorControl extends CameraHolder {
     }
 
     @Override
-    public void closeConnection() throws Exception {
-        serialPort.removeEventListener();// TODO check is this require
-        serialPort.close();
+    public void closeConnection() {
+        if (serialPort != null) {
+            serialPort.removeEventListener();// TODO check is this require
+            serialPort.close();
+        }
     }
 
     public void sendSingleByte(byte myByte) {
