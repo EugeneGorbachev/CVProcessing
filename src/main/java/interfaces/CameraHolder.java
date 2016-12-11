@@ -19,10 +19,11 @@ public abstract class CameraHolder {
         this.verticalAngleMaxValue = verticalAngleMaxValue;
     }
 
-    public abstract boolean setUpConnection(Map<String, Object> parameters) throws Exception;
+    public abstract void setUpConnection(Map<String, Object> parameters) throws Exception;
 
     public abstract void closeConnection();
 
+    /* Getters and setters */
     public boolean isConnected() {
         return connected;
     }

@@ -4,12 +4,10 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -26,14 +24,13 @@ public final class Utils {
         imageView.setFitWidth(width);
     }
 
-    // Without preserve ratio
+    // Without preserve ratio TODO delete by useless
     public static void imageViewDimension(ImageView imageView, int height, int width) {
         imageView.setPreserveRatio(false);
         imageView.setFitHeight(height);
         imageView.setFitWidth(width);
     }
-
-    /* */
+    /* Setting properties */
 
     public static Image mat2Image(Mat frame) {
         // create a temporary buffer
@@ -44,12 +41,21 @@ public final class Utils {
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
-    public static Mat findAndDrawBalls(Mat maskImage, Mat frame) {
+    public static Mat findAndDrawContours(Mat maskImage, Mat frame) {
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
 
         // find contours
         Imgproc.findContours(maskImage, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        List<Moments> mu = new ArrayList<Moments>(contours.size());
+        for (int i = 0; i < contours.size(); i++) {
+            mu.add(i, Imgproc.moments(contours.get(i), false));
+            Moments p = mu.get(i);
+            int x = (int) (p.get_m10() / p.get_m00());
+            int y = (int) (p.get_m01() / p.get_m00());
+            Imgproc.drawMarker(frame, new Point(x, y), new Scalar(49, 0, 255));
+        }
 
         // if any contour exist
         if (hierarchy.size().height > 0 && hierarchy.size().width > 0) {

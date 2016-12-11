@@ -26,7 +26,7 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
     }
 
     @Override
-    public boolean setUpConnection(Map<String, Object> parameters) throws Exception {
+    public void setUpConnection(Map<String, Object> parameters) throws Exception {
         connected = false;
 
         String portName = (String) parameters.get("portName");
@@ -63,7 +63,6 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
         serialPort.notifyOnDataAvailable(true);
 
         connected = true;
-        return true;
     }
 
     @Override
@@ -82,7 +81,7 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
 
     // todo check correct working
     private byte mapIntToByteValue(int value) {
-        double convertedValue = ((double) (value + 1) * 128d) / 180d;
+        double convertedValue = ((double) (value + 1) * 128d) / 180d;// todo use 0-180
         return (byte) (Math.round(convertedValue / 128) - 1);
     }
 

@@ -20,10 +20,7 @@ public class Main extends Application {
         primaryStage.show();
 
         CVFormController cv = fxmlLoader.getController();
-        primaryStage.setOnCloseRequest(event -> {
-            cv.cameraHolder.closeConnection();
-            cv.handleClose();
-        });
+        primaryStage.setOnCloseRequest(event -> cv.handleClose());
     }
 
     public static void main(String[] args) {
