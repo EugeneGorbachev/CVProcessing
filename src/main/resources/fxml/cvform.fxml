@@ -54,7 +54,7 @@
                         </Label>
                         <Button fx:id="testConnectionButton" disable="true" mnemonicParsing="false" text="Test connection" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                        <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="179.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="180.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="10.0" right="10.0" />
                            </GridPane.margin>

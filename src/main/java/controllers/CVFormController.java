@@ -147,9 +147,9 @@ public class CVFormController implements Initializable {
         /* Binding slider and textfield value */
 
         /* Initialize views and start video capture */
-        Utils.imageViewDimension(viewCamera, 600);
-        Utils.imageViewDimension(viewMaskImage, 400);
-        Utils.imageViewDimension(viewMorphImage, 400);
+        imageViewDimension(viewCamera, 600);
+        imageViewDimension(viewMaskImage, 400);
+        imageViewDimension(viewMorphImage, 400);
 
         try {
             imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
@@ -219,4 +219,11 @@ public class CVFormController implements Initializable {
         cameraHolder.closeConnection();
         imageRecognition.closeVideoCapture();
     }
+
+    /* Static methods */
+    public static void imageViewDimension(ImageView imageView, int width) {
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(width);
+    }
+    /* Static methods */
 }

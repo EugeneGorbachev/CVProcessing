@@ -6,7 +6,7 @@ import org.opencv.videoio.VideoCapture;
 import java.util.Map;
 
 public abstract class ImageRecognition {
-    VideoCapture videoCapture;// todo may be private?
+    VideoCapture videoCapture;
     int webCameraIndex;
 
     //  Tracked object's center coordinate

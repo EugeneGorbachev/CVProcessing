@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Map;
 
-// todo delete implementing interface
+// TODO delete interface implementation by useless
 public class ServoMotorControl extends CameraHolder implements SerialPortEventListener {
     private static final int TIME_OUT = 2000;
     private static final int DATA_RATE = 9600;
@@ -79,10 +79,10 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
         sendSingleByte(mapIntToByteValue(horizontalAngle));
     }
 
-    // todo check correct working
     private byte mapIntToByteValue(int value) {
-        double convertedValue = ((double) (value + 1) * 128d) / 180d;// todo use 0-180
-        return (byte) (Math.round(convertedValue / 128) - 1);
+        if (value == 0)
+            return 0;
+        return (byte) Math.round((value * 127d) / 180d);
     }
 
     private void sendSingleByte(byte myByte) {
