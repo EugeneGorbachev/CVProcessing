@@ -22,7 +22,7 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
 
 
     public ServoMotorControl() {
-        super(0, 179, 0, 0);
+        super(0, 180, 0, 0);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
             }
         }
         if (portId == null) {
-            throw new Exception("COM port not found.");
+            throw new Exception("COM port \"" + portName + "\" not found.");
         }
 
         // open serial port, and use class name for the appName.
@@ -68,6 +68,7 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
     @Override
     public void closeConnection() {
         if (serialPort != null) {
+            connected = false;
             serialPort.removeEventListener();// TODO check is this require
             serialPort.close();
         }

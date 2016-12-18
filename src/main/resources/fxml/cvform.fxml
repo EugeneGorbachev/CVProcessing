@@ -52,13 +52,25 @@
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <Button fx:id="testConnectionButton" disable="true" mnemonicParsing="false" text="Test connection" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
                         <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="180.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="10.0" right="10.0" />
                            </GridPane.margin>
                         </Slider>
+                        <GridPane GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                            <Button fx:id="closeConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleCloseSerialPortConnection" text="Close connection" GridPane.columnIndex="1" />
+                              <Button fx:id="establishConnectionButton" disable="true" mnemonicParsing="false" text="Establish connection" />
+                           </children>
+                        </GridPane>
                      </children>
                   </GridPane>
                </content>

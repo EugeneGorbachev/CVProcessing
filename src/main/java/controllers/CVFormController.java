@@ -78,7 +78,9 @@ public class CVFormController implements Initializable {
     @FXML
     private ChoiceBox COMPortChooseBox;
     @FXML
-    private Button testConnectionButton;
+    private Button establishConnectionButton;
+    @FXML
+    private Button closeConnectionButton;
     @FXML
     private Slider servoAngleSlider;
     @FXML
@@ -95,7 +97,7 @@ public class CVFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-         cameraHolder = new ServoMotorControl();
+        cameraHolder = new ServoMotorControl();
 
         /* Initialize servo settings */
         OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
@@ -113,8 +115,17 @@ public class CVFormController implements Initializable {
             }
             COMPortChooseBox.setDisable(false);
         });
-        COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) ->
-                tryConnectSerialPort((String) newValue)));
+        COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            if (COMPortChooseBox.getSelectionModel().getSelectedItem() == null) {
+                establishConnectionButton.setDisable(true);
+            } else {
+                establishConnectionButton.setDisable(false);
+            }
+            handleCloseSerialPortConnection();
+        }));
+        establishConnectionButton.setOnAction(event ->
+                handleEstablishSerialPortConnection((String) COMPortChooseBox.getSelectionModel().getSelectedItem())
+        );
         /* Initialize servo settings */
 
         /* Binding slider and textfield value */
@@ -175,24 +186,37 @@ public class CVFormController implements Initializable {
 
     private void logMessage(String message) {
         Platform.runLater(() -> logTextArea.appendText(
-                new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message));
+                new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
     }
 
-    private void tryConnectSerialPort(String portName) {
+    private void handleEstablishSerialPortConnection(String portName) {
         try {
-            cameraHolder.setUpConnection(new HashMap<String,Object>() {{
+            cameraHolder.setUpConnection(new HashMap<String, Object>() {{
                 put("portName", portName);
             }});
+            if (cameraHolder.isConnected()) {
+                logMessage("Connection with COM port \"" + portName + "\" established");
+            }
+            closeConnectionButton.setDisable(!cameraHolder.isConnected());
             servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
                     cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue()));
-            testConnectionButton.setDisable(false);
             servoAngleSlider.setDisable(false);
         } catch (Exception e) {
             e.printStackTrace();
             logMessage(e.getMessage());
-            testConnectionButton.setDisable(true);
             servoAngleSlider.setDisable(true);
         }
+    }
+
+    @FXML
+    private void handleCloseSerialPortConnection() {
+        boolean isConnectedValue = cameraHolder.isConnected();
+        cameraHolder.closeConnection();
+        closeConnectionButton.setDisable(!cameraHolder.isConnected());
+        if (isConnectedValue != cameraHolder.isConnected()) {
+            logMessage("Connection with COM port was closed");
+        }
+        servoAngleSlider.setDisable(true);
     }
 
     private void handleChangeStartRangeColor() {
