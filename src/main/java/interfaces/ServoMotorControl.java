@@ -2,22 +2,17 @@ package interfaces;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Map;
 
-// TODO delete interface implementation by useless
-public class ServoMotorControl extends CameraHolder implements SerialPortEventListener {
+public class ServoMotorControl extends CameraHolder {
     private static final int TIME_OUT = 2000;
     private static final int DATA_RATE = 9600;
 
     private SerialPort serialPort;
 
-    private InputStream inputStream;
     private OutputStream outputStream;
 
 
@@ -56,10 +51,8 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
                 SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE);
         // open the streams
-        inputStream = serialPort.getInputStream();
         outputStream = serialPort.getOutputStream();
         // add event listeners
-        serialPort.addEventListener(this::serialEvent);// TODO check is this require
         serialPort.notifyOnDataAvailable(true);
 
         connected = true;
@@ -69,7 +62,6 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
     public void closeConnection() {
         if (serialPort != null) {
             connected = false;
-            serialPort.removeEventListener();// TODO check is this require
             serialPort.close();
         }
     }
@@ -89,25 +81,9 @@ public class ServoMotorControl extends CameraHolder implements SerialPortEventLi
     private void sendSingleByte(byte myByte) {
         try {
             outputStream.write(myByte);
-//            outputStream.flush();// TODO discover why it lead to fatal error
+//            outputStream.flush();// TODO discover why this method calling lead to fatal error
         } catch (Exception e) {
             System.err.println(e.toString());
-        }
-    }
-
-    // TODO check if this require
-    public synchronized void serialEvent(SerialPortEvent oEvent) {
-        if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-            try {
-                int myByte = inputStream.read();
-                int value = myByte & 0xff;//byte to int conversion:0...127,-127...0 -> 0...255
-                if (value >= 0 && value < 256) {
-                    System.out.println(value);
-
-                }
-            } catch (Exception e) {
-                System.err.println(e.toString());
-            }
         }
     }
 }
