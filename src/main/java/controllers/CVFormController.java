@@ -1,9 +1,9 @@
 package controllers;
 
-import interfaces.CameraHolder;
-import interfaces.ImageRecognition;
-import interfaces.RecognizeByColorControl;
-import interfaces.ServoMotorControl;
+import cameraHolder.CameraHolder;
+import imageRecognition.ImageRecognition;
+import imageRecognition.RecognizeByColorControl;
+import cameraHolder.ServoMotorControl;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -93,11 +93,13 @@ public class CVFormController implements Initializable {
     private final String[] MacOSPortNames = {"COM4"};
 
     private CameraHolder cameraHolder;
-    private ImageRecognition imageRecognition = new RecognizeByColorControl();// todo remove new
+    private ImageRecognition imageRecognition;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cameraHolder = new ServoMotorControl();
+        imageRecognition = new RecognizeByColorControl();// todo remove new
+        imageRecognition.addObserver(cameraHolder);
 
         /* Initialize servo settings */
         OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));

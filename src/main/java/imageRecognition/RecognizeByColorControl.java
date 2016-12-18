@@ -1,21 +1,26 @@
-package interfaces;
+package imageRecognition;
 
 import javafx.application.Platform;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import observer.Observer;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 import java.io.ByteArrayInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class RecognizeByColorControl extends ImageRecognition {
+    private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
 
     @Override
@@ -133,8 +138,11 @@ public class RecognizeByColorControl extends ImageRecognition {
                 validPointCount++;
             }
         }
+        prevXCoordinate = xCoordinate;
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
+        prevYCoordinate = yCoordinate;
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
+        notifyObservers();
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }
@@ -147,6 +155,21 @@ public class RecognizeByColorControl extends ImageRecognition {
         Imgproc.drawMarker(frame, new Point(xCoordinate, yCoordinate), new Scalar(0, 0, 255),
                 0, 50, 2, 4);
         return frame;
+    }
+
+    @Override
+    public void addObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        observers.forEach(observer -> observer.update(xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate));
     }
 
     /* Static methods */

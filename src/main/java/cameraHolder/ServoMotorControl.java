@@ -1,4 +1,4 @@
-package interfaces;
+package cameraHolder;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
@@ -14,7 +14,6 @@ public class ServoMotorControl extends CameraHolder {
     private SerialPort serialPort;
 
     private OutputStream outputStream;
-
 
     public ServoMotorControl() {
         super(0, 180, 0, 0);
@@ -84,6 +83,18 @@ public class ServoMotorControl extends CameraHolder {
 //            outputStream.flush();// TODO discover why this method calling lead to fatal error
         } catch (Exception e) {
             System.err.println(e.toString());
+        }
+    }
+
+    @Override
+    public void update(int x, int y) {
+        if (horizontalAngle != x) {
+            System.out.println("Get new x value = " + x);
+            // TODO move on diff
+        }
+        if (verticalAngle != y) {
+            System.out.println("Get new y value = " + y);
+            // TODO move on diff
         }
     }
 }

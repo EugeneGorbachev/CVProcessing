@@ -1,15 +1,17 @@
-package interfaces;
+package cameraHolder;
+
+import observer.Observer;
 
 import java.util.Map;
 
-public abstract class CameraHolder {
-    private final int horizontalAngleMinValue;
-    private final int horizontalAngleMaxValue;
-    private final int verticalAngleMinValue;
-    private final int verticalAngleMaxValue;
+public abstract class CameraHolder implements Observer {
+    final int horizontalAngleMinValue;
+    final int horizontalAngleMaxValue;
+    final int verticalAngleMinValue;
+    final int verticalAngleMaxValue;
 
-    private int horizontalAngle;
-    private int verticalAngle;
+    int horizontalAngle;
+    int verticalAngle;
     boolean connected;
 
     CameraHolder(int horizontalAngleMinValue, int horizontalAngleMaxValue, int verticalAngleMinValue, int verticalAngleMaxValue) {
