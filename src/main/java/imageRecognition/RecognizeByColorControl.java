@@ -50,6 +50,7 @@ public class RecognizeByColorControl extends ImageRecognition {
             };
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
+            setRefreshPrevCoordinateFrequency(33);
         } else {
             throw new Exception("Can't open camera with index " + webCameraIndex + ".");
         }
@@ -138,13 +139,25 @@ public class RecognizeByColorControl extends ImageRecognition {
                 validPointCount++;
             }
         }
-        prevXCoordinate = xCoordinate;
+        // TODO somehow call notifyObservers after savePrevCoordinate
+        boolean isSaved = savePrevCoordinate();
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
-        prevYCoordinate = yCoordinate;
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
-        notifyObservers();
+        if (isSaved) {
+            notifyObservers();
+        }
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
+    }
+
+    private boolean savePrevCoordinate() {
+        if (++coordinateChangeCounter >= getRefreshPrevCoordinateFrequency()) {
+            prevXCoordinate = xCoordinate;
+            prevYCoordinate = yCoordinate;
+            coordinateChangeCounter %= getRefreshPrevCoordinateFrequency();
+            return true;
+        }
+        return false;
     }
 
     private Mat drawContours(Mat hierarchy, List<MatOfPoint> contours, Mat frame, Scalar color) {

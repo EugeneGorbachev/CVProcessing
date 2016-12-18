@@ -16,9 +16,14 @@ public abstract class ImageRecognition implements Observable {
     int prevXCoordinate;
     int prevYCoordinate;
 
+    int coordinateChangeCounter;
+    private int refreshPrevCoordinateFrequency;
+
     public ImageRecognition() {
         videoCapture = new VideoCapture();
         webCameraIndex = 0;
+        coordinateChangeCounter = 0;
+        refreshPrevCoordinateFrequency = 1;
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
     }
@@ -32,6 +37,18 @@ public abstract class ImageRecognition implements Observable {
     }
 
     abstract Image grabFrame(Map<String, Object> parameters);
+
+    public int getRefreshPrevCoordinateFrequency() {
+        return refreshPrevCoordinateFrequency;
+    }
+
+    public void setRefreshPrevCoordinateFrequency(int refreshPrevCoordinateFrequency) {
+        if (refreshPrevCoordinateFrequency <= 0) {
+            System.err.println("Wrong refreshPrevCoordinateFrequency value");
+        } else {
+            this.refreshPrevCoordinateFrequency = refreshPrevCoordinateFrequency;
+        }
+    }
 
     /* Getters and setters */
     public int getWebCameraIndex() {

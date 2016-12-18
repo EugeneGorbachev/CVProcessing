@@ -88,11 +88,11 @@ public class ServoMotorControl extends CameraHolder {
 
     @Override
     public void update(int x, int y) {
-        if (horizontalAngle != x) {
+        if (getHorizontalAngle() != x) {
             System.out.println("Get new x value = " + x);
             // TODO move on diff
         }
-        if (verticalAngle != y) {
+        if (getVerticalAngle() != y) {
             System.out.println("Get new y value = " + y);
             // TODO move on diff
         }

@@ -10,8 +10,8 @@ public abstract class CameraHolder implements Observer {
     final int verticalAngleMinValue;
     final int verticalAngleMaxValue;
 
-    int horizontalAngle;
-    int verticalAngle;
+    private int horizontalAngle;
+    private int verticalAngle;
     boolean connected;
 
     CameraHolder(int horizontalAngleMinValue, int horizontalAngleMaxValue, int verticalAngleMinValue, int verticalAngleMaxValue) {
@@ -35,14 +35,11 @@ public abstract class CameraHolder implements Observer {
     }
 
     public void setHorizontalAngle(int horizontalAngle) {
-        try {
-            if (horizontalAngle < horizontalAngleMinValue || horizontalAngle > horizontalAngleMaxValue) {
-                throw new Exception("Received angle's value is out of bound");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (horizontalAngle < horizontalAngleMinValue || horizontalAngle > horizontalAngleMaxValue) {
+            System.err.println("Received angle's value is out of bound");
+        } else {
+            this.horizontalAngle = horizontalAngle;
         }
-        this.horizontalAngle = horizontalAngle;
     }
 
     public int getVerticalAngle() {
@@ -50,14 +47,12 @@ public abstract class CameraHolder implements Observer {
     }
 
     public void setVerticalAngle(int verticalAngle) {
-        try {
-            if (verticalAngle < verticalAngleMinValue || verticalAngle > verticalAngleMaxValue) {
-                throw new Exception("Received angle's value is out of bound");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (verticalAngle < verticalAngleMinValue || verticalAngle > verticalAngleMaxValue) {
+            System.err.println("Received angle's value is out of bound");
+        } else {
+            this.verticalAngle = verticalAngle;
         }
-        this.verticalAngle = verticalAngle;
     }
 
     /* Final fields getters */
