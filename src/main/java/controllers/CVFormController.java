@@ -128,6 +128,8 @@ public class CVFormController implements Initializable {
         establishConnectionButton.setOnAction(event ->
                 handleEstablishSerialPortConnection((String) COMPortChooseBox.getSelectionModel().getSelectedItem())
         );
+        System.out.println("Height: " + viewCamera.getFitHeight());
+        System.out.println("Width: " + viewCamera.getFitWidth());
         /* Initialize servo settings */
 
         /* Binding slider and textfield value */
@@ -160,7 +162,7 @@ public class CVFormController implements Initializable {
         /* Binding slider and textfield value */
 
         /* Initialize views and start video capture */
-        imageViewDimension(viewCamera, 600);
+        imageViewDimension(viewCamera, 600);// TODO resize after changing window's size
         imageViewDimension(viewMaskImage, 400);
         imageViewDimension(viewMorphImage, 400);
 
@@ -196,6 +198,7 @@ public class CVFormController implements Initializable {
             cameraHolder.setUpConnection(new HashMap<String, Object>() {{
                 put("portName", portName);
             }});
+            cameraHolder.setHorizontalAngle(cameraHolder.getHorizontalAngleMaxValue() / 2);
             if (cameraHolder.isConnected()) {
                 logMessage("Connection with COM port \"" + portName + "\" established");
             }

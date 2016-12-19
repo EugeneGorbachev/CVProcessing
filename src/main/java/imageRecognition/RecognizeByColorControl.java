@@ -50,7 +50,7 @@ public class RecognizeByColorControl extends ImageRecognition {
             };
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
-            setRefreshPrevCoordinateFrequency(33);
+            setRefreshPrevCoordinateFrequency(5);
         } else {
             throw new Exception("Can't open camera with index " + webCameraIndex + ".");
         }

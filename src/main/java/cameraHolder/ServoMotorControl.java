@@ -69,6 +69,7 @@ public class ServoMotorControl extends CameraHolder {
     public void setHorizontalAngle(int horizontalAngle) {
         super.setHorizontalAngle(horizontalAngle);
         sendSingleByte(mapIntToByteValue(horizontalAngle));
+        System.out.println(horizontalAngle);
     }
 
     private byte mapIntToByteValue(int value) {
@@ -90,7 +91,7 @@ public class ServoMotorControl extends CameraHolder {
     public void update(int x, int y) {
         if (getHorizontalAngle() != x) {
             System.out.println("Get new x value = " + x);
-            // TODO move on diff
+            setHorizontalAngle(getHorizontalAngle() + (int) Math.round((double) x / (600d / 78d)));// TODO replace hardcode
         }
         if (getVerticalAngle() != y) {
             System.out.println("Get new y value = " + y);
