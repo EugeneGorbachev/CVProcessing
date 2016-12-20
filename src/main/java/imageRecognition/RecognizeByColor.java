@@ -6,11 +6,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import observer.Observer;
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class RecognizeByColorControl extends ImageRecognition {
+import static imageRecognition.OpenCVUtils.matToImage;
+
+public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
 
@@ -93,7 +93,7 @@ public class RecognizeByColorControl extends ImageRecognition {
             Imgproc.cvtColor(maskImage, maskImage, Imgproc.COLOR_BGR2HSV);// convert to HSV (also HSB)
 
             Core.inRange(maskImage, lowerb, upperb, maskImage);
-            Platform.runLater(() -> viewMaskImage.imageProperty().set(mat2Image(maskImage)));
+            Platform.runLater(() -> viewMaskImage.imageProperty().set(matToImage(maskImage)));
 
             // dilate with large element, erode with small ones
             Mat morphImage = new Mat();
@@ -104,21 +104,21 @@ public class RecognizeByColorControl extends ImageRecognition {
             Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
             Imgproc.erode(maskImage, morphImage, erodeElement);
 
-            Platform.runLater(() -> viewMorphImage.imageProperty().set(mat2Image(maskImage)));
+            Platform.runLater(() -> viewMorphImage.imageProperty().set(matToImage(maskImage)));
 
             Mat hierarchy = new Mat();
             List<MatOfPoint> contours = new ArrayList<>();
-            if (findContours(maskImage, frame, hierarchy, contours)) {
+            if (findContours(maskImage, hierarchy, contours)) {
                 frame = drawContours(hierarchy, contours, frame, new Scalar(255, 0, 0));
             }
             // convert the Mat object (OpenCV) to Image (JavaFX)
-            image = mat2Image(frame);
+            image = matToImage(frame);
         }
 
         return image;
     }
 
-    private boolean findContours(Mat image, Mat frame, Mat hierarchy, List<MatOfPoint> contours) {
+    private boolean findContours(Mat image, Mat hierarchy, List<MatOfPoint> contours) {
         Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
         List<Point> pointList = new ArrayList<>();
@@ -150,16 +150,6 @@ public class RecognizeByColorControl extends ImageRecognition {
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }
 
-    private boolean savePrevCoordinate() {
-        if (++coordinateChangeCounter >= getRefreshPrevCoordinateFrequency()) {
-            prevXCoordinate = xCoordinate;
-            prevYCoordinate = yCoordinate;
-            coordinateChangeCounter %= getRefreshPrevCoordinateFrequency();
-            return true;
-        }
-        return false;
-    }
-
     private Mat drawContours(Mat hierarchy, List<MatOfPoint> contours, Mat frame, Scalar color) {
         for (int idx = 0; idx >= 0; idx = (int) hierarchy.get(0, idx)[0]) {
             Imgproc.drawContours(frame, contours, idx, color);
@@ -184,15 +174,4 @@ public class RecognizeByColorControl extends ImageRecognition {
     public void notifyObservers() {
         observers.forEach(observer -> observer.update(xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate));
     }
-
-    /* Static methods */
-    public static Image mat2Image(Mat frame) {
-        // create a temporary buffer
-        MatOfByte buffer = new MatOfByte();
-        // encode the frame in the buffer, according to the PNG format
-        Imgcodecs.imencode(".png", frame, buffer);
-        // build and return an Image created from the image encoded in the buffer
-        return new Image(new ByteArrayInputStream(buffer.toArray()));
-    }
-    /* Static methods */
 }

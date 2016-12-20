@@ -16,7 +16,7 @@ public abstract class ImageRecognition implements Observable {
     int prevXCoordinate;
     int prevYCoordinate;
 
-    int coordinateChangeCounter;
+    private int coordinateChangeCounter;
     private int refreshPrevCoordinateFrequency;
 
     public ImageRecognition() {
@@ -37,6 +37,16 @@ public abstract class ImageRecognition implements Observable {
     }
 
     abstract Image grabFrame(Map<String, Object> parameters);
+
+    boolean savePrevCoordinate() {
+        if (++coordinateChangeCounter >= getRefreshPrevCoordinateFrequency()) {
+            prevXCoordinate = xCoordinate;
+            prevYCoordinate = yCoordinate;
+            coordinateChangeCounter %= getRefreshPrevCoordinateFrequency();
+            return true;
+        }
+        return false;
+    }
 
     public int getRefreshPrevCoordinateFrequency() {
         return refreshPrevCoordinateFrequency;

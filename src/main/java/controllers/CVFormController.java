@@ -2,8 +2,9 @@ package controllers;
 
 import cameraHolder.CameraHolder;
 import imageRecognition.ImageRecognition;
-import imageRecognition.RecognizeByColorControl;
+import imageRecognition.RecognizeByColor;
 import cameraHolder.ServoMotorControl;
+import imageRecognition.RecognizeByFace;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -88,9 +89,9 @@ public class CVFormController implements Initializable {
     /* Servo connection settings */
 
 
-    private final String[] WindowsPortNames = {"COM4"};
+    private final String[] WindowsPortNames = {"COM4", "COM6", "COM7", "COM8"};
     private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
-    private final String[] MacOSPortNames = {"COM4"};
+    private final String[] MacOSPortNames = {"/dev/tty.wchusbserial1420"};
 
     private CameraHolder cameraHolder;
     private ImageRecognition imageRecognition;
@@ -98,7 +99,7 @@ public class CVFormController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cameraHolder = new ServoMotorControl();
-        imageRecognition = new RecognizeByColorControl();// todo remove new
+        imageRecognition = new RecognizeByFace();// todo remove new
         imageRecognition.addObserver(cameraHolder);
 
         /* Initialize servo settings */
@@ -128,8 +129,6 @@ public class CVFormController implements Initializable {
         establishConnectionButton.setOnAction(event ->
                 handleEstablishSerialPortConnection((String) COMPortChooseBox.getSelectionModel().getSelectedItem())
         );
-        System.out.println("Height: " + viewCamera.getFitHeight());
-        System.out.println("Width: " + viewCamera.getFitWidth());
         /* Initialize servo settings */
 
         /* Binding slider and textfield value */
