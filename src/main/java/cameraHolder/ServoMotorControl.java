@@ -91,13 +91,13 @@ public class ServoMotorControl extends CameraHolder {
     public void update(int x, int y) {
         if (getHorizontalAngle() != x) {
             if (getHorizontalAngleMaxValue() > 0) {
-                System.out.println("Get new x value = " + x);// TODO remove this
+                System.out.println("Got new x value = " + x);// TODO remove this
                 setHorizontalAngle(getHorizontalAngle() + (int) Math.round((double) x / (600d / 78d)));// TODO replace hardcode
             }
         }
         if (getVerticalAngle() != y) {
             if (getVerticalAngleMaxValue() > 0) {
-                System.out.println("Get new y value = " + y);// TODO remove this
+                System.out.println("Got new y value = " + y);// TODO remove this
                 setVerticalAngle(getVerticalAngle() + (int) Math.round((double) y / (600d / 78d)));// TODO replace hardcode
             }
         }

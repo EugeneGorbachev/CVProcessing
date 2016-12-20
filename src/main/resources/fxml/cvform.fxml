@@ -20,7 +20,7 @@
         <ImageView fx:id="viewCamera" fitHeight="400.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
       <Accordion GridPane.columnIndex="1" GridPane.rowSpan="2">
         <panes>
-          <TitledPane text="Servo connection settings">
+          <TitledPane text="Program settings">
                <content>
                   <GridPane>
                     <columnConstraints>
@@ -28,6 +28,7 @@
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" />
@@ -35,30 +36,30 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Label text="Choose your OS:">
+                        <Label text="Choose your OS:" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label text="Choose COM port:" GridPane.rowIndex="1">
+                        <Label text="Choose COM port:" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <ChoiceBox fx:id="OSChooseBox" prefWidth="150.0" GridPane.columnIndex="1" />
-                        <ChoiceBox fx:id="COMPortChooseBox" disable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Rotate servo:" GridPane.rowIndex="3">
+                        <ChoiceBox fx:id="OSChooseBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ChoiceBox fx:id="COMPortChooseBox" disable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Rotate servo:" GridPane.rowIndex="4">
                            <GridPane.margin>
                               <Insets right="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                        <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="180.0" showTickLabels="true" showTickMarks="true" value="90.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+                        <Slider fx:id="servoAngleSlider" blockIncrement="1" disable="true" max="180.0" showTickLabels="true" showTickMarks="true" value="90.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                            <GridPane.margin>
                               <Insets left="10.0" right="10.0" />
                            </GridPane.margin>
                         </Slider>
-                        <GridPane GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                        <GridPane GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                           <columnConstraints>
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -71,6 +72,12 @@
                               <Button fx:id="establishConnectionButton" disable="true" mnemonicParsing="false" text="Establish connection" />
                            </children>
                         </GridPane>
+                        <Label text="Choose IR method:">
+                           <GridPane.margin>
+                              <Insets right="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <ChoiceBox fx:id="IRMethodChooseBox" prefWidth="150.0" GridPane.columnIndex="1" />
                      </children>
                   </GridPane>
                </content>

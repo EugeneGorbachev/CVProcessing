@@ -2,9 +2,9 @@ package controllers;
 
 import cameraHolder.CameraHolder;
 import imageRecognition.ImageRecognition;
-import imageRecognition.RecognizeByColor;
+import imageRecognition.RecognizeByCascade;
 import cameraHolder.ServoMotorControl;
-import imageRecognition.RecognizeByFace;
+import imageRecognition.RecognizeByColor;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -32,13 +32,18 @@ public class CVFormController implements Initializable {
     enum OperatingSystem {
         WINDOWS, LINUX, MACOS
     }
+    enum ImageRecognithionMethods {
+        NONE, RECOGNIZE_BY_COLOR, RECOGNIZE_BY_CASCADE
+    }
 
     /* Central part*/
     @FXML
     private ImageView viewCamera;
     /*Central part*/
 
-    /* Servo connection settings */
+    /* Program settings */
+    @FXML
+    private ChoiceBox IRMethodChooseBox;
     @FXML
     private ChoiceBox OSChooseBox;
     @FXML
@@ -51,7 +56,7 @@ public class CVFormController implements Initializable {
     private Slider servoAngleSlider;
     @FXML
     private TextArea logTextArea;
-    /* Servo connection settings */
+    /* Program settings */
 
     /* Recognize by color pane */
     @FXML
@@ -98,7 +103,6 @@ public class CVFormController implements Initializable {
     private TextArea previewHaarCascadeTextArea;
     /* Recognize by Haar cascade */
 
-
     private final String[] WindowsPortNames = {"COM4", "COM6", "COM7", "COM8"};
     private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
     private final String[] MacOSPortNames = {"/dev/tty.wchusbserial1420"};
@@ -108,11 +112,25 @@ public class CVFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cameraHolder = new ServoMotorControl();
-        imageRecognition = new RecognizeByFace();// todo remove new
-        imageRecognition.addObserver(cameraHolder);
+        imageViewDimension(viewCamera, 600);// TODO resize after changing window's size
+        cameraHolder = new ServoMotorControl();// TODO remove in case of new realization CameraHolder
+        // TODO fake realization!!!!!!!!
+        imageRecognition = new RecognizeByCascade(getClass().getClassLoader().getResource("haarcascades/haarcascade_eye.xml").getPath());// todo remove new
 
-        /* Initialize servo settings */
+        /* Initialize settings */
+        IRMethodChooseBox.setItems(FXCollections.observableArrayList(ImageRecognithionMethods.values()));
+        IRMethodChooseBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            switch ((ImageRecognithionMethods) IRMethodChooseBox.getSelectionModel().getSelectedItem()) {
+                case RECOGNIZE_BY_COLOR:
+                    handleSwitchToRecognizeByColor();
+                    break;
+                case RECOGNIZE_BY_CASCADE:
+                    handleSwitchToRecognizeByCascade();
+                    break;
+                default:
+            }
+        }));
+
         OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
         OSChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             switch ((OperatingSystem) OSChooseBox.getSelectionModel().getSelectedItem()) {
@@ -128,6 +146,7 @@ public class CVFormController implements Initializable {
             }
             COMPortChooseBox.setDisable(false);
         });
+
         COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
             if (COMPortChooseBox.getSelectionModel().getSelectedItem() == null) {
                 establishConnectionButton.setDisable(true);
@@ -139,7 +158,7 @@ public class CVFormController implements Initializable {
         establishConnectionButton.setOnAction(event ->
                 handleEstablishSerialPortConnection((String) COMPortChooseBox.getSelectionModel().getSelectedItem())
         );
-        /* Initialize servo settings */
+        /* Initialize settings */
 
         /* Binding slider and textfield value */
         IntegerProperty hueRangeStartInteger = new SimpleIntegerProperty(0);
@@ -172,7 +191,7 @@ public class CVFormController implements Initializable {
 
         /* Initialize recognize by color */
         List<String> haarCascades = new ArrayList<>();
-        File haarCascadesDirectory = new File("/Users/eugene.home/IdeaProjects/CVProcessing/src/main/resources/haarcascades");
+        File haarCascadesDirectory = new File(getClass().getClassLoader().getResource("haarcascades").getPath());
         for (final File file: haarCascadesDirectory.listFiles()) {
             haarCascades.add(file.getName());
         }
@@ -180,6 +199,9 @@ public class CVFormController implements Initializable {
 
         haarCascadeChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             try {
+                handleSwitchToRecognizeByCascade();
+
+                /* Show preview in TextArea */
                 BufferedReader bufferedReader = new BufferedReader(
                         new FileReader(haarCascadesDirectory.getAbsolutePath() + "/" + newValue)
                 );
@@ -193,14 +215,26 @@ public class CVFormController implements Initializable {
                     previewHaarCascadeTextArea.appendText("...");
                 }
                 previewHaarCascadeTextArea.positionCaret(1);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         /* Initialize recognize by color */
 
-        /* Initialize views and start video capture */
-        imageViewDimension(viewCamera, 600);// TODO resize after changing window's size
+        handleChangeStartRangeColor();
+        handleChangeEndRangeColor();
+    }
+
+    private void logMessage(String message) {
+        Platform.runLater(() -> logTextArea.appendText(
+                new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
+    }
+
+    private void handleSwitchToRecognizeByColor() {
+        imageRecognition.closeVideoCapture();
+        imageRecognition = new RecognizeByColor();
+        imageRecognition.addObserver(cameraHolder);
+
         imageViewDimension(viewMaskImage, 400);
         imageViewDimension(viewMorphImage, 400);
 
@@ -220,15 +254,27 @@ public class CVFormController implements Initializable {
             e.printStackTrace();
             logMessage(e.getMessage());
         }
-        /* Initialize views and start video capture */
-
-        handleChangeStartRangeColor();
-        handleChangeEndRangeColor();
     }
 
-    private void logMessage(String message) {
-        Platform.runLater(() -> logTextArea.appendText(
-                new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
+    private void handleSwitchToRecognizeByCascade() {
+        imageRecognition.closeVideoCapture();
+        String cascadeConfigName = (String) haarCascadeChooseBox.getSelectionModel().getSelectedItem();
+        if (cascadeConfigName == null) {
+            cascadeConfigName = (String) haarCascadeChooseBox.getItems().get(0);
+            haarCascadeChooseBox.getSelectionModel().select(0);
+        }
+        imageRecognition = new RecognizeByCascade(getClass().getClassLoader().getResource(
+                "haarcascades/" + cascadeConfigName).getPath()
+        );
+        imageRecognition.addObserver(cameraHolder);
+
+        try {
+            imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
+                put("viewCamera", viewCamera);
+            }});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleEstablishSerialPortConnection(String portName) {

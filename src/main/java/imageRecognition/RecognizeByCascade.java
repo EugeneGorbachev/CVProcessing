@@ -18,18 +18,22 @@ import java.util.concurrent.TimeUnit;
 
 import static imageRecognition.OpenCVUtils.matToImage;
 
-public class RecognizeByFace extends ImageRecognition {
+public class RecognizeByCascade extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
 
     private int absoluteFaceSize;
     private CascadeClassifier cascadeClassifier;
 
-    public RecognizeByFace() {
+    public RecognizeByCascade(String filePath) {
         absoluteFaceSize = 0;
         cascadeClassifier = new CascadeClassifier();
-        cascadeClassifier.load("/Users/eugene.home/IdeaProjects/CVProcessing/src/main/resources/haarcascades/haarcascade_frontalface_alt.xml");
-}
+        loadCascade(filePath);
+    }
+
+    public void loadCascade(String filePath) {
+        cascadeClassifier.load(filePath);
+    }
 
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
@@ -97,15 +101,21 @@ public class RecognizeByFace extends ImageRecognition {
 
         // detect faces
         cascadeClassifier.detectMultiScale(grayFrame, faces, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE,
-                new Size(absoluteFaceSize,absoluteFaceSize), new Size());
+                new Size(absoluteFaceSize, absoluteFaceSize), new Size());
 
         if (faces.elemSize() == 0) {
             return false;
         }
+        // TODO somehow call notifyObservers after savePrevCoordinate
+        boolean isSaved = savePrevCoordinate();
         Rect firstFace = faces.toList().get(0);
         xCoordinate = (int) (firstFace.br().x - (firstFace.br().x - firstFace.tl().x) / 2);
         yCoordinate = (int) (firstFace.br().y - (firstFace.br().y - firstFace.tl().y) / 2);
         drawRectangles(faces.toList(), frame, new Scalar(0, 255, 0));
+        if (isSaved) {
+            notifyObservers();
+        }
+
         return true;
     }
 
@@ -131,6 +141,6 @@ public class RecognizeByFace extends ImageRecognition {
 
     @Override
     public void notifyObservers() {
-        observers.forEach(observer -> observer.update(xCoordinate - prevXCoordinate,yCoordinate - prevYCoordinate));
+        observers.forEach(observer -> observer.update(xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate));
     }
 }
