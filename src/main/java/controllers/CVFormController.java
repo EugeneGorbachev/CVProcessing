@@ -20,9 +20,12 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CVFormController implements Initializable {
@@ -34,6 +37,21 @@ public class CVFormController implements Initializable {
     @FXML
     private ImageView viewCamera;
     /*Central part*/
+
+    /* Servo connection settings */
+    @FXML
+    private ChoiceBox OSChooseBox;
+    @FXML
+    private ChoiceBox COMPortChooseBox;
+    @FXML
+    private Button establishConnectionButton;
+    @FXML
+    private Button closeConnectionButton;
+    @FXML
+    private Slider servoAngleSlider;
+    @FXML
+    private TextArea logTextArea;
+    /* Servo connection settings */
 
     /* Recognize by color pane */
     @FXML
@@ -73,20 +91,12 @@ public class CVFormController implements Initializable {
     private Slider brightnessRangeEndSlider;
     /* Recognize by color pane */
 
-    /* Servo connection settings */
+    /* Recognize by Haar cascade */
     @FXML
-    private ChoiceBox OSChooseBox;
+    private ChoiceBox haarCascadeChooseBox;
     @FXML
-    private ChoiceBox COMPortChooseBox;
-    @FXML
-    private Button establishConnectionButton;
-    @FXML
-    private Button closeConnectionButton;
-    @FXML
-    private Slider servoAngleSlider;
-    @FXML
-    private TextArea logTextArea;
-    /* Servo connection settings */
+    private TextArea previewHaarCascadeTextArea;
+    /* Recognize by Haar cascade */
 
 
     private final String[] WindowsPortNames = {"COM4", "COM6", "COM7", "COM8"};
@@ -159,6 +169,35 @@ public class CVFormController implements Initializable {
         saturationRangeEndSlider.valueProperty().addListener(((observable, oldValue, newValue) -> handleChangeEndRangeColor()));
         brightnessRangeEndSlider.valueProperty().addListener(((observable, oldValue, newValue) -> handleChangeEndRangeColor()));
         /* Binding slider and textfield value */
+
+        /* Initialize recognize by color */
+        List<String> haarCascades = new ArrayList<>();
+        File haarCascadesDirectory = new File("/Users/eugene.home/IdeaProjects/CVProcessing/src/main/resources/haarcascades");
+        for (final File file: haarCascadesDirectory.listFiles()) {
+            haarCascades.add(file.getName());
+        }
+        haarCascadeChooseBox.setItems(FXCollections.observableArrayList(haarCascades));
+
+        haarCascadeChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                BufferedReader bufferedReader = new BufferedReader(
+                        new FileReader(haarCascadesDirectory.getAbsolutePath() + "/" + newValue)
+                );
+
+                String line;
+                previewHaarCascadeTextArea.clear();
+                for (int i = 0; (line = bufferedReader.readLine()) != null && i < 100; i++) {
+                    previewHaarCascadeTextArea.appendText(line + "\n");
+                }
+                if (line != null) {
+                    previewHaarCascadeTextArea.appendText("...");
+                }
+                previewHaarCascadeTextArea.positionCaret(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        /* Initialize recognize by color */
 
         /* Initialize views and start video capture */
         imageViewDimension(viewCamera, 600);// TODO resize after changing window's size

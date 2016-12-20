@@ -73,8 +73,6 @@ public class RecognizeByFace extends ImageRecognition {
         if (!frame.empty()) {
             findFaces(frame);
             image = matToImage(frame);
-        } else {
-            System.err.println("empty frame");
         }
 
         return image;
