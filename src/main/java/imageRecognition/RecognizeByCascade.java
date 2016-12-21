@@ -111,7 +111,7 @@ public class RecognizeByCascade extends ImageRecognition {
         Rect firstFace = faces.toList().get(0);
         xCoordinate = (int) (firstFace.br().x - (firstFace.br().x - firstFace.tl().x) / 2);
         yCoordinate = (int) (firstFace.br().y - (firstFace.br().y - firstFace.tl().y) / 2);
-        drawRectangles(faces.toList(), frame, new Scalar(0, 255, 0));
+        drawRectangles(faces.toList(), frame, new Scalar(0, 255, 0), new Scalar(255, 0, 0));
         if (isSaved) {
             notifyObservers();
         }
@@ -119,12 +119,13 @@ public class RecognizeByCascade extends ImageRecognition {
         return true;
     }
 
-    private Mat drawRectangles(List<Rect> rects, Mat frame, Scalar color) {
-        for (Rect rect : rects) {
-            Imgproc.rectangle(frame, rect.tl(), rect.br(), color, 3);
+    private Mat drawRectangles(List<Rect> rects, Mat frame, Scalar mainColor, Scalar sideColor) {
+        Imgproc.rectangle(frame, rects.get(0).tl(), rects.get(0).br(), mainColor, 3);
+        for (int i = 1; i < rects.size(); i++) {
+            Imgproc.rectangle(frame, rects.get(i).tl(), rects.get(i).br(), sideColor, 3);
         }
-        // TODO customize marker
-        Imgproc.drawMarker(frame, new Point(xCoordinate, yCoordinate), new Scalar(0, 0, 255),
+        Imgproc.drawMarker(frame, new Point(xCoordinate, yCoordinate),
+                new Scalar(markerColor.getBlue() * 255, markerColor.getGreen() * 255, markerColor.getRed() * 255),
                 0, 50, 2, 4);
         return frame;
     }

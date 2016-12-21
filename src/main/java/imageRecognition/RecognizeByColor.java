@@ -154,8 +154,8 @@ public class RecognizeByColor extends ImageRecognition {
         for (int idx = 0; idx >= 0; idx = (int) hierarchy.get(0, idx)[0]) {
             Imgproc.drawContours(frame, contours, idx, color);
         }
-        // TODO customize marker
-        Imgproc.drawMarker(frame, new Point(xCoordinate, yCoordinate), new Scalar(0, 0, 255),
+        Imgproc.drawMarker(frame, new Point(xCoordinate, yCoordinate),
+                new Scalar(markerColor.getBlue() * 255, markerColor.getGreen() * 255, markerColor.getRed() * 255),
                 0, 50, 2, 4);
         return frame;
     }

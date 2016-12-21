@@ -45,6 +45,8 @@ public class CVFormController implements Initializable {
     @FXML
     private ChoiceBox IRMethodChooseBox;
     @FXML
+    private ColorPicker markerColorPicker;
+    @FXML
     private ChoiceBox OSChooseBox;
     @FXML
     private ChoiceBox COMPortChooseBox;
@@ -131,6 +133,12 @@ public class CVFormController implements Initializable {
             }
         }));
 
+        markerColorPicker.setValue(imageRecognition.getMarkerColor());
+        markerColorPicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            imageRecognition.setMarkerColor(newValue);
+        }));
+
+        // Servo settings
         OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
         OSChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             switch ((OperatingSystem) OSChooseBox.getSelectionModel().getSelectedItem()) {
@@ -334,7 +342,7 @@ public class CVFormController implements Initializable {
     }
 
     /* Static methods */
-    public static void imageViewDimension(ImageView imageView, int width) {
+    static void imageViewDimension(ImageView imageView, int width) {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(width);
     }

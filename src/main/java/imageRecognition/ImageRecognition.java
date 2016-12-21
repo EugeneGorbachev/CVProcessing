@@ -1,6 +1,7 @@
 package imageRecognition;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import observer.Observable;
 import org.opencv.videoio.VideoCapture;
 
@@ -15,6 +16,7 @@ public abstract class ImageRecognition implements Observable {
     int yCoordinate;
     int prevXCoordinate;
     int prevYCoordinate;
+    Color markerColor;
 
     private int coordinateChangeCounter;
     private int refreshPrevCoordinateFrequency;
@@ -26,6 +28,7 @@ public abstract class ImageRecognition implements Observable {
         refreshPrevCoordinateFrequency = 1;
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
+        markerColor = new Color(1,0,0,1);
     }
 
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;
@@ -76,5 +79,13 @@ public abstract class ImageRecognition implements Observable {
 
     public int getyCoordinate() {
         return yCoordinate;
+    }
+
+    public Color getMarkerColor() {
+        return markerColor;
+    }
+
+    public void setMarkerColor(Color markerColor) {
+        this.markerColor = markerColor;
     }
 }
