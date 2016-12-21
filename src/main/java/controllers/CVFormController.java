@@ -32,6 +32,7 @@ public class CVFormController implements Initializable {
     enum OperatingSystem {
         WINDOWS, LINUX, MACOS
     }
+
     enum ImageRecognithionMethods {
         NONE, RECOGNIZE_BY_COLOR, RECOGNIZE_BY_CASCADE
     }
@@ -200,7 +201,7 @@ public class CVFormController implements Initializable {
         /* Initialize recognize by color */
         List<String> haarCascades = new ArrayList<>();
         File haarCascadesDirectory = new File(getClass().getClassLoader().getResource("haarcascades").getPath());
-        for (final File file: haarCascadesDirectory.listFiles()) {
+        for (final File file : haarCascadesDirectory.listFiles()) {
             haarCascades.add(file.getName());
         }
         haarCascadeChooseBox.setItems(FXCollections.observableArrayList(haarCascades));
@@ -291,14 +292,14 @@ public class CVFormController implements Initializable {
                 put("portName", portName);
             }});
             cameraHolder.setHorizontalAngle(cameraHolder.getHorizontalAngleMaxValue() / 2);
-            ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue());
+            ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoAngleSlider.getValue()));
             if (cameraHolder.isConnected()) {
                 logMessage("Connection with COM port \"" + portName + "\" established");
             }
             closeConnectionButton.setDisable(!cameraHolder.isConnected());
             servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-                    cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue());
-                    ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue());
+                cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue());
+                ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoAngleSlider.getValue()));
             });
             servoAngleSlider.setDisable(false);
         } catch (Exception e) {

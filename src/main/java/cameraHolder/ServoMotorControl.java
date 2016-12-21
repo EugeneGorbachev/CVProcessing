@@ -71,7 +71,7 @@ public class ServoMotorControl extends CameraHolder {
 //        sendSingleByte(mapIntToByteValue(horizontalAngle));
     }
 
-    public byte mapIntToByteValue(int value) {
+    public static byte mapIntToByteValue(int value) {
         if (value == 0)
             return 0;
         return (byte) Math.round((value * 127d) / 180d);
