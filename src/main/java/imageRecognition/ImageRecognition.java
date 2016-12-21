@@ -14,6 +14,7 @@ public abstract class ImageRecognition implements Observable {
     //  Tracked object's center coordinate
     int xCoordinate;
     int yCoordinate;
+    boolean objectDetected;
     int prevXCoordinate;
     int prevYCoordinate;
     Color markerColor;
@@ -64,6 +65,15 @@ public abstract class ImageRecognition implements Observable {
     }
 
     /* Getters and setters */
+
+    public boolean isObjectDetected() {
+        return objectDetected;
+    }
+
+    public void setObjectDetected(boolean objectDetected) {
+        this.objectDetected = objectDetected;
+    }
+
     public int getWebCameraIndex() {
         return webCameraIndex;
     }

@@ -68,8 +68,7 @@ public class ServoMotorControl extends CameraHolder {
     @Override
     public void setHorizontalAngle(int horizontalAngle) {
         super.setHorizontalAngle(horizontalAngle);
-        sendSingleByte(mapIntToByteValue(horizontalAngle));
-        System.out.println(horizontalAngle);
+//        sendSingleByte(mapIntToByteValue(horizontalAngle));
     }
 
     private byte mapIntToByteValue(int value) {
@@ -81,18 +80,30 @@ public class ServoMotorControl extends CameraHolder {
     private void sendSingleByte(byte myByte) {
         try {
             outputStream.write(myByte);
-//            outputStream.flush();// TODO discover why this method calling lead to fatal error
+            outputStream.flush();
         } catch (Exception e) {
             System.err.println(e.toString());
         }
     }
 
     @Override
-    public void update(int x, int y) {
+    public void update(boolean isDetected, int x, int y) {
+        System.out.println("Detected = " + isDetected);
         if (getHorizontalAngle() != x) {
             if (getHorizontalAngleMaxValue() > 0) {
+                System.out.println("__________________________________________");
                 System.out.println("Got new x value = " + x);// TODO remove this
                 setHorizontalAngle(getHorizontalAngle() + (int) Math.round((double) x / (600d / 78d)));// TODO replace hardcode
+
+                byte sendingValue = mapIntToByteValue(getHorizontalAngle());
+                System.out.println("Mapped value = " + sendingValue);
+                System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
+                if (isDetected) {
+                    sendingValue = (byte) (sendingValue | (1 << 7));
+                }
+                System.out.println("Sending value = " + sendingValue);
+                System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
+                sendSingleByte(sendingValue);
             }
         }
         if (getVerticalAngle() != y) {

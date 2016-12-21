@@ -108,7 +108,8 @@ public class RecognizeByColor extends ImageRecognition {
 
             Mat hierarchy = new Mat();
             List<MatOfPoint> contours = new ArrayList<>();
-            if (findContours(maskImage, hierarchy, contours)) {
+            objectDetected = findContours(maskImage, hierarchy, contours);
+            if (objectDetected) {
                 frame = drawContours(hierarchy, contours, frame, new Scalar(255, 0, 0));
             }
             // convert the Mat object (OpenCV) to Image (JavaFX)
@@ -143,9 +144,9 @@ public class RecognizeByColor extends ImageRecognition {
         boolean isSaved = savePrevCoordinate();
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
-        if (isSaved) {
+//        if (isSaved) {
             notifyObservers();
-        }
+//        }
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }
@@ -172,6 +173,8 @@ public class RecognizeByColor extends ImageRecognition {
 
     @Override
     public void notifyObservers() {
-        observers.forEach(observer -> observer.update(xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate));
+        observers.forEach(observer -> observer.update(objectDetected,
+                xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate)
+        );
     }
 }

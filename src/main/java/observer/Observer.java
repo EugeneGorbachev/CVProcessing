@@ -1,5 +1,5 @@
 package observer;
 
 public interface Observer {
-    void update(int x, int y);
+    void update(boolean isDetected, int x, int y);
 }
