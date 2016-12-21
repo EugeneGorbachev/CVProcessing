@@ -71,13 +71,13 @@ public class ServoMotorControl extends CameraHolder {
 //        sendSingleByte(mapIntToByteValue(horizontalAngle));
     }
 
-    private byte mapIntToByteValue(int value) {
+    public byte mapIntToByteValue(int value) {
         if (value == 0)
             return 0;
         return (byte) Math.round((value * 127d) / 180d);
     }
 
-    private void sendSingleByte(byte myByte) {
+    public void sendSingleByte(byte myByte) {
         try {
             outputStream.write(myByte);
             outputStream.flush();

@@ -291,12 +291,15 @@ public class CVFormController implements Initializable {
                 put("portName", portName);
             }});
             cameraHolder.setHorizontalAngle(cameraHolder.getHorizontalAngleMaxValue() / 2);
+            ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue());
             if (cameraHolder.isConnected()) {
                 logMessage("Connection with COM port \"" + portName + "\" established");
             }
             closeConnectionButton.setDisable(!cameraHolder.isConnected());
-            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                    cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue()));
+            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue());
+                    ((ServoMotorControl) cameraHolder).sendSingleByte((byte) servoAngleSlider.getValue());
+            });
             servoAngleSlider.setDisable(false);
         } catch (Exception e) {
             e.printStackTrace();
