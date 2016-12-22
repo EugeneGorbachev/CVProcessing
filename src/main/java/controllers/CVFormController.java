@@ -1,6 +1,7 @@
 package controllers;
 
 import cameraHolder.CameraHolder;
+import com.fazecast.jSerialComm.SerialPort;
 import imageRecognition.ImageRecognition;
 import imageRecognition.RecognizeByCascade;
 import cameraHolder.ServoMotorControl;
@@ -23,16 +24,10 @@ import javafx.scene.paint.Color;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CVFormController implements Initializable {
-    enum OperatingSystem {
-        WINDOWS, LINUX, MACOS
-    }
-
     enum ImageRecognithionMethods {
         NONE, RECOGNIZE_BY_COLOR, RECOGNIZE_BY_CASCADE
     }
@@ -47,8 +42,6 @@ public class CVFormController implements Initializable {
     private ChoiceBox IRMethodChooseBox;
     @FXML
     private ColorPicker markerColorPicker;
-    @FXML
-    private ChoiceBox OSChooseBox;
     @FXML
     private ChoiceBox COMPortChooseBox;
     @FXML
@@ -106,10 +99,6 @@ public class CVFormController implements Initializable {
     private TextArea previewHaarCascadeTextArea;
     /* Recognize by Haar cascade */
 
-    private final String[] WindowsPortNames = {"COM4", "COM6", "COM7", "COM8"};
-    private final String[] LinuxPortNames = {"/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"};
-    private final String[] MacOSPortNames = {"/dev/tty.wchusbserial1420"};
-
     private CameraHolder cameraHolder;
     private ImageRecognition imageRecognition;
 
@@ -140,22 +129,13 @@ public class CVFormController implements Initializable {
         }));
 
         // Servo settings
-        OSChooseBox.setItems(FXCollections.observableArrayList(OperatingSystem.values()));
-        OSChooseBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            switch ((OperatingSystem) OSChooseBox.getSelectionModel().getSelectedItem()) {
-                case WINDOWS:
-                    COMPortChooseBox.setItems(FXCollections.observableArrayList(WindowsPortNames));
-                    break;
-                case LINUX:
-                    COMPortChooseBox.setItems(FXCollections.observableArrayList(LinuxPortNames));
-                    break;
-                case MACOS:
-                    COMPortChooseBox.setItems(FXCollections.observableArrayList(MacOSPortNames));
-                    break;
-            }
-            COMPortChooseBox.setDisable(false);
-        });
-
+        COMPortChooseBox.setItems(FXCollections.observableArrayList(
+                Arrays.stream(SerialPort.getCommPorts())
+                        .map(serialPort -> serialPort.getSystemPortName())
+                        .filter(s -> s.startsWith("tty") || s.startsWith("COM"))
+                        .collect(Collectors.toList())
+                )
+        );
         COMPortChooseBox.valueProperty().addListener(((observable, oldValue, newValue) -> {
             if (COMPortChooseBox.getSelectionModel().getSelectedItem() == null) {
                 establishConnectionButton.setDisable(true);

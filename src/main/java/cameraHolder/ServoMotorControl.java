@@ -1,18 +1,13 @@
 package cameraHolder;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.SerialPort;
+import com.fazecast.jSerialComm.SerialPort;
 
 import java.io.OutputStream;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ServoMotorControl extends CameraHolder {
-    private static final int TIME_OUT = 2000;
-    private static final int DATA_RATE = 9600;
-
-    private SerialPort serialPort;
-
+    private SerialPort commPort;
     private OutputStream outputStream;
 
     public ServoMotorControl() {
@@ -27,54 +22,33 @@ public class ServoMotorControl extends CameraHolder {
         if (portName == null) {
             throw new Exception("There is no 'portName' value in parameters.");
         }
-
-        // check does a port with received name exist
-        CommPortIdentifier portId = null;
-        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
-        while (portEnum.hasMoreElements()) {
-            CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-            if (currPortId.getName().equals(portName)) {
-                portId = currPortId;
-                break;
-            }
+        ArrayList<String> portNames = new ArrayList<>();
+        for (SerialPort serialPort: SerialPort.getCommPorts()) {
+            portNames.add(serialPort.getSystemPortName());
         }
-        if (portId == null) {
-            throw new Exception("COM port \"" + portName + "\" not found.");
+        if (!portNames.contains(portName)) {
+            throw new Exception("Can't find port with name \"" + portName + "\"");
         }
+        commPort = SerialPort.getCommPort(portName);
+        commPort.openPort();
 
-        // open serial port, and use class name for the appName.
-        serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
-        // set port parameters TODO control setting up
-        serialPort.setSerialPortParams(DATA_RATE,
-                SerialPort.DATABITS_8,
-                SerialPort.STOPBITS_1,
-                SerialPort.PARITY_NONE);
-        // open the streams
-        outputStream = serialPort.getOutputStream();
-        // add event listeners
-        serialPort.notifyOnDataAvailable(true);
+        commPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 0);
+        outputStream = commPort.getOutputStream();
 
         connected = true;
     }
 
     @Override
     public void closeConnection() {
-        if (serialPort != null) {
+        if (commPort != null) {
             connected = false;
-            serialPort.close();
+            commPort.closePort();
         }
     }
 
     @Override
     public void setHorizontalAngle(int horizontalAngle) {
         super.setHorizontalAngle(horizontalAngle);
-//        sendSingleByte(mapIntToByteValue(horizontalAngle));
-    }
-
-    public static byte mapIntToByteValue(int value) {
-        if (value == 0)
-            return 0;
-        return (byte) Math.round((value * 127d) / 180d);
     }
 
     public void sendSingleByte(byte myByte) {
@@ -113,4 +87,12 @@ public class ServoMotorControl extends CameraHolder {
             }
         }
     }
+
+    /* Static methods */
+    public static byte mapIntToByteValue(int value) {
+        if (value == 0)
+            return 0;
+        return (byte) Math.round((value * 127d) / 180d);
+    }
+    /* Static methods */
 }
