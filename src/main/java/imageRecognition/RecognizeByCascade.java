@@ -143,7 +143,7 @@ public class RecognizeByCascade extends ImageRecognition {
     @Override
     public void notifyObservers() {
         observers.forEach(observer -> observer.update(objectDetected,
-                xCoordinate - prevXCoordinate, yCoordinate - prevYCoordinate)
+                -(xCoordinate - prevXCoordinate), -(yCoordinate - prevYCoordinate))
         );
     }
 }
