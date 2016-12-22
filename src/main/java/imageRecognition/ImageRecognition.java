@@ -26,7 +26,7 @@ public abstract class ImageRecognition implements Observable {
         videoCapture = new VideoCapture();
         webCameraIndex = 0;
         coordinateChangeCounter = 0;
-        refreshPrevCoordinateFrequency = 1;
+        refreshPrevCoordinateFrequency = 5;
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
         markerColor = new Color(1,0,0,1);

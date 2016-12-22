@@ -57,25 +57,24 @@ public class ServoMotorControl extends CameraHolder {
 
     @Override
     public void update(boolean isDetected, int x, int y) {
+        System.out.println("__________________________________________");
         System.out.println("Detected = " + isDetected);
 
         byte sendingValue = 0;
         if (getHorizontalAngleMaxValue() > 0) {
             if (getHorizontalAngle() != x) {
-//                System.out.println("__________________________________________");
-//                System.out.println("Got new x value = " + x);// TODO remove this
+                System.out.println("Got new x value = " + x);// TODO remove this
                 setHorizontalAngle(getHorizontalAngle() + (int) Math.round((double) x / (600d / 78d)));// TODO replace hardcode
 
                 sendingValue = mapIntToByteValue(getHorizontalAngle());
-//                System.out.println("Mapped value = " + sendingValue);
-//                System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
+                System.out.println("Mapped value = " + sendingValue);
+                System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
                 if (isDetected) {
                     sendingValue = (byte) (sendingValue | (1 << 7));
                 }
-//                System.out.println("Sending value = " + sendingValue);
-//                System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
-//                sendSingleByte(sendingValue);
             }
+            System.out.println("Sending value = " + sendingValue);
+            System.out.println(String.format("%8s", Integer.toBinaryString(sendingValue & 0xFF)).replace(' ', '0'));
             sendSingleByte(sendingValue);
         }
         sendingValue = 0;

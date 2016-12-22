@@ -141,12 +141,10 @@ public class RecognizeByColor extends ImageRecognition {
             }
         }
         // TODO somehow call notifyObservers after savePrevCoordinate
-        boolean isSaved = savePrevCoordinate();
+        savePrevCoordinate();
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
-//        if (isSaved) {
-            notifyObservers();
-//        }
+        notifyObservers();
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }

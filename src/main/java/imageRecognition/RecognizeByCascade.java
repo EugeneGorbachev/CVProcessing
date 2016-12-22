@@ -74,10 +74,10 @@ public class RecognizeByCascade extends ImageRecognition {
         Mat frame = new Mat();
         videoCapture.read(frame);
 
-        if (!frame.empty()) {
-            objectDetected = findFaces(frame);
-            image = matToImage(frame);
-        }
+//        if (!frame.empty()) {
+        objectDetected = findFaces(frame);
+        image = matToImage(frame);
+//        }
 
         return image;
     }
@@ -104,17 +104,16 @@ public class RecognizeByCascade extends ImageRecognition {
                 new Size(absoluteFaceSize, absoluteFaceSize), new Size());
 
         if (faces.elemSize() == 0) {
+            notifyObservers();
             return false;
         }
         // TODO somehow call notifyObservers after savePrevCoordinate
-        boolean isSaved = savePrevCoordinate();
+        savePrevCoordinate();
         Rect firstFace = faces.toList().get(0);
         xCoordinate = (int) (firstFace.br().x - (firstFace.br().x - firstFace.tl().x) / 2);
         yCoordinate = (int) (firstFace.br().y - (firstFace.br().y - firstFace.tl().y) / 2);
         drawRectangles(faces.toList(), frame, new Scalar(0, 255, 0), new Scalar(255, 0, 0));
-//        if (isSaved) {
-            notifyObservers();
-//        }
+        notifyObservers();
 
         return true;
     }
