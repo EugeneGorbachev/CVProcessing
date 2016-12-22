@@ -2,6 +2,7 @@ package controllers;
 
 import cameraHolder.CameraHolder;
 import com.fazecast.jSerialComm.SerialPort;
+import imageRecognition.FakeImageRecognition;
 import imageRecognition.ImageRecognition;
 import imageRecognition.RecognizeByCascade;
 import cameraHolder.ServoMotorControl;
@@ -106,8 +107,8 @@ public class CVFormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         imageViewDimension(viewCamera, 600);// TODO resize after changing window's size
         cameraHolder = new ServoMotorControl();// TODO remove in case of new realization CameraHolder
-        // TODO fake realization!!!!!!!!
-        imageRecognition = new RecognizeByCascade(getClass().getClassLoader().getResource("haarcascades/haarcascade_eye.xml").getPath());// todo remove new
+        imageRecognition = new FakeImageRecognition();
+        handleSwitchToNone();
 
         /* Initialize settings */
         IRMethodChooseBox.setItems(FXCollections.observableArrayList(ImageRecognithionMethods.values()));
@@ -120,6 +121,7 @@ public class CVFormController implements Initializable {
                     handleSwitchToRecognizeByCascade();
                     break;
                 default:
+                    handleSwitchToNone();
             }
         }));
 
@@ -219,6 +221,20 @@ public class CVFormController implements Initializable {
                 new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
     }
 
+    private void handleSwitchToNone() {
+        imageRecognition.closeVideoCapture();
+        imageRecognition = new FakeImageRecognition();
+
+        try {
+            imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
+                put("viewCamera", viewCamera);
+            }});
+            IRMethodChooseBox.getSelectionModel().select(ImageRecognithionMethods.NONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void handleSwitchToRecognizeByColor() {
         imageRecognition.closeVideoCapture();
         imageRecognition = new RecognizeByColor();
@@ -239,6 +255,7 @@ public class CVFormController implements Initializable {
                 put("viewMaskImage", viewMaskImage);
                 put("viewMorphImage", viewMorphImage);
             }});
+            IRMethodChooseBox.getSelectionModel().select(ImageRecognithionMethods.RECOGNIZE_BY_COLOR);
         } catch (Exception e) {
             e.printStackTrace();
             logMessage(e.getMessage());
@@ -261,6 +278,7 @@ public class CVFormController implements Initializable {
             imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
                 put("viewCamera", viewCamera);
             }});
+            IRMethodChooseBox.getSelectionModel().select(ImageRecognithionMethods.RECOGNIZE_BY_CASCADE);
         } catch (Exception e) {
             e.printStackTrace();
         }

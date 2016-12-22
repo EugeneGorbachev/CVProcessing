@@ -46,11 +46,6 @@ public class ServoMotorControl extends CameraHolder {
         }
     }
 
-    @Override
-    public void setHorizontalAngle(int horizontalAngle) {
-        super.setHorizontalAngle(horizontalAngle);
-    }
-
     public void sendSingleByte(byte myByte) {
         try {
             outputStream.write(myByte);

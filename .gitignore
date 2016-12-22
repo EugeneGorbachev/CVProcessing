@@ -1,4 +1,6 @@
 .idea/
+.gitignore
 *.iml
-/target/
+target/
 */target/
+src/test/
