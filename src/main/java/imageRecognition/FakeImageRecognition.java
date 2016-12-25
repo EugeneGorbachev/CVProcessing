@@ -1,5 +1,6 @@
 package imageRecognition;
 
+import cameraHolder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import observer.Observer;
@@ -15,6 +16,10 @@ import static imageRecognition.OpenCVUtils.matToImage;
 
 public class FakeImageRecognition extends ImageRecognition {
     private ScheduledExecutorService timer;
+
+    public FakeImageRecognition(Camera camera) {
+        super(camera);
+    }
 
     @Override
     public void addObserver(Observer o) {
@@ -35,7 +40,7 @@ public class FakeImageRecognition extends ImageRecognition {
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
         ImageView viewCamera = (ImageView) parameters.get("viewCamera");
 
-        videoCapture.open(webCameraIndex);
+        videoCapture.open(camera.getWebcamIndex());
 
         Runnable frameGrabber = () -> {
             viewCamera.setImage(grabFrame(new HashMap<>()));

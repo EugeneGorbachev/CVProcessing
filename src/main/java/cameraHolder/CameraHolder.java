@@ -34,10 +34,9 @@ public abstract class CameraHolder implements Observer {
         return horizontalAngle;
     }
 
-    // TODO replace with exception
-    public void setHorizontalAngle(int horizontalAngle) {
+    public void setHorizontalAngle(int horizontalAngle) throws Exception {
         if (horizontalAngle < horizontalAngleMinValue || horizontalAngle > horizontalAngleMaxValue) {
-            System.err.println("Received angle's value is out of bound");
+            throw new Exception("Received angle's value is out of bound");
         } else {
             this.horizontalAngle = horizontalAngle;
         }
@@ -47,10 +46,9 @@ public abstract class CameraHolder implements Observer {
         return verticalAngle;
     }
 
-    public void setVerticalAngle(int verticalAngle) {
-
+    public void setVerticalAngle(int verticalAngle) throws Exception {
         if (verticalAngle < verticalAngleMinValue || verticalAngle > verticalAngleMaxValue) {
-            System.err.println("Received angle's value is out of bound");
+            throw new Exception("Received angle's value is out of bound");
         } else {
             this.verticalAngle = verticalAngle;
         }

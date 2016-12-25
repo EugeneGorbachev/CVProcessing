@@ -1,7 +1,9 @@
 package controllers;
 
+import cameraHolder.Camera;
 import cameraHolder.CameraHolder;
 import com.fazecast.jSerialComm.SerialPort;
+import com.github.sarxos.webcam.Webcam;
 import imageRecognition.FakeImageRecognition;
 import imageRecognition.ImageRecognition;
 import imageRecognition.RecognizeByCascade;
@@ -16,10 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.io.*;
@@ -29,9 +28,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CVFormController implements Initializable {
+    private final static double MIN_IMAGE_VIEW_HEIGH = 266.6d;
+    private final static double MIN_IMAGE_VIEW_WIDTH = 400d;
+
     enum ImageRecognithionMethods {
         NONE, RECOGNIZE_BY_COLOR, RECOGNIZE_BY_CASCADE
     }
+
+    @FXML
+    private SplitPane mainSplitPane;
+    @FXML
+    private AnchorPane leftSideOfSplitPane;
+    @FXML
+    private AnchorPane rightSideOfSplitPane;
 
     /* Central part*/
     @FXML
@@ -50,7 +59,7 @@ public class CVFormController implements Initializable {
     @FXML
     private Button closeConnectionButton;
     @FXML
-    private Slider servoAngleSlider;
+    private Slider servoHorizontalAngleSlider;
     @FXML
     private TextArea logTextArea;
     /* Program settings */
@@ -100,15 +109,24 @@ public class CVFormController implements Initializable {
     private TextArea previewHaarCascadeTextArea;
     /* Recognize by Haar cascade */
 
+    private List<Camera> cameraList;
     private CameraHolder cameraHolder;
     private ImageRecognition imageRecognition;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        imageViewDimension(viewCamera, 600);// TODO resize after changing window's size
-        cameraHolder = new ServoMotorControl();// TODO remove in case of new realization CameraHolder
-        imageRecognition = new FakeImageRecognition();
+        int webcamCounter = 0;
+        for (Webcam webcam: Webcam.getWebcams()) {
+            cameraList.add(new Camera(webcamCounter++, webcam));
+        }
+        // TODO add selector for camera
+
+        cameraHolder = new ServoMotorControl(cameraList.get(0));// TODO remove in case of new realization CameraHolder
+        imageRecognition = new FakeImageRecognition(cameraList.get(0));// TODO replace hardcode
+//        handleChangeDividerPosition();
         handleSwitchToNone();
+
+        mainSplitPane.getDividers().get(0).positionProperty().addListener(observable -> handleChangeDividerPosition());
 
         /* Initialize settings */
         IRMethodChooseBox.setItems(FXCollections.observableArrayList(ImageRecognithionMethods.values()));
@@ -221,9 +239,10 @@ public class CVFormController implements Initializable {
                 new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis()) + " - " + message + "\n"));
     }
 
+    /* Handles for switch recognition type */
     private void handleSwitchToNone() {
         imageRecognition.closeVideoCapture();
-        imageRecognition = new FakeImageRecognition();
+        imageRecognition = new FakeImageRecognition(cameraList.get(0));// TODO replace hardcode
 
         try {
             imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
@@ -237,11 +256,11 @@ public class CVFormController implements Initializable {
 
     private void handleSwitchToRecognizeByColor() {
         imageRecognition.closeVideoCapture();
-        imageRecognition = new RecognizeByColor();
+        imageRecognition = new RecognizeByColor(cameraList.get(0));// TODO replace hardcode
         imageRecognition.addObserver(cameraHolder);
 
-        imageViewDimension(viewMaskImage, 400);
-        imageViewDimension(viewMorphImage, 400);
+        setImageViewWidth(viewMaskImage, rightSideOfSplitPane.getWidth() / 2);
+        setImageViewWidth(viewMorphImage, rightSideOfSplitPane.getWidth() / 2);
 
         try {
             imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
@@ -269,9 +288,8 @@ public class CVFormController implements Initializable {
             cascadeConfigName = (String) haarCascadeChooseBox.getItems().get(0);
             haarCascadeChooseBox.getSelectionModel().select(0);
         }
-        imageRecognition = new RecognizeByCascade(getClass().getClassLoader().getResource(
-                "haarcascades/" + cascadeConfigName).getPath()
-        );
+        imageRecognition = new RecognizeByCascade(cameraList.get(0),// TODO replace hardcode
+                getClass().getClassLoader().getResource("haarcascades/" + cascadeConfigName).getPath());
         imageRecognition.addObserver(cameraHolder);
 
         try {
@@ -283,27 +301,33 @@ public class CVFormController implements Initializable {
             e.printStackTrace();
         }
     }
+    /* Handles for switch recognition type */
 
+    /* Handles for open/close serial port connection */
     private void handleEstablishSerialPortConnection(String portName) {
         try {
             cameraHolder.setUpConnection(new HashMap<String, Object>() {{
                 put("portName", portName);
             }});
             cameraHolder.setHorizontalAngle(cameraHolder.getHorizontalAngleMaxValue() / 2);
-            ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoAngleSlider.getValue()));
+            ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
             if (cameraHolder.isConnected()) {
                 logMessage("Connection with COM port \"" + portName + "\" established");
             }
             closeConnectionButton.setDisable(!cameraHolder.isConnected());
-            servoAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-                cameraHolder.setHorizontalAngle((int) servoAngleSlider.getValue());
-                ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoAngleSlider.getValue()));
+            servoHorizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    cameraHolder.setHorizontalAngle((int) servoHorizontalAngleSlider.getValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
             });
-            servoAngleSlider.setDisable(false);
+            servoHorizontalAngleSlider.setDisable(false);
         } catch (Exception e) {
             e.printStackTrace();
             logMessage(e.getMessage());
-            servoAngleSlider.setDisable(true);
+            servoHorizontalAngleSlider.setDisable(true);
         }
     }
 
@@ -315,7 +339,18 @@ public class CVFormController implements Initializable {
         if (isConnectedValue != cameraHolder.isConnected()) {
             logMessage("Connection with COM port was closed");
         }
-        servoAngleSlider.setDisable(true);
+        servoHorizontalAngleSlider.setDisable(true);
+    }
+    /* Handles for open/close serial port connection */
+
+    /* Handles for changing parameters */
+    private void handleChangeDividerPosition() {
+        double height = leftSideOfSplitPane.getHeight() > 0 ? leftSideOfSplitPane.getHeight() : 400d;
+        double width = leftSideOfSplitPane.getWidth() > 0 ? leftSideOfSplitPane.getWidth() : 600d;
+        setImageViewDimension(viewCamera, true,
+                height <= MIN_IMAGE_VIEW_HEIGH ? MIN_IMAGE_VIEW_HEIGH : height,
+                width <= MIN_IMAGE_VIEW_WIDTH ? MIN_IMAGE_VIEW_WIDTH : width
+        );
     }
 
     private void handleChangeStartRangeColor() {
@@ -337,6 +372,7 @@ public class CVFormController implements Initializable {
         Background background = new Background(new BackgroundFill(selectedColor, CornerRadii.EMPTY, Insets.EMPTY));
         paneRangeEndColor.setBackground(background);
     }
+    /* Handles for changing parameters */
 
     public void handleClose() {
         cameraHolder.closeConnection();
@@ -344,7 +380,18 @@ public class CVFormController implements Initializable {
     }
 
     /* Static methods */
-    static void imageViewDimension(ImageView imageView, int width) {
+    private void setImageViewDimension(ImageView imageView, boolean preserveRatio, double height, double width) {
+        imageView.setPreserveRatio(preserveRatio);
+        imageView.setFitHeight(height);
+        imageView.setFitWidth(width);
+    }
+
+    private void setImageViewHeight(ImageView imageView, double height) {
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(height);
+    }
+
+    private void setImageViewWidth(ImageView imageView, double width) {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(width);
     }

@@ -1,5 +1,6 @@
 package imageRecognition;
 
+import cameraHolder.Camera;
 import javafx.application.Platform;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -23,6 +24,10 @@ public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
 
+    public RecognizeByColor(Camera camera) {
+        super(camera);
+    }
+
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
         Slider hueRangeStartSlider = (Slider) parameters.get("hueRangeStartSlider");
@@ -36,7 +41,7 @@ public class RecognizeByColor extends ImageRecognition {
         ImageView viewMaskImage = (ImageView) parameters.get("viewMaskImage");
         ImageView viewMorphImage = (ImageView) parameters.get("viewMorphImage");
 
-        videoCapture.open(webCameraIndex);
+        videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
@@ -52,7 +57,7 @@ public class RecognizeByColor extends ImageRecognition {
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
             setRefreshPrevCoordinateFrequency(5);
         } else {
-            throw new Exception("Can't open camera with index " + webCameraIndex + ".");
+            throw new Exception("Can't open camera \"" + camera.getWebcamName() + "\" with index " + camera.getWebcamIndex() + ".");
         }
     }
 

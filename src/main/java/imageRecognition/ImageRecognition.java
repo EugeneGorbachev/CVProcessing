@@ -1,5 +1,6 @@
 package imageRecognition;
 
+import cameraHolder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import observer.Observable;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public abstract class ImageRecognition implements Observable {
     VideoCapture videoCapture;
-    int webCameraIndex;
+    Camera camera;
 
     //  Tracked object's center coordinate
     int xCoordinate;
@@ -22,9 +23,10 @@ public abstract class ImageRecognition implements Observable {
     private int coordinateChangeCounter;
     private int refreshPrevCoordinateFrequency;
 
-    public ImageRecognition() {
+    public ImageRecognition(Camera camera) {
         videoCapture = new VideoCapture();
-        webCameraIndex = 0;
+        this.camera = camera;
+
         coordinateChangeCounter = 0;
         refreshPrevCoordinateFrequency = 5;
         prevXCoordinate = xCoordinate = 0;
@@ -72,14 +74,6 @@ public abstract class ImageRecognition implements Observable {
 
     public void setObjectDetected(boolean objectDetected) {
         this.objectDetected = objectDetected;
-    }
-
-    public int getWebCameraIndex() {
-        return webCameraIndex;
-    }
-
-    public void setWebCameraIndex(int webCameraIndex) {
-        this.webCameraIndex = webCameraIndex;
     }
 
     /* Getters for tracked object's center coordinate */

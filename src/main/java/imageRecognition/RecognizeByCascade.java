@@ -1,5 +1,6 @@
 package imageRecognition;
 
+import cameraHolder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import observer.Observer;
@@ -25,7 +26,8 @@ public class RecognizeByCascade extends ImageRecognition {
     private int absoluteFaceSize;
     private CascadeClassifier cascadeClassifier;
 
-    public RecognizeByCascade(String filePath) {
+    public RecognizeByCascade(Camera camera, String filePath) {
+        super(camera);
         absoluteFaceSize = 0;
         cascadeClassifier = new CascadeClassifier();
         loadCascade(filePath);
@@ -39,7 +41,7 @@ public class RecognizeByCascade extends ImageRecognition {
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
         ImageView viewCamera = (ImageView) parameters.get("viewCamera");
 
-        videoCapture.open(webCameraIndex);
+        videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
@@ -50,7 +52,7 @@ public class RecognizeByCascade extends ImageRecognition {
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
             setRefreshPrevCoordinateFrequency(5);
         } else {
-            throw new Exception("Can't open camera with index " + webCameraIndex + ".");
+            throw new Exception("Can't open camera \"" + camera.getWebcamName() + "\" with index " + camera.getWebcamIndex() + ".");
         }
     }
 
