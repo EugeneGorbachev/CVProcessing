@@ -3,7 +3,6 @@ package controllers;
 import cameraHolder.Camera;
 import cameraHolder.CameraHolder;
 import com.fazecast.jSerialComm.SerialPort;
-import com.github.sarxos.webcam.Webcam;
 import imageRecognition.FakeImageRecognition;
 import imageRecognition.ImageRecognition;
 import imageRecognition.RecognizeByCascade;
@@ -115,10 +114,9 @@ public class CVFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        int webcamCounter = 0;
-        for (Webcam webcam: Webcam.getWebcams()) {
-            cameraList.add(new Camera(webcamCounter++, webcam));
-        }
+        cameraList = new ArrayList<Camera>() {{
+            add(new Camera(0, 70, 400d, 600d));
+        }};
         // TODO add selector for camera
 
         cameraHolder = new ServoMotorControl(cameraList.get(0));// TODO remove in case of new realization CameraHolder

@@ -1,21 +1,20 @@
 package cameraHolder;
 
-import com.github.sarxos.webcam.Webcam;
-
 public class Camera {
     private int webcamIndex;
-    private Webcam webcam;
-
     private int fieldOfView;
+    private double height;
+    private double width;
 
-    public Camera(int webcamIndex, Webcam webcam) {
+    public Camera(int webcamIndex, int fieldOfView, double height, double width) {
         this.webcamIndex = webcamIndex;
-        this.webcam = webcam;
-        fieldOfView = 70;// default
+        this.fieldOfView = fieldOfView;
+        this.height = height;
+        this.width = width;
     }
 
     public String getWebcamName() {
-        return webcam.getName();
+        return "";//webcam.getName();
     }
 
     /* Getters and setters */
@@ -27,36 +26,28 @@ public class Camera {
         this.webcamIndex = webcamIndex;
     }
 
-    public Webcam getWebcam() {
-        return webcam;
-    }
-
-    public void setWebcam(Webcam webcam) {
-        this.webcam = webcam;
-    }
-
-    public double getHeight() {
-        return webcam.getViewSize().getHeight();
-    }
-
-    public void setHeight(double height) {
-        webcam.getViewSize().setSize(webcam.getViewSize().getWidth(), height);
-    }
-
-    public double getWidth() {
-        return webcam.getViewSize().getWidth();
-    }
-
-    public void setWidth(double width) {
-        webcam.getViewSize().setSize(width, webcam.getViewSize().height);
-    }
-
     public int getFieldOfView() {
         return fieldOfView;
     }
 
     public void setFieldOfView(int fieldOfView) {
         this.fieldOfView = fieldOfView;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
     }
     /* Getters and setters */
 }
