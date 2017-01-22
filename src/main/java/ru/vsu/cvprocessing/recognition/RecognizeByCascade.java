@@ -1,9 +1,9 @@
-package imageRecognition;
+package ru.vsu.cvprocessing.recognition;
 
-import cameraHolder.Camera;
+import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import observer.Observer;
+import ru.vsu.cvprocessing.observer.Observer;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static imageRecognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class RecognizeByCascade extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
@@ -52,7 +52,7 @@ public class RecognizeByCascade extends ImageRecognition {
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
             setRefreshPrevCoordinateFrequency(5);
         } else {
-            throw new Exception("Can't open camera \"" + camera.getWebcamName() + "\" with index " + camera.getWebcamIndex() + ".");
+            throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
     }
 

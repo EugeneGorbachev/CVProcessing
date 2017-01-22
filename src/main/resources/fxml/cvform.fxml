@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane fx:id="mainSplitPane" dividerPositions="0.6" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CVFormController">
+<SplitPane fx:id="mainSplitPane" dividerPositions="0.6" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.CVFormController">
     <items>
         <AnchorPane fx:id="leftSideOfSplitPane" minHeight="0.0" minWidth="400.0" prefHeight="160.0" prefWidth="100.0">
             <children>

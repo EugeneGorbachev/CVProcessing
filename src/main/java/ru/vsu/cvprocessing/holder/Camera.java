@@ -1,4 +1,4 @@
-package cameraHolder;
+package ru.vsu.cvprocessing.holder;
 
 public class Camera {
     private int webcamIndex;
@@ -6,15 +6,12 @@ public class Camera {
     private double height;
     private double width;
 
+    // TODO realise builder
     public Camera(int webcamIndex, int fieldOfView, double height, double width) {
         this.webcamIndex = webcamIndex;
         this.fieldOfView = fieldOfView;
         this.height = height;
         this.width = width;
-    }
-
-    public String getWebcamName() {
-        return "";//webcam.getName();
     }
 
     /* Getters and setters */

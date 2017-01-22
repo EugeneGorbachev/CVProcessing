@@ -1,9 +1,9 @@
-package imageRecognition;
+package ru.vsu.cvprocessing.recognition;
 
-import cameraHolder.Camera;
+import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import observer.Observer;
+import ru.vsu.cvprocessing.observer.Observer;
 import org.opencv.core.Mat;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static imageRecognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class FakeImageRecognition extends ImageRecognition {
     private ScheduledExecutorService timer;
@@ -42,9 +42,7 @@ public class FakeImageRecognition extends ImageRecognition {
 
         videoCapture.open(camera.getWebcamIndex());
 
-        Runnable frameGrabber = () -> {
-            viewCamera.setImage(grabFrame(new HashMap<>()));
-        };
+        Runnable frameGrabber = () -> viewCamera.setImage(grabFrame(new HashMap<>()));
         timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
     }

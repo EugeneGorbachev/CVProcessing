@@ -1,6 +1,6 @@
-package cameraHolder;
+package ru.vsu.cvprocessing.holder;
 
-import observer.Observer;
+import ru.vsu.cvprocessing.observer.Observer;
 
 import java.util.Map;
 

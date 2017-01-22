@@ -1,13 +1,13 @@
-package controllers;
+package ru.vsu.cvprocessing.controller;
 
-import cameraHolder.Camera;
-import cameraHolder.CameraHolder;
+import ru.vsu.cvprocessing.holder.Camera;
+import ru.vsu.cvprocessing.holder.CameraHolder;
 import com.fazecast.jSerialComm.SerialPort;
-import imageRecognition.FakeImageRecognition;
-import imageRecognition.ImageRecognition;
-import imageRecognition.RecognizeByCascade;
-import cameraHolder.ServoMotorControl;
-import imageRecognition.RecognizeByColor;
+import ru.vsu.cvprocessing.recognition.FakeImageRecognition;
+import ru.vsu.cvprocessing.recognition.ImageRecognition;
+import ru.vsu.cvprocessing.recognition.RecognizeByCascade;
+import ru.vsu.cvprocessing.holder.ServoMotorControl;
+import ru.vsu.cvprocessing.recognition.RecognizeByColor;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

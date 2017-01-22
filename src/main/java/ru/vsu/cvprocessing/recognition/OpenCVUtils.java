@@ -1,4 +1,4 @@
-package imageRecognition;
+package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.image.Image;
 import org.opencv.core.Mat;

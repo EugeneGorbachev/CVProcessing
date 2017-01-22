@@ -1,14 +1,15 @@
-package imageRecognition;
+package ru.vsu.cvprocessing.recognition;
 
-import cameraHolder.Camera;
+import ru.vsu.cvprocessing.holder.Camera;
 import javafx.application.Platform;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import observer.Observer;
+import ru.vsu.cvprocessing.observer.Observer;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
+import ru.vsu.cvprocessing.settings.SettingsHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static imageRecognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
@@ -30,12 +31,13 @@ public class RecognizeByColor extends ImageRecognition {
 
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
-        Slider hueRangeStartSlider = (Slider) parameters.get("hueRangeStartSlider");
-        Slider saturationRangeStartSlider = (Slider) parameters.get("saturationRangeStartSlider");
-        Slider brightnessRangeStartSlider = (Slider) parameters.get("brightnessRangeStartSlider");
-        Slider hueRangeEndSlider = (Slider) parameters.get("hueRangeEndSlider");
-        Slider saturationRangeEndSlider = (Slider) parameters.get("saturationRangeEndSlider");
-        Slider brightnessRangeEndSlider = (Slider) parameters.get("brightnessRangeEndSlider");
+//        Slider hueRangeStartSlider = (Slider) parameters.get("hueRangeStartSlider");
+//        Slider saturationRangeStartSlider = (Slider) parameters.get("saturationRangeStartSlider");
+//        Slider brightnessRangeStartSlider = (Slider) parameters.get("brightnessRangeStartSlider");
+//        Slider hueRangeEndSlider = (Slider) parameters.get("hueRangeEndSlider");
+//        Slider saturationRangeEndSlider = (Slider) parameters.get("saturationRangeEndSlider");
+//        Slider brightnessRangeEndSlider = (Slider) parameters.get("brightnessRangeEndSlider");
+
 
         ImageView viewCamera = (ImageView) parameters.get("viewCamera");
         ImageView viewMaskImage = (ImageView) parameters.get("viewMaskImage");
@@ -46,8 +48,16 @@ public class RecognizeByColor extends ImageRecognition {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
-                    put("lowerb", HSBColorModelToOpenCVHSB(hueRangeStartSlider, saturationRangeStartSlider, brightnessRangeStartSlider));
-                    put("upperb", HSBColorModelToOpenCVHSB(hueRangeEndSlider, saturationRangeEndSlider, brightnessRangeEndSlider));
+                    put("lowerb", HSBColorModelToOpenCVHSB(
+                            SettingsHolder.getInstance().getHsbRange().getColorHueStartRange(),
+                            SettingsHolder.getInstance().getHsbRange().getColorSaturationStartRange(),
+                            SettingsHolder.getInstance().getHsbRange().getColorBrightnessStartRange()
+                    ));
+                    put("upperb", HSBColorModelToOpenCVHSB(
+                            SettingsHolder.getInstance().getHsbRange().getColorHueEndRange(),
+                            SettingsHolder.getInstance().getHsbRange().getColorSaturationEndRange(),
+                            SettingsHolder.getInstance().getHsbRange().getColorBrightnessEndRange()
+                    ));
                     put("viewMaskImage", viewMaskImage);
                     put("viewMorphImage", viewMorphImage);
                 }});
@@ -57,7 +67,7 @@ public class RecognizeByColor extends ImageRecognition {
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
             setRefreshPrevCoordinateFrequency(5);
         } else {
-            throw new Exception("Can't open camera \"" + camera.getWebcamName() + "\" with index " + camera.getWebcamIndex() + ".");
+            throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
     }
 
@@ -74,9 +84,14 @@ public class RecognizeByColor extends ImageRecognition {
         super.closeVideoCapture();
     }
 
+    // TODO remove
     private Scalar HSBColorModelToOpenCVHSB(Slider hueSlider, Slider saturationSlider, Slider brightnessSlider) {
         return new Scalar(hueSlider.getValue() * 0.5d, saturationSlider.getValue() * 2.56d,
                 brightnessSlider.getValue() * 2.56d);
+    }
+
+    private Scalar HSBColorModelToOpenCVHSB(int hueValue, int saturationValue, int brightnessValue) {
+        return new Scalar(hueValue * 0.5d, saturationValue * 2.56d, brightnessValue * 2.56d);
     }
 
     @Override
@@ -98,7 +113,9 @@ public class RecognizeByColor extends ImageRecognition {
             Imgproc.cvtColor(maskImage, maskImage, Imgproc.COLOR_BGR2HSV);// convert to HSV (also HSB)
 
             Core.inRange(maskImage, lowerb, upperb, maskImage);
-            Platform.runLater(() -> viewMaskImage.imageProperty().set(matToImage(maskImage)));
+            if (viewMaskImage != null) {
+                Platform.runLater(() -> viewMaskImage.imageProperty().set(matToImage(maskImage)));
+            }
 
             // dilate with large element, erode with small ones
             Mat morphImage = new Mat();
@@ -109,7 +126,9 @@ public class RecognizeByColor extends ImageRecognition {
             Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
             Imgproc.erode(maskImage, morphImage, erodeElement);
 
-            Platform.runLater(() -> viewMorphImage.imageProperty().set(matToImage(maskImage)));
+            if (viewMorphImage != null) {
+                Platform.runLater(() -> viewMorphImage.imageProperty().set(matToImage(maskImage)));
+            }
 
             Mat hierarchy = new Mat();
             List<MatOfPoint> contours = new ArrayList<>();
@@ -128,8 +147,8 @@ public class RecognizeByColor extends ImageRecognition {
         Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
         List<Point> pointList = new ArrayList<>();
-        for (int i = 0; i < contours.size(); i++) {
-            Moments moments = Imgproc.moments(contours.get(i), false);
+        for (MatOfPoint contour : contours) {
+            Moments moments = Imgproc.moments(contour, false);
             double x = moments.get_m10() / moments.get_m00();
             double y = moments.get_m01() / moments.get_m00();
             pointList.add(new Point(x, y));

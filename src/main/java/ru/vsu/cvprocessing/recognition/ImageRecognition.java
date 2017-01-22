@@ -1,9 +1,9 @@
-package imageRecognition;
+package ru.vsu.cvprocessing.recognition;
 
-import cameraHolder.Camera;
+import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import observer.Observable;
+import ru.vsu.cvprocessing.observer.Observable;
 import org.opencv.videoio.VideoCapture;
 
 import java.util.Map;

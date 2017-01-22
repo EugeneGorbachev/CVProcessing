@@ -1,4 +1,4 @@
-package observer;
+package ru.vsu.cvprocessing.observer;
 
 public interface Observable {
     void addObserver(Observer o);

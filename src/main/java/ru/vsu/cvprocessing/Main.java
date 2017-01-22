@@ -1,4 +1,6 @@
-import controllers.CVFormController;
+package ru.vsu.cvprocessing;
+
+import ru.vsu.cvprocessing.controller.MainFormController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,18 +9,17 @@ import javafx.stage.Stage;
 import org.opencv.core.Core;
 
 public class Main extends Application {
-
     public void start(Stage primaryStage) throws Exception {
-        String fxmlFile = "fxml/cvform.fxml";
+        String fxmlFile = "../../../fxml/mainform.fxml";
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
         Parent root = fxmlLoader.load();
 
-        primaryStage.setTitle("Title");
+        primaryStage.setTitle("CV image processing");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        CVFormController cv = fxmlLoader.getController();
-        primaryStage.setOnCloseRequest(event -> cv.handleClose());
+        MainFormController mc = fxmlLoader.getController();
+        primaryStage.setOnCloseRequest(event -> mc.handleClose());
     }
 
     public static void main(String[] args) {

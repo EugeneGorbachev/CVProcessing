@@ -1,4 +1,4 @@
-package cameraHolder;
+package ru.vsu.cvprocessing.holder;
 
 import com.fazecast.jSerialComm.SerialPort;
 
