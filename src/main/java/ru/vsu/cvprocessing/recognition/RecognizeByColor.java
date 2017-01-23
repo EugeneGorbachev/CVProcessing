@@ -1,5 +1,6 @@
 package ru.vsu.cvprocessing.recognition;
 
+import javafx.scene.paint.Color;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.application.Platform;
 import javafx.scene.control.Slider;
@@ -9,7 +10,6 @@ import ru.vsu.cvprocessing.observer.Observer;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
-import ru.vsu.cvprocessing.settings.SettingsHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
@@ -48,16 +49,8 @@ public class RecognizeByColor extends ImageRecognition {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
-                    put("lowerb", HSBColorModelToOpenCVHSB(
-                            SettingsHolder.getInstance().getHsbRange().getColorHueStartRange(),
-                            SettingsHolder.getInstance().getHsbRange().getColorSaturationStartRange(),
-                            SettingsHolder.getInstance().getHsbRange().getColorBrightnessStartRange()
-                    ));
-                    put("upperb", HSBColorModelToOpenCVHSB(
-                            SettingsHolder.getInstance().getHsbRange().getColorHueEndRange(),
-                            SettingsHolder.getInstance().getHsbRange().getColorSaturationEndRange(),
-                            SettingsHolder.getInstance().getHsbRange().getColorBrightnessEndRange()
-                    ));
+                    put("lowerb", colorToOpenCVHSB(getInstance().getColorRangeStart()));
+                    put("upperb", colorToOpenCVHSB(getInstance().getColorRangeEnd()));
                     put("viewMaskImage", viewMaskImage);
                     put("viewMorphImage", viewMorphImage);
                 }});
@@ -85,13 +78,13 @@ public class RecognizeByColor extends ImageRecognition {
     }
 
     // TODO remove
-    private Scalar HSBColorModelToOpenCVHSB(Slider hueSlider, Slider saturationSlider, Slider brightnessSlider) {
+    private Scalar colorToOpenCVHSB(Slider hueSlider, Slider saturationSlider, Slider brightnessSlider) {
         return new Scalar(hueSlider.getValue() * 0.5d, saturationSlider.getValue() * 2.56d,
                 brightnessSlider.getValue() * 2.56d);
     }
 
-    private Scalar HSBColorModelToOpenCVHSB(int hueValue, int saturationValue, int brightnessValue) {
-        return new Scalar(hueValue * 0.5d, saturationValue * 2.56d, brightnessValue * 2.56d);
+    private Scalar colorToOpenCVHSB(Color color) {
+        return new Scalar(color.getHue() * 256d / 360d, color.getSaturation() * 256d, color.getBrightness() * 256d);
     }
 
     @Override

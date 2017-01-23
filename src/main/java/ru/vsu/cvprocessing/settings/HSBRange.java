@@ -8,30 +8,7 @@ public class HSBRange {
     private int colorBrightnessStartRange;
     private int colorBrightnessEndRange;
 
-    HSBRange(int colorHueStartRange,  int colorHueEndRange,
-                    int colorSaturationStartRange, int colorSaturationEndRange,
-                    int colorBrightnessStartRange, int colorBrightnessEndRange) {
-        this.colorHueStartRange = colorHueStartRange;
-        this.colorSaturationStartRange = colorSaturationStartRange;
-        this.colorBrightnessStartRange = colorBrightnessStartRange;
-        this.colorHueEndRange = colorHueEndRange;
-        this.colorSaturationEndRange = colorSaturationEndRange;
-        this.colorBrightnessEndRange = colorBrightnessEndRange;
-    }
-
-    public void setColorHueRange(int colorHueStartRange, int colorHueEndRange) {
-        this.colorHueStartRange = colorHueStartRange;
-        this.colorHueEndRange = colorHueEndRange;
-    }
-
-    public void setColorSaturationRange(int colorSaturationStartRange, int colorSaturationEndRange) {
-        this.colorSaturationStartRange = colorSaturationStartRange;
-        this.colorSaturationEndRange = colorSaturationEndRange;
-    }
-
-    public void setColorBrightnessRange(int colorBrightnessStartRange, int colorBrightnessEndRange) {
-        this.colorBrightnessStartRange = colorBrightnessStartRange;
-        this.colorBrightnessEndRange = colorBrightnessEndRange;
+    private HSBRange() {
     }
 
     public int getColorHueStartRange() {
@@ -58,27 +35,46 @@ public class HSBRange {
         return colorBrightnessEndRange;
     }
 
-    public void setColorHueStartRange(int colorHueStartRange) {
-        this.colorHueStartRange = colorHueStartRange;
+    public static Builder newBuilder() {
+        return new HSBRange().new Builder();
     }
 
-    public void setColorHueEndRange(int colorHueEndRange) {
-        this.colorHueEndRange = colorHueEndRange;
-    }
+    public class Builder {
+        private Builder() {
+        }
 
-    public void setColorSaturationStartRange(int colorSaturationStartRange) {
-        this.colorSaturationStartRange = colorSaturationStartRange;
-    }
+        public Builder setColorHueStartRange(int colorHueStartRange) {
+            HSBRange.this.colorBrightnessStartRange = colorHueStartRange;
+            return this;
+        }
 
-    public void setColorSaturationEndRange(int colorSaturationEndRange) {
-        this.colorSaturationEndRange = colorSaturationEndRange;
-    }
+        public Builder setColorHueEndRange(int colorHueEndRange) {
+            HSBRange.this.colorHueEndRange = colorHueEndRange;
+            return this;
+        }
 
-    public void setColorBrightnessStartRange(int colorBrightnessStartRange) {
-        this.colorBrightnessStartRange = colorBrightnessStartRange;
-    }
+        public Builder setColorSaturationStartRange(int colorSaturationStartRange) {
+            HSBRange.this.colorSaturationStartRange = colorSaturationStartRange;
+            return this;
+        }
 
-    public void setColorBrightnessEndRange(int colorBrightnessEndRange) {
-        this.colorBrightnessEndRange = colorBrightnessEndRange;
+        public Builder setColorSaturationEndRange(int colorSaturationEndRange) {
+            HSBRange.this.colorSaturationEndRange = colorSaturationEndRange;
+            return this;
+        }
+
+        public Builder setColorBrightnessStartRange(int colorBrightnessStartRange) {
+            HSBRange.this.colorBrightnessStartRange = colorBrightnessStartRange;
+            return this;
+        }
+
+        public Builder setColorBrightnessEndRange(int colorBrightnessEndRange) {
+            HSBRange.this.colorBrightnessEndRange = colorBrightnessEndRange;
+            return this;
+        }
+
+        public HSBRange build() {
+            return HSBRange.this;
+        }
     }
 }

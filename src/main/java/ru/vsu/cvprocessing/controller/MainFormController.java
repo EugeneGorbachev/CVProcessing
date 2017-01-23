@@ -1,10 +1,11 @@
 package ru.vsu.cvprocessing.controller;
 
-import ru.vsu.cvprocessing.holder.Camera;
-import ru.vsu.cvprocessing.holder.CameraHolder;
-import ru.vsu.cvprocessing.holder.ServoMotorControl;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.GridPane;
+import org.springframework.context.event.EventListener;
+import ru.vsu.cvprocessing.event.ChangeIRMethodEvent;
 import ru.vsu.cvprocessing.recognition.FakeImageRecognition;
-import ru.vsu.cvprocessing.recognition.ImageRecognition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -12,19 +13,27 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
+import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
+import ru.vsu.cvprocessing.recognition.RecognizeByColor;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
+
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class MainFormController implements Initializable {
     private static final Logger log = Logger.getLogger(MainFormController.class);
 
     @FXML
-    private Pane recognitionSettingPane;
+    private SplitPane contentSplitPane;
+    @FXML
+    private GridPane contentGridPane;
+    @FXML
+    private ScrollPane recognitionSettingPane;
     @FXML
     private ImageView cameraImageView;
     @FXML
@@ -32,36 +41,31 @@ public class MainFormController implements Initializable {
 
     private Stage settingsStage = null;
 
-    private Camera camera;
-    private CameraHolder cameraHolder;
-    private ImageRecognition imageRecognition;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("../../../../fxml/settings.fxml"));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        settingsStage = new Stage();
-        settingsStage.setTitle("Title");
-        settingsStage.setResizable(false);
-        settingsStage.setScene(new Scene(root));
-
         cameraImageView.setPreserveRatio(true);
-        camera = new Camera(0, 70, 400, 600);
 
-        cameraHolder = new ServoMotorControl(camera);
-        imageRecognition = new FakeImageRecognition(camera);
-
+        contentSplitPane.getDividers().get(0).positionProperty()
+                .addListener(listener -> setImageViewDimension(cameraImageView, contentGridPane.getHeight(), contentGridPane.getWidth()));
         openSettingsButton.setOnAction(event -> handleOpenSettings());
 
-//        SettingsHolder.getInstance().switchToFake(camera, cameraImageView);
-//        SettingsHolder.getInstance().switchToRecognizeByColor(camera, cameraImageView, null, null);
+        //TODO remove this
+        handleChangeIRMethod(new ChangeIRMethodEvent(this, ImageRecognitionMethod.FAKE, ImageRecognitionMethod.BYCOLOR));
     }
 
     private void handleOpenSettings() {
+        if (settingsStage == null) {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("../../../../fxml/settings.fxml"));
+                settingsStage = new Stage();
+                settingsStage.setTitle("Settings");
+                settingsStage.setResizable(false);
+                settingsStage.setScene(new Scene(root));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        }
+
         if (settingsStage.isShowing()) {
             settingsStage.requestFocus();
         } else {
@@ -71,8 +75,65 @@ public class MainFormController implements Initializable {
     }
 
     public void handleClose() {
-        settingsStage.close();// TODO call setting form ru.vsu.cvprocessing.controller's close method
-        cameraHolder.closeConnection();
-        imageRecognition.closeVideoCapture();
+        getInstance().getCameraHolder().closeConnection();
+        getInstance().getImageRecognition().closeVideoCapture();
     }
+
+    /* Handles for switch recognition type */
+    private void handleSwitchToNone() throws Exception {
+        getInstance().getImageRecognition().closeVideoCapture();
+        getInstance().setImageRecognition(new FakeImageRecognition(getInstance().getCamera()));
+
+        recognitionSettingPane.setContent(FXMLLoader.load(getClass().getResource("../../../../fxml/irfake.fxml")));
+
+        getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
+            put("viewCamera", cameraImageView);
+        }});
+    }
+
+    private void handleSwitchToRecognizeByColor() throws Exception {
+        getInstance().getImageRecognition().closeVideoCapture();
+        getInstance().setImageRecognition(new RecognizeByColor(getInstance().getCamera()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../../../../fxml/irbycolor.fxml"));
+        recognitionSettingPane.setContent(fxmlLoader.load());
+
+        IRByColorController irByColorController = fxmlLoader.getController();
+        getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
+            put("viewCamera", cameraImageView);
+            put("viewMaskImage", irByColorController.getMaskImageView());
+            put("viewMorphImage", irByColorController.getMorphImageView());
+        }});
+    }
+
+    private void handleSwitchToRecognizeByCascade() {
+    }
+    /* Handles for switch recognition type */
+
+    @EventListener
+    public void handleChangeIRMethod(ChangeIRMethodEvent event) {
+        try {
+            switch (event.getNewValue()) {
+                case FAKE:
+                    handleSwitchToNone();
+                    break;
+                case BYCOLOR:
+                    handleSwitchToRecognizeByColor();
+                    break;
+                case BYCASCADE:
+                    handleSwitchToRecognizeByCascade();
+                    break;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        log.info("Image recognition method was changed from \"" + event.getOldValue() + "\" to \"" + event.getNewValue() + "\"");
+    }
+
+    /* Static methods */
+    private static void setImageViewDimension(ImageView imageView, double height, double width) {
+        imageView.setFitHeight(height);
+        imageView.setFitWidth(width);
+    }
+    /* Static methods */
 }

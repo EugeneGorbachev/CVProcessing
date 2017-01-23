@@ -5,11 +5,7 @@ import ru.vsu.cvprocessing.holder.CameraHolder;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
 import ru.vsu.cvprocessing.recognition.FakeImageRecognition;
 import ru.vsu.cvprocessing.recognition.ImageRecognition;
-import ru.vsu.cvprocessing.recognition.RecognizeByColor;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-
-import java.util.HashMap;
 
 public class SettingsHolder {
     /* Singleton */
@@ -17,15 +13,15 @@ public class SettingsHolder {
 
     public static SettingsHolder getInstance() {
         if (instance == null) {
-            Camera camera = new Camera(0, 70, 233.3d, 400d);
+            Camera camera = new Camera(0, 70, 200d, 200d);
+
             instance = new SettingsHolder(
+                    camera,
+                    new Color(1, 0, 0, 1),
                     new ServoMotorControl(camera),
                     new FakeImageRecognition(camera),
-                    0,
-                    new Color(1, 0, 0, 1),
-                    new HSBRange(0, 0,
-                            0, 0,
-                            0, 0),
+                    new Color(1, 0, 0,1),
+                    new Color(0, 0, 1, 1),
                     null
             );
         }
@@ -33,83 +29,89 @@ public class SettingsHolder {
     }
     /* Singleton */
 
-    private CameraHolder cameraHolder;
-    private ImageRecognition imageRecognition;
-
     /* Image preferences */
-    private int webcameraIndex;
+    private Camera camera;
     private Color markerColor;
     /* Image preferences */
 
+    private CameraHolder cameraHolder;
+    private ImageRecognition imageRecognition;
+
     /* Recognize by color preferences */
-    private HSBRange hsbRange;
+    private Color colorRangeStart;
+    private Color colorRangeEnd;
     /* Recognize by color preferences */
 
     /* Recognize by cascade preferences */
     private String haarcascade;
     /* Recognize by cascade preferences */
 
-    public void switchToFake(Camera camera, ImageView viewCamera) {
-        imageRecognition.closeVideoCapture();
-        imageRecognition = new FakeImageRecognition(camera);
-
-        try {
-            imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
-                put("viewCamera", viewCamera);
-            }});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void switchToRecognizeByColor(Camera camera, ImageView viewCamera, ImageView viewMaskImage, ImageView viewMorphImage) {
-        imageRecognition.closeVideoCapture();
-        imageRecognition = new RecognizeByColor(camera);
-        imageRecognition.addObserver(cameraHolder);
-
-        try {
-            imageRecognition.openVideoCapture(new HashMap<String, Object>() {{
-                put("viewCamera", viewCamera);
-                put("viewMaskImage", viewMaskImage);
-                put("viewMorphImage", viewMorphImage);
-            }});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // TODO realise builder
-    private SettingsHolder(CameraHolder cameraHolder, ImageRecognition imageRecognition, int webcameraIndex,
-                           Color markerColor, HSBRange hsbRange, String haarcascade) {
+    private SettingsHolder(Camera camera, Color markerColor, CameraHolder cameraHolder, ImageRecognition imageRecognition,
+                           Color colorRangeStart, Color colorRangeEnd, String haarcascade) {
         this.cameraHolder = cameraHolder;
         this.imageRecognition = imageRecognition;
-        this.webcameraIndex = webcameraIndex;
+        this.camera = camera;
         this.markerColor = markerColor;
-        this.hsbRange = hsbRange;
+        this.colorRangeStart = colorRangeStart;
+        this.colorRangeEnd = colorRangeEnd;
         this.haarcascade = haarcascade;
     }
 
-    public CameraHolder getCameraHolder() {
-        return cameraHolder;
+    /* Getters and setters */
+    public Camera getCamera() {
+        return camera;
     }
 
-    public ImageRecognition getImageRecognition() {
-        return imageRecognition;
-    }
-
-    public int getWebcameraIndex() {
-        return webcameraIndex;
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
     public Color getMarkerColor() {
         return markerColor;
     }
 
-    public HSBRange getHsbRange() {
-        return hsbRange;
+    public void setMarkerColor(Color markerColor) {
+        this.markerColor = markerColor;
+    }
+
+    public CameraHolder getCameraHolder() {
+        return cameraHolder;
+    }
+
+    public void setCameraHolder(CameraHolder cameraHolder) {
+        this.cameraHolder = cameraHolder;
+    }
+
+    public ImageRecognition getImageRecognition() {
+        return imageRecognition;
+    }
+
+    public void setImageRecognition(ImageRecognition imageRecognition) {
+        this.imageRecognition = imageRecognition;
+    }
+
+    public Color getColorRangeStart() {
+        return colorRangeStart;
+    }
+
+    public void setColorRangeStart(Color colorRangeStart) {
+        this.colorRangeStart = colorRangeStart;
+    }
+
+    public Color getColorRangeEnd() {
+        return colorRangeEnd;
+    }
+
+    public void setColorRangeEnd(Color colorRangeEnd) {
+        this.colorRangeEnd = colorRangeEnd;
     }
 
     public String getHaarcascade() {
         return haarcascade;
     }
+
+    public void setHaarcascade(String haarcascade) {
+        this.haarcascade = haarcascade;
+    }
+    /* Getters and setters */
 }
