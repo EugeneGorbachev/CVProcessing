@@ -13,7 +13,7 @@ public class SettingsHolder {
 
     public static SettingsHolder getInstance() {
         if (instance == null) {
-            Camera camera = new Camera(0, 70, 200d, 200d);
+            Camera camera = new Camera(0, 70, 340d, 495d);
 
             instance = new SettingsHolder(
                     camera,
@@ -43,18 +43,18 @@ public class SettingsHolder {
     /* Recognize by color preferences */
 
     /* Recognize by cascade preferences */
-    private String haarcascade;
+    private String haarCascadeConfigFilename;
     /* Recognize by cascade preferences */
 
     private SettingsHolder(Camera camera, Color markerColor, CameraHolder cameraHolder, ImageRecognition imageRecognition,
-                           Color colorRangeStart, Color colorRangeEnd, String haarcascade) {
+                           Color colorRangeStart, Color colorRangeEnd, String haarCascadeConfigFilename) {
         this.cameraHolder = cameraHolder;
         this.imageRecognition = imageRecognition;
         this.camera = camera;
         this.markerColor = markerColor;
         this.colorRangeStart = colorRangeStart;
         this.colorRangeEnd = colorRangeEnd;
-        this.haarcascade = haarcascade;
+        this.haarCascadeConfigFilename = haarCascadeConfigFilename;
     }
 
     /* Getters and setters */
@@ -106,12 +106,12 @@ public class SettingsHolder {
         this.colorRangeEnd = colorRangeEnd;
     }
 
-    public String getHaarcascade() {
-        return haarcascade;
+    public String getHaarCascadeConfigFilename() {
+        return haarCascadeConfigFilename;
     }
 
-    public void setHaarcascade(String haarcascade) {
-        this.haarcascade = haarcascade;
+    public void setHaarCascadeConfigFilename(String haarCascadeConfigFilename) {
+        this.haarCascadeConfigFilename = haarCascadeConfigFilename;
     }
     /* Getters and setters */
 }

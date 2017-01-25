@@ -16,6 +16,8 @@ public class Main extends Application {
 
         primaryStage.setTitle("CV image processing");
         primaryStage.setScene(new Scene(root));
+        primaryStage.setMinHeight(420d);
+        primaryStage.setMinWidth(600d);
         primaryStage.show();
 
         MainFormController mc = fxmlLoader.getController();

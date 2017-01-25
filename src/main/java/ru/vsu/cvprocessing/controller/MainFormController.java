@@ -16,13 +16,16 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
+import ru.vsu.cvprocessing.recognition.RecognizeByCascade;
 import ru.vsu.cvprocessing.recognition.RecognizeByColor;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class MainFormController implements Initializable {
@@ -44,9 +47,15 @@ public class MainFormController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cameraImageView.setPreserveRatio(true);
+        setImageViewDimension(cameraImageView, getInstance().getCamera().getHeight(), getInstance().getCamera().getWidth());
 
-        contentSplitPane.getDividers().get(0).positionProperty()
-                .addListener(listener -> setImageViewDimension(cameraImageView, contentGridPane.getHeight(), contentGridPane.getWidth()));
+        contentSplitPane.getDividers().get(0).positionProperty().addListener(
+                observable -> {
+                    if (contentGridPane.getHeight() > 0 && contentGridPane.getWidth() > 0) {
+                        setImageViewDimension(cameraImageView, contentGridPane.getHeight(), contentGridPane.getWidth());
+                    }
+                });
+
         openSettingsButton.setOnAction(event -> handleOpenSettings());
 
         //TODO remove this
@@ -62,7 +71,7 @@ public class MainFormController implements Initializable {
                 settingsStage.setResizable(false);
                 settingsStage.setScene(new Scene(root));
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error(e);
             }
         }
 
@@ -106,7 +115,23 @@ public class MainFormController implements Initializable {
         }});
     }
 
-    private void handleSwitchToRecognizeByCascade() {
+    private void handleSwitchToRecognizeByCascade() throws Exception {
+        getInstance().getImageRecognition().closeVideoCapture();
+
+        if (getInstance().getHaarCascadeConfigFilename() == null) {
+            File haarCascadesDirectory = new File(getClass().getResource("../../../../haarcascades").getPath());
+            getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[0].getName());
+        }
+        getInstance().setImageRecognition(new RecognizeByCascade(
+                getInstance().getCamera(),
+                getClass().getResource("../../../../haarcascades/" + getInstance().getHaarCascadeConfigFilename()).getPath())
+        );
+
+        recognitionSettingPane.setContent(FXMLLoader.load(getClass().getResource("../../../../fxml/irbycascade.fxml")));
+
+        getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
+            put("viewCamera", cameraImageView);
+        }});
     }
     /* Handles for switch recognition type */
 
@@ -124,10 +149,10 @@ public class MainFormController implements Initializable {
                     handleSwitchToRecognizeByCascade();
                     break;
             }
+            log.info("Image recognition method was changed from \"" + event.getOldValue() + "\" to \"" + event.getNewValue() + "\"");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e);
         }
-        log.info("Image recognition method was changed from \"" + event.getOldValue() + "\" to \"" + event.getNewValue() + "\"");
     }
 
     /* Static methods */
