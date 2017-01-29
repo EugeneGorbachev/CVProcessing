@@ -8,6 +8,8 @@ import ru.vsu.cvprocessing.recognition.ImageRecognition;
 import javafx.scene.paint.Color;
 
 public class SettingsHolder {
+    public final static String FXML_FILE_PREF = "../../../../fxml/";
+
     /* Singleton */
     private static SettingsHolder instance = null;
 

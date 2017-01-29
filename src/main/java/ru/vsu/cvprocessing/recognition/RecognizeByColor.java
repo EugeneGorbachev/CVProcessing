@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
@@ -28,18 +29,11 @@ public class RecognizeByColor extends ImageRecognition {
 
     public RecognizeByColor(Camera camera) {
         super(camera);
+        imageRecognitionMethod = BYCOLOR;
     }
 
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
-//        Slider hueRangeStartSlider = (Slider) parameters.get("hueRangeStartSlider");
-//        Slider saturationRangeStartSlider = (Slider) parameters.get("saturationRangeStartSlider");
-//        Slider brightnessRangeStartSlider = (Slider) parameters.get("brightnessRangeStartSlider");
-//        Slider hueRangeEndSlider = (Slider) parameters.get("hueRangeEndSlider");
-//        Slider saturationRangeEndSlider = (Slider) parameters.get("saturationRangeEndSlider");
-//        Slider brightnessRangeEndSlider = (Slider) parameters.get("brightnessRangeEndSlider");
-
-
         ImageView viewCamera = (ImageView) parameters.get("viewCamera");
         ImageView viewMaskImage = (ImageView) parameters.get("viewMaskImage");
         ImageView viewMorphImage = (ImageView) parameters.get("viewMorphImage");
@@ -65,7 +59,7 @@ public class RecognizeByColor extends ImageRecognition {
     }
 
     @Override
-    public void closeVideoCapture() {
+    public boolean closeVideoCapture() {
         if (timer != null && !timer.isShutdown()) {
             timer.shutdown();
             try {
@@ -74,7 +68,7 @@ public class RecognizeByColor extends ImageRecognition {
                 e.printStackTrace();
             }
         }
-        super.closeVideoCapture();
+        return super.closeVideoCapture();
     }
 
     // TODO remove

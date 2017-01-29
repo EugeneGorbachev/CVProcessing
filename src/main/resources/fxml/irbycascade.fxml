@@ -16,7 +16,10 @@
   </rowConstraints>
    <children>
       <Label text="Haar cascade: " GridPane.halignment="RIGHT" />
-      <ChoiceBox fx:id="haarCascadeChooseBox" prefWidth="230.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+      <ChoiceBox fx:id="haarCascadeChooseBox" prefWidth="230.0" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+         <GridPane.margin>
+            <Insets left="10.0" right="10.0" />
+         </GridPane.margin></ChoiceBox>
       <TextArea fx:id="previewHaarCascadeTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ServoMotorControl extends CameraHolder {
     private Camera camera;
 
@@ -22,9 +24,7 @@ public class ServoMotorControl extends CameraHolder {
         connected = false;
 
         String portName = (String) parameters.get("portName");
-        if (portName == null) {
-            throw new Exception("There is no 'portName' value in parameters.");
-        }
+        checkNotNull(portName, "There is no 'portName' value in parameters.");
         ArrayList<String> portNames = new ArrayList<>();
         for (SerialPort serialPort : SerialPort.getCommPorts()) {
             portNames.add(serialPort.getSystemPortName());
@@ -42,11 +42,12 @@ public class ServoMotorControl extends CameraHolder {
     }
 
     @Override
-    public void closeConnection() {
+    public boolean closeConnection() {
         if (commPort != null) {
             connected = false;
             commPort.closePort();
         }
+        return !isConnected();
     }
 
     public void sendSingleByte(byte myByte) {
@@ -99,10 +100,6 @@ public class ServoMotorControl extends CameraHolder {
     /* Getters and setters */
     public Camera getCamera() {
         return camera;
-    }
-
-    public void setCamera(Camera camera) {
-        this.camera = camera;
     }
     /* Getters and setters */
 

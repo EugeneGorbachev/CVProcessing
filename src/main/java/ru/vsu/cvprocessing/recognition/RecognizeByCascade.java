@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class RecognizeByCascade extends ImageRecognition {
@@ -28,6 +29,7 @@ public class RecognizeByCascade extends ImageRecognition {
 
     public RecognizeByCascade(Camera camera, String filePath) {
         super(camera);
+        imageRecognitionMethod = BYCASCADE;
         absoluteFaceSize = 0;
         cascadeClassifier = new CascadeClassifier();
         loadCascade(filePath);
@@ -57,7 +59,7 @@ public class RecognizeByCascade extends ImageRecognition {
     }
 
     @Override
-    public void closeVideoCapture() {
+    public boolean closeVideoCapture() {
         if (timer != null && !timer.isShutdown()) {
             this.timer.shutdown();
             try {
@@ -66,7 +68,7 @@ public class RecognizeByCascade extends ImageRecognition {
                 e.printStackTrace();
             }
         }
-        super.closeVideoCapture();
+        return super.closeVideoCapture();
     }
 
     @Override

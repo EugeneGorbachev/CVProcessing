@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class FakeImageRecognition extends ImageRecognition {
@@ -19,6 +20,7 @@ public class FakeImageRecognition extends ImageRecognition {
 
     public FakeImageRecognition(Camera camera) {
         super(camera);
+        imageRecognitionMethod = FAKE;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class FakeImageRecognition extends ImageRecognition {
     }
 
     @Override
-    public void closeVideoCapture() {
+    public boolean closeVideoCapture() {
         if (timer != null && !timer.isShutdown()) {
             timer.shutdown();
             try {
@@ -57,7 +59,7 @@ public class FakeImageRecognition extends ImageRecognition {
                 e.printStackTrace();
             }
         }
-        super.closeVideoCapture();
+        return super.closeVideoCapture();
     }
 
     @Override

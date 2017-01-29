@@ -23,7 +23,7 @@ public abstract class CameraHolder implements Observer {
 
     public abstract void setUpConnection(Map<String, Object> parameters) throws Exception;
 
-    public abstract void closeConnection();
+    public abstract boolean closeConnection();
 
     /* Getters and setters */
     public boolean isConnected() {

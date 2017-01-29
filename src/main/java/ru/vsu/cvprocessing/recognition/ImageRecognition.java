@@ -9,6 +9,7 @@ import org.opencv.videoio.VideoCapture;
 import java.util.Map;
 
 public abstract class ImageRecognition implements Observable {
+    ImageRecognitionMethod imageRecognitionMethod;
     VideoCapture videoCapture;
     Camera camera;
 
@@ -36,10 +37,11 @@ public abstract class ImageRecognition implements Observable {
 
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;
 
-    public void closeVideoCapture() {
+    public boolean closeVideoCapture() {
         if (videoCapture.isOpened()) {
             videoCapture.release();
         }
+        return videoCapture.isOpened();
     }
 
     abstract Image grabFrame(Map<String, Object> parameters);
@@ -67,6 +69,13 @@ public abstract class ImageRecognition implements Observable {
     }
 
     /* Getters and setters */
+    public ImageRecognitionMethod getImageRecognitionMethod() {
+        return imageRecognitionMethod;
+    }
+
+    public void setImageRecognitionMethod(ImageRecognitionMethod imageRecognitionMethod) {
+        this.imageRecognitionMethod = imageRecognitionMethod;
+    }
 
     public boolean isObjectDetected() {
         return objectDetected;

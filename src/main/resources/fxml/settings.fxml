@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane fx:controller="ru.vsu.cvprocessing.controller.SettingsController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.SettingsController">
   <columnConstraints>
     <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -28,16 +28,16 @@
       <Label text="Choose marker color: " GridPane.rowIndex="3" />
       <Label text="Servo settings:" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
       <Label text="Choose COM port: " GridPane.rowIndex="5" />
-      <Label text="Rotate servo: " GridPane.rowIndex="6" />
+      <Label text="Set horizontal angle: " GridPane.rowIndex="6" />
       <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="8">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </TextArea>
-      <TextField maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <ColorPicker prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <TextField fx:id="webcameraIndexTextField" alignment="CENTER" maxWidth="150.0" promptText="0 for built-in camera" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ChoiceBox fx:id="irMethodChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <ColorPicker fx:id="markerColorPicker" onAction="#handleChangedMarkerColor" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <ChoiceBox fx:id="comPortChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
       <GridPane GridPane.columnSpan="2" GridPane.rowIndex="7">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -47,11 +47,11 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" prefWidth="150.0" text="Establish connection" />
-            <Button mnemonicParsing="false" prefWidth="150.0" text="Close connection" GridPane.columnIndex="1" />
+            <Button fx:id="establishConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleEstablishConnection" prefWidth="150.0" text="Establish connection" />
+            <Button fx:id="closeConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleCloseConnection" prefWidth="150.0" text="Close connection" GridPane.columnIndex="1" />
          </children>
       </GridPane>
-      <Slider blockIncrement="1.0" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="90.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <Slider fx:id="horizontalAngleSlider" blockIncrement="1.0" disable="true" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="90.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
