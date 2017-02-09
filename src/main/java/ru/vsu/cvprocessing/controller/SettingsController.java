@@ -11,6 +11,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.vsu.cvprocessing.event.ChangeIRMethodEvent;
 import ru.vsu.cvprocessing.event.IRMethodPublisher;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
 import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
 
@@ -44,6 +46,8 @@ public class SettingsController implements Initializable {
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
+    @Autowired
+    private SendingDataPublisher sendingDataPublisher;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -73,6 +77,9 @@ public class SettingsController implements Initializable {
                 )
         );
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
+
+        horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
+                new SendingDataEvent(ServoMotorControl.mapIntToByteValue((int) horizontalAngleSlider.getValue()))));
     }
 
     private void handleChangedWebcameraIndex(int cameraIndex) {
@@ -100,6 +107,16 @@ public class SettingsController implements Initializable {
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(false);
         horizontalAngleSlider.setDisable(false);
+
+        try {
+            getInstance().getCameraHolder().setUpConnection(new HashMap<String, Object>() {{
+                put("portName", comPortChoiceBox.getValue());
+            }});
+            getInstance().getCameraHolder().setHorizontalAngle(getInstance().getCameraHolder().getHorizontalAngleMaxValue() / 2);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            horizontalAngleSlider.setDisable(true);
+        }
     }
 
     @FXML
@@ -112,6 +129,14 @@ public class SettingsController implements Initializable {
             log.info("Connection with COM port was closed");
         }
     }
+
+
+    @EventListener
+    public void handleSendingData(SendingDataEvent event) {
+        ((ServoMotorControl) getInstance().getCameraHolder()).sendSingleByte(event.getValue());
+        log.info(String.format("Sent %d to Arduino", event.getValue()));
+    }
+
 
     @EventListener
     public void handleChangeIRMethod(ChangeIRMethodEvent event) {

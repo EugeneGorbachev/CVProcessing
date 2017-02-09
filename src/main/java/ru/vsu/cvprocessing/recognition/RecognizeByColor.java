@@ -1,6 +1,8 @@
 package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.paint.Color;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.application.Platform;
 import javafx.scene.control.Slider;
@@ -26,6 +28,7 @@ import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
+    private SendingDataPublisher sendingDataPublisher;
 
     public RecognizeByColor(Camera camera) {
         super(camera);
@@ -155,6 +158,7 @@ public class RecognizeByColor extends ImageRecognition {
         savePrevCoordinate();
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
+//        sendingDataPublisher.publish(new SendingDataEvent());
         notifyObservers();
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
