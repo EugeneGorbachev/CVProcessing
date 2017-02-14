@@ -1,5 +1,6 @@
 package ru.vsu.cvprocessing.settings;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import ru.vsu.cvprocessing.holder.Camera;
 import ru.vsu.cvprocessing.holder.CameraHolder;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
@@ -31,6 +32,8 @@ public class SettingsHolder {
     }
     /* Singleton */
 
+    private ConfigurableApplicationContext applicationContext;
+
     /* Image preferences */
     private Camera camera;
     private Color markerColor;
@@ -60,6 +63,15 @@ public class SettingsHolder {
     }
 
     /* Getters and setters */
+
+    public ConfigurableApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public void setApplicationContext(ConfigurableApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     public Camera getCamera() {
         return camera;
     }

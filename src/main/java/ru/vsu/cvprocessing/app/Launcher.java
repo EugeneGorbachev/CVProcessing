@@ -22,6 +22,7 @@ public class Launcher extends Application {
     @Override
     public void init() throws Exception {
         springContext = SpringApplication.run(SpringConfig.class);
+        SettingsHolder.getInstance().setApplicationContext(springContext);
     }
 
     @Override

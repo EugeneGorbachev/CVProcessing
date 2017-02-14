@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.vsu.cvprocessing.app.Launcher;
-import ru.vsu.cvprocessing.event.ChangeIRMethodEvent;
+import ru.vsu.cvprocessing.event.IRMethodChangedEvent;
 import ru.vsu.cvprocessing.event.IRMethodPublisher;
 import ru.vsu.cvprocessing.recognition.*;
 import javafx.fxml.FXML;
@@ -76,7 +76,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new ChangeIRMethodEvent(this, null, FAKE));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
     }
 
     @FXML
@@ -116,6 +116,7 @@ public class MainFormController implements Initializable {
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../../../../fxml/irbycolor.fxml"));
+        fxmlLoader.setControllerFactory(getInstance().getApplicationContext()::getBean);
         recognitionSettingPane.setContent(fxmlLoader.load());
 
         IRByColorController irByColorController = fxmlLoader.getController();
@@ -151,21 +152,21 @@ public class MainFormController implements Initializable {
     /* Event publishing and handling */
     @FXML
     private void handleChangeIRFakeClick() {
-        irMethodPublisher.publish(new ChangeIRMethodEvent(this, null, FAKE));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, FAKE));
     }
 
     @FXML
     private void handleChangeIRByColorClick() {
-        irMethodPublisher.publish(new ChangeIRMethodEvent(this, null, BYCOLOR));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
     }
 
     @FXML
     private void handleChangeIRByCascadeClick() {
-        irMethodPublisher.publish(new ChangeIRMethodEvent(this, null, BYCASCADE));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
     }
 
     @EventListener
-    public void handleChangeIRMethod(ChangeIRMethodEvent event) {
+    public void handleChangeIRMethod(IRMethodChangedEvent event) {
         try {
             switch (event.getNewValue()) {
                 case FAKE:

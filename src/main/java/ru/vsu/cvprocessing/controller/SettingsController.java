@@ -5,14 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import ru.vsu.cvprocessing.event.ChangeIRMethodEvent;
-import ru.vsu.cvprocessing.event.IRMethodPublisher;
-import ru.vsu.cvprocessing.event.SendingDataEvent;
-import ru.vsu.cvprocessing.event.SendingDataPublisher;
+import ru.vsu.cvprocessing.event.*;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
 import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
 
@@ -48,6 +46,8 @@ public class SettingsController implements Initializable {
     private IRMethodPublisher irMethodPublisher;
     @Autowired
     private SendingDataPublisher sendingDataPublisher;
+    @Autowired
+    private ColorChangedPublisher colorChangedPublisher;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -64,7 +64,7 @@ public class SettingsController implements Initializable {
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
         irMethodChoiceBox.setValue(getInstance().getImageRecognition().getImageRecognitionMethod());
         irMethodChoiceBox.valueProperty().addListener(((observable, oldValue, newValue) ->
-                irMethodPublisher.publish(new ChangeIRMethodEvent(this,
+                irMethodPublisher.publish(new IRMethodChangedEvent(this,
                         (ImageRecognitionMethod) oldValue, (ImageRecognitionMethod) newValue))));
 
         markerColorPicker.setValue(getInstance().getMarkerColor());
@@ -79,7 +79,7 @@ public class SettingsController implements Initializable {
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(ServoMotorControl.mapIntToByteValue((int) horizontalAngleSlider.getValue()))));
+                new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
     }
 
     private void handleChangedWebcameraIndex(int cameraIndex) {
@@ -89,8 +89,11 @@ public class SettingsController implements Initializable {
 
     @FXML
     private void handleChangedMarkerColor() {
-        getInstance().setMarkerColor(markerColorPicker.getValue());
-        log.info("Marker color was changed to " + markerColorPicker.getValue());
+//        getInstance().setMarkerColor(markerColorPicker.getValue());
+        Color selectedValue = markerColorPicker.getValue();
+        colorChangedPublisher.publish(new ColorChangedEvent(this, ColorType.MARKER,
+                selectedValue.getHue(), selectedValue.getSaturation(), selectedValue.getBrightness()));
+//        log.info("Marker color was changed to " + markerColorPicker.getValue());
     }
 
     private void handleChangedCOMPort() {
@@ -114,7 +117,7 @@ public class SettingsController implements Initializable {
             }});
             getInstance().getCameraHolder().setHorizontalAngle(getInstance().getCameraHolder().getHorizontalAngleMaxValue() / 2);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e);
             horizontalAngleSlider.setDisable(true);
         }
     }
@@ -133,13 +136,17 @@ public class SettingsController implements Initializable {
 
     @EventListener
     public void handleSendingData(SendingDataEvent event) {
-        ((ServoMotorControl) getInstance().getCameraHolder()).sendSingleByte(event.getValue());
-        log.info(String.format("Sent %d to Arduino", event.getValue()));
+        int sendingValue = event.getValue();
+        sendingValue = sendingValue | (1 << 8);
+        sendingValue = sendingValue | (1 << 9);
+        ((ServoMotorControl) getInstance().getCameraHolder()).sendSingleInt(sendingValue);
+        log.info(String.format("Sent %d to Arduino as %d %s",
+                event.getValue(), event.getPreparedValue(), Integer.toBinaryString(event.getPreparedValue())));
     }
 
 
     @EventListener
-    public void handleChangeIRMethod(ChangeIRMethodEvent event) {
+    public void handleChangeIRMethod(IRMethodChangedEvent event) {
         if (irMethodChoiceBox != null) {
             irMethodChoiceBox.setValue(event.getNewValue());
         }

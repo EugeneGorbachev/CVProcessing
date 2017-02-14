@@ -5,15 +5,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IRMethodPublisher{
+public class ColorChangedPublisher {
     private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public IRMethodPublisher(ApplicationEventPublisher publisher) {
+    public ColorChangedPublisher(ApplicationEventPublisher publisher) {
         this.publisher = publisher;
     }
 
-    public void publish(IRMethodChangedEvent event) {
+    public void publish(ColorChangedEvent event) {
         publisher.publishEvent(event);
     }
 }
