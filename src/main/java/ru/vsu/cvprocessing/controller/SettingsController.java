@@ -36,11 +36,13 @@ public class SettingsController implements Initializable {
     @FXML
     private ChoiceBox comPortChoiceBox;
     @FXML
+    private Slider horizontalAngleSlider;
+    @FXML
+    private Slider verticalAngleSlider;
+    @FXML
     private Button establishConnectionButton;
     @FXML
     private Button closeConnectionButton;
-    @FXML
-    private Slider horizontalAngleSlider;
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
@@ -79,7 +81,10 @@ public class SettingsController implements Initializable {
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, true, (int) horizontalAngleSlider.getValue())));
+                new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
+        verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
+                new SendingDataEvent(true,true, (int) verticalAngleSlider.getValue())
+        )));
     }
 
     private void handleChangedWebcameraIndex(int cameraIndex) {
@@ -89,11 +94,9 @@ public class SettingsController implements Initializable {
 
     @FXML
     private void handleChangedMarkerColor() {
-//        getInstance().setMarkerColor(markerColorPicker.getValue());
         Color selectedValue = markerColorPicker.getValue();
         colorChangedPublisher.publish(new ColorChangedEvent(this, ColorType.MARKER,
                 selectedValue.getHue(), selectedValue.getSaturation(), selectedValue.getBrightness()));
-//        log.info("Marker color was changed to " + markerColorPicker.getValue());
     }
 
     private void handleChangedCOMPort() {
@@ -110,6 +113,7 @@ public class SettingsController implements Initializable {
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(false);
         horizontalAngleSlider.setDisable(false);
+        verticalAngleSlider.setDisable(false);
 
         try {
             getInstance().getCameraHolder().setUpConnection(new HashMap<String, Object>() {{
@@ -119,6 +123,7 @@ public class SettingsController implements Initializable {
         } catch (Exception e) {
             log.error(e);
             horizontalAngleSlider.setDisable(true);
+            verticalAngleSlider.setDisable(true);
         }
     }
 
@@ -127,6 +132,7 @@ public class SettingsController implements Initializable {
         establishConnectionButton.setDisable(false);
         closeConnectionButton.setDisable(true);
         horizontalAngleSlider.setDisable(true);
+        verticalAngleSlider.setDisable(true);
 
         if (getInstance().getCameraHolder().closeConnection()) {
             log.info("Connection with COM port was closed");

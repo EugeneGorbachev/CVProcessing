@@ -1,4 +1,5 @@
 #include <Servo.h> 
+Servo verticalServo;
 Servo horizontalServo;
 boolean isPreferences = true;
 boolean isDetected;
@@ -7,6 +8,7 @@ byte sendedPreferences;
 int sendedValue;
 
 void setup() {
+//  verticalServo.attach();
   horizontalServo.attach(9);
   Serial.begin(9600);
 }
@@ -30,7 +32,7 @@ void loop() {
       sendedValue = (int)Serial.read();
       
       if (isVertical) {
-        // вращаем серво вертикального направления
+        verticalServo.write(sendedValue);
       } else {
         horizontalServo.write(sendedValue);
       }
