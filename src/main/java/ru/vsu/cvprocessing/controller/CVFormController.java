@@ -308,7 +308,7 @@ public class CVFormController implements Initializable {
                 put("portName", portName);
             }});
             cameraHolder.setHorizontalAngle(cameraHolder.getHorizontalAngleMaxValue() / 2);
-            ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
+            ((ServoMotorControl) cameraHolder).sendInt(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
             if (cameraHolder.isConnected()) {
                 logMessage("Connection with COM port \"" + portName + "\" established");
             }
@@ -319,7 +319,7 @@ public class CVFormController implements Initializable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                ((ServoMotorControl) cameraHolder).sendSingleByte(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
+                ((ServoMotorControl) cameraHolder).sendInt(ServoMotorControl.mapIntToByteValue((int) servoHorizontalAngleSlider.getValue()));
             });
             servoHorizontalAngleSlider.setDisable(false);
         } catch (Exception e) {

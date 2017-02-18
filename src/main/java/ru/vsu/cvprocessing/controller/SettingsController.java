@@ -79,7 +79,7 @@ public class SettingsController implements Initializable {
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
+                new SendingDataEvent(true, true, (int) horizontalAngleSlider.getValue())));
     }
 
     private void handleChangedWebcameraIndex(int cameraIndex) {
@@ -136,12 +136,11 @@ public class SettingsController implements Initializable {
 
     @EventListener
     public void handleSendingData(SendingDataEvent event) {
-        int sendingValue = event.getValue();
-        sendingValue = sendingValue | (1 << 8);
-        sendingValue = sendingValue | (1 << 9);
-        ((ServoMotorControl) getInstance().getCameraHolder()).sendSingleInt(sendingValue);
-        log.info(String.format("Sent %d to Arduino as %d %s",
-                event.getValue(), event.getPreparedValue(), Integer.toBinaryString(event.getPreparedValue())));
+        ((ServoMotorControl) getInstance().getCameraHolder()).sendInt(event.getPreferences());
+        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(event.getPreferences())));
+
+        ((ServoMotorControl) getInstance().getCameraHolder()).sendInt(event.getValue());
+        log.info(String.format("Sent %d to Arduino as %s", event.getValue(), Integer.toBinaryString(event.getValue())));
     }
 
 

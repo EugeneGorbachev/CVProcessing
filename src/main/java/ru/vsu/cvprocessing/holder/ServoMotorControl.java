@@ -1,7 +1,9 @@
 package ru.vsu.cvprocessing.holder;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
@@ -9,6 +11,8 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ServoMotorControl extends CameraHolder {
+    private static final Logger log = Logger.getLogger(ServoMotorControl.class);
+
     private Camera camera;
 
     private SerialPort commPort;
@@ -50,12 +54,12 @@ public class ServoMotorControl extends CameraHolder {
         return !isConnected();
     }
 
-    public void sendSingleByte(byte myByte) {
+    public void sendInt(int intValue) {
         try {
-            outputStream.write(myByte);
+            outputStream.write(intValue);
             outputStream.flush();
-        } catch (Exception e) {
-            System.err.println(e.toString());
+        } catch (IOException e) {
+            log.error(e);
         }
     }
 
@@ -73,7 +77,7 @@ public class ServoMotorControl extends CameraHolder {
                         sendingValue = (byte) (sendingValue | (1 << 7));// set unused bit to 1
                     }
                 }
-                sendSingleByte(sendingValue);
+                sendInt(sendingValue);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,7 +94,7 @@ public class ServoMotorControl extends CameraHolder {
                         sendingValue = (byte) (sendingValue | (1 << 7));// set unused bit to 1
                     }
                 }
-                sendSingleByte(sendingValue);
+                sendInt(sendingValue);
             }
         } catch (Exception e) {
             e.printStackTrace();
