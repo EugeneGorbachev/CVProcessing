@@ -1,6 +1,5 @@
 #include <Servo.h> 
-Servo verticalServo;
-Servo horizontalServo;
+Servo verticalServo,horizontalServo;
 boolean isPreferences = true;
 boolean isDetected;
 boolean isVertical;
@@ -8,8 +7,8 @@ byte sendedPreferences;
 int sendedValue;
 
 void setup() {
-//  verticalServo.attach();
-  horizontalServo.attach(9);
+  verticalServo.attach(9);
+  horizontalServo.attach(8);
   Serial.begin(9600);
 }
 
