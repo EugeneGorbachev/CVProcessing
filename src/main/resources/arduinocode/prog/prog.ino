@@ -49,89 +49,56 @@ void setup() {
   lcd.createChar(4, p100);
 }
 void loop() {
- /* horizontalServo.write(pos);
-  verticalServo.write(pos+13);*/
-
-/*void serialEvent() {*/
   while (Serial.available()) {
-   /* sendedValue = (byte)Serial.read();
-    // получаем первый бит из sendedValue
-   if (bitRead(sendedValue, 7) == 0) {
-     flag = false;
-   } 
-   else
-     flag = true;
-*/
-  if (isPreferences) {
+    if (isPreferences) {
       sendedPreferences = Serial.read();
       isDetected = bitRead(sendedPreferences, 0);
       isVertical = bitRead(sendedPreferences, 1);
       isPreferences = false;
     } else {
-      isPreferences = true;
       sendedValue = (int)Serial.read();
-    
-    /*if (flag) {
-      digitalWrite(LED_BUILTIN,HIGH);
-    } 
-    else {
-      digitalWrite(LED_BUILTIN,LOW);
-    }
-    //test*/
-    if (isDetected) {
-      digitalWrite(LED_BUILTIN,HIGH);
-    } 
-    else {
-      digitalWrite(LED_BUILTIN,LOW);
-    }
-    }
-    /*
-    if (faceDetected != flag) {
-      faceDetected = flag;
-      if (faceDetected)*/
+      
+      if (isDetected) {
+        digitalWrite(LED_BUILTIN,HIGH);
+      } 
+      else {
+        digitalWrite(LED_BUILTIN,LOW);
+      }
+      
+      lcd.setCursor(0,1);
+      lcd.print("            ");
+      lcd.setCursor(0,1);
       if (isDetected){
-        lcd.setCursor(0,1);
-        lcd.print("            ");
-        lcd.setCursor(0,1);
         lcd.print("I see you");
-        // включить синию лампу
+          // включить синию лампу
         digitalWrite(ledBlue,HIGH);
         digitalWrite(ledRed,LOW);
       } 
       else {
-        lcd.setCursor(0,1);
-        lcd.print("            ");
-        lcd.setCursor(0,1);
         lcd.print("I feel you");
         // включить красную лампу
         digitalWrite(ledRed,HIGH);
         digitalWrite(ledBlue,LOW);
       }
-    } 
-      /* bitClear(sendedValue, 7);
-        bytev = sendedValue;
-        pos = map(bytev,0,127,0,180);
-//display pos
-        i = map(bytev,0,127,0,16);*/
-         if (isVertical) {
-          i = map(sendedValue,0,127,0,180);
-        verticalServo.write(i);
+      
+      if (isVertical) {
+        verticalServo.write(sendedValue);
       } else {
-        i = map(sendedValue,0,127,0,180);
-        horizontalServo.write(i);
+        i = map(sendedValue,0,180,0,16);
+        horizontalServo.write(sendedValue);
       }
-
-        
-// from "i" depend left or right
-        lcd.setCursor(i,0);
-        lcd.write(4);
-        delay(10);
-        lcd.setCursor(i,0);
-        lcd.write(1);
-       
- }
-    
-
+      
+      // from "i" depend left or right
+      lcd.setCursor(i,0);
+      lcd.write(4);
+      delay(10);
+      lcd.setCursor(i,0);
+      lcd.write(1);
+         
+      isPreferences = true;
+    }
+  }
+}
  
     
 
