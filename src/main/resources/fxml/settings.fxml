@@ -35,7 +35,6 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </TextArea>
-      <TextField fx:id="webcameraIndexTextField" alignment="CENTER" maxWidth="150.0" promptText="0 for built-in camera" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <ChoiceBox fx:id="irMethodChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <ColorPicker fx:id="markerColorPicker" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <ChoiceBox fx:id="comPortChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
@@ -63,5 +62,11 @@
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
       </Slider>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="webcameraIndexTextField" alignment="CENTER" maxWidth="90.0" promptText="0 for built-in" />
+            <Button fx:id="saveWebcameraIndexButton" mnemonicParsing="false" onAction="#handleSaveWebcameraIndex" prefWidth="50.0" text="Save" />
+         </children>
+      </HBox>
    </children>
 </GridPane>

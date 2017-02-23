@@ -28,6 +28,8 @@ public class SettingsController implements Initializable {
     @FXML
     private TextField webcameraIndexTextField;
     @FXML
+    private Button saveWebcameraIndexButton;
+    @FXML
     private ChoiceBox irMethodChoiceBox;
     @FXML
     private ColorPicker markerColorPicker;
@@ -50,13 +52,15 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        saveWebcameraIndexButton.setDisable(true);
+
         webcameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebcamIndex()));
         webcameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {//TODO replace with combobox
-            if (newValue.matches("\\d+")) {
-                handleChangedWebcameraIndex(Integer.valueOf(newValue));
-            } else {
-                log.error("Camera index must be a number");
-                webcameraIndexTextField.setText(oldValue);
+            try {
+                Integer.parseInt(newValue);
+                saveWebcameraIndexButton.setDisable(false);
+            } catch (NumberFormatException e) {
+                saveWebcameraIndexButton.setDisable(true);
             }
         }));
 
@@ -80,13 +84,8 @@ public class SettingsController implements Initializable {
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
                 new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
         verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true,true, (int) verticalAngleSlider.getValue())
+                new SendingDataEvent(true, true, (int) verticalAngleSlider.getValue())
         )));
-    }
-
-    private void handleChangedWebcameraIndex(int cameraIndex) {
-        getInstance().getCamera().setWebcamIndex(cameraIndex);
-        log.info("Camera cameraIndex value was changed on " + cameraIndex);
     }
 
     private void handleChangedCOMPort() {
@@ -96,6 +95,17 @@ public class SettingsController implements Initializable {
             establishConnectionButton.setDisable(true);
         }
         handleCloseConnection();
+    }
+
+    @FXML
+    private void handleSaveWebcameraIndex() {
+        int webcamIndex = Integer.parseInt(webcameraIndexTextField.getText());
+        getInstance().getCamera().setWebcamIndex(webcamIndex);
+        irMethodPublisher.publish(new IRMethodChangedEvent(this,
+                (ImageRecognitionMethod) irMethodChoiceBox.getValue(),
+                (ImageRecognitionMethod) irMethodChoiceBox.getValue()
+        ));
+        log.info("Camera cameraIndex value was changed on " + webcamIndex);
     }
 
     @FXML

@@ -1,9 +1,12 @@
 package ru.vsu.cvprocessing.controller;
 
 import javafx.application.Platform;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -45,14 +48,33 @@ public class MainFormController implements Initializable {
     private ScrollPane recognitionSettingPane;
     @FXML
     private ImageView cameraImageView;
+    @FXML
+    private CheckBox showPixelColorCheckBox;
+    @FXML
+    private Label selectedPixelColorLabel;
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
 
     private Stage settingsStage = null;
+    private boolean fixShownSelectedPixelColor = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        showPixelColorCheckBox.selectedProperty().bindBidirectional(getInstance().showSelectedPixelColorProperty());
+        selectedPixelColorLabel.visibleProperty().bind(getInstance().showSelectedPixelColorProperty());
+        cameraImageView.setOnMouseMoved(event -> {
+            if (!fixShownSelectedPixelColor) {
+                Color pixelColor = cameraImageView.getImage().getPixelReader().getColor(((int) event.getX()), ((int) event.getY()));
+                selectedPixelColorLabel.setText(
+                        String.format("Pixel color: H:%1.1f S:%1.1f B:%1.1f",
+                                pixelColor.getHue(),
+                                pixelColor.getSaturation() * 100,
+                                pixelColor.getBrightness() * 100
+                        ));
+            }
+        });
+
         Platform.runLater(() -> {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(SettingsHolder.FXML_FILE_PREF + "settings.fxml"));
@@ -150,6 +172,14 @@ public class MainFormController implements Initializable {
     /* Handles for switch recognition type */
 
     /* Event publishing and handling */
+    @FXML
+    private void handleCameraImageViewClick() {
+        fixShownSelectedPixelColor = !fixShownSelectedPixelColor;
+        if (fixShownSelectedPixelColor) {
+            selectedPixelColorLabel.setText(selectedPixelColorLabel.getText() + " (fixed)");
+        }
+    }
+
     @FXML
     private void handleChangeIRFakeClick() {
         irMethodPublisher.publish(new IRMethodChangedEvent(this, null, FAKE));

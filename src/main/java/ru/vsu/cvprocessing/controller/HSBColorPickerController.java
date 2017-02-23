@@ -13,11 +13,14 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
+import org.apache.log4j.Logger;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class HSBColorPickerController implements Initializable {
+    private static final Logger log = Logger.getLogger(HSBColorPickerController.class);
+
     @FXML
     private Pane currentColorPane;
     @FXML
@@ -64,7 +67,13 @@ public class HSBColorPickerController implements Initializable {
 
             @Override
             public Number fromString(String string) {
-                return Double.parseDouble(string);
+                Double doubleValue = 0d;
+                try {
+                     doubleValue = Double.parseDouble(string);
+                } catch (NumberFormatException e) {
+                    log.error(e);
+                }
+                return doubleValue;
             }
         };
 

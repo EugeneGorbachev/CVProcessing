@@ -1,7 +1,9 @@
 package ru.vsu.cvprocessing.settings;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.log4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.vsu.cvprocessing.holder.Camera;
@@ -54,6 +56,10 @@ public class SettingsHolder {
     private String haarCascadeConfigFilename;
     /* Recognize by cascade preferences */
 
+    /* Other */
+    private BooleanProperty showSelectedPixelColor;
+    /* Other */
+
     private SettingsHolder(Camera camera, Color markerColor, CameraHolder cameraHolder, ImageRecognition imageRecognition,
                            Color colorRangeStart, Color colorRangeEnd, String haarCascadeConfigFilename) {
         this.cameraHolder = cameraHolder;
@@ -63,10 +69,10 @@ public class SettingsHolder {
         this.colorRangeStartProperty = new ColorProperty(colorRangeStart, "Image recognition color range start");
         this.colorRangeEndProperty = new ColorProperty(colorRangeEnd, "Image recognition color range end");
         this.haarCascadeConfigFilename = haarCascadeConfigFilename;
+        this.showSelectedPixelColor = new SimpleBooleanProperty(true);
     }
 
     /* Property Getters */
-
     public Color getMarkerColorProperty() {
         return markerColorProperty.get();
     }
@@ -90,10 +96,17 @@ public class SettingsHolder {
     public ObjectProperty<Color> colorRangeEndPropertyProperty() {
         return colorRangeEndProperty;
     }
+
+    public boolean isShowSelectedPixelColor() {
+        return showSelectedPixelColor.get();
+    }
+
+    public BooleanProperty showSelectedPixelColorProperty() {
+        return showSelectedPixelColor;
+    }
     /* Property Getters */
 
     /* Getters and setters */
-
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
@@ -141,7 +154,7 @@ class ColorProperty extends ObjectPropertyBase<Color> {
 
     private String propertyName;
 
-    public ColorProperty(Color initialValue, String propertyName) {
+    ColorProperty(Color initialValue, String propertyName) {
         super(initialValue);
         this.propertyName = propertyName;
     }
