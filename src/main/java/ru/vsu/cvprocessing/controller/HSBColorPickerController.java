@@ -40,7 +40,7 @@ public class HSBColorPickerController implements Initializable {
     @FXML
     private TextField brightnessTextField;
 
-    private Property<Color> colorProperty = new SimpleObjectProperty<>(Color.hsb(0d, 0d, 0d));// TODO setter
+    private Property<Color> colorProperty = new SimpleObjectProperty<>(Color.hsb(0d, 0d, 0d));
     private DoubleProperty hue = new SimpleDoubleProperty();
     private DoubleProperty saturation = new SimpleDoubleProperty();
     private DoubleProperty brightness = new SimpleDoubleProperty();

@@ -6,7 +6,6 @@ public class Camera {
     private double height;
     private double width;
 
-    // TODO realise builder
     public Camera(int webcamIndex, int fieldOfView, double height, double width) {
         this.webcamIndex = webcamIndex;
         this.fieldOfView = fieldOfView;

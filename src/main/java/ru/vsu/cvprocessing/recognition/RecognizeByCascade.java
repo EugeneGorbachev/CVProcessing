@@ -78,10 +78,10 @@ public class RecognizeByCascade extends ImageRecognition {
         Mat frame = new Mat();
         videoCapture.read(frame);
 
-//        if (!frame.empty()) {
-        objectDetected = findFaces(frame);
-        image = matToImage(frame);
-//        }
+        if (!frame.empty()) {
+            objectDetected = findFaces(frame);
+            image = matToImage(frame);
+        }
 
         return image;
     }

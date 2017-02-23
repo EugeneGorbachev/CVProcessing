@@ -55,7 +55,7 @@ public class SettingsController implements Initializable {
         saveWebcameraIndexButton.setDisable(true);
 
         webcameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebcamIndex()));
-        webcameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {//TODO replace with combobox
+        webcameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
             try {
                 Integer.parseInt(newValue);
                 saveWebcameraIndexButton.setDisable(false);
