@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -48,8 +47,6 @@ public class SettingsController implements Initializable {
     private IRMethodPublisher irMethodPublisher;
     @Autowired
     private SendingDataPublisher sendingDataPublisher;
-    @Autowired
-    private ColorChangedPublisher colorChangedPublisher;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,7 +66,7 @@ public class SettingsController implements Initializable {
                 irMethodPublisher.publish(new IRMethodChangedEvent(this,
                         (ImageRecognitionMethod) oldValue, (ImageRecognitionMethod) newValue))));
 
-        markerColorPicker.setValue(getInstance().getMarkerColor());
+        markerColorPicker.valueProperty().bindBidirectional(getInstance().markerColorPropertyProperty());
 
         comPortChoiceBox.setItems(FXCollections.observableArrayList(
                 Arrays.stream(SerialPort.getCommPorts())
@@ -90,13 +87,6 @@ public class SettingsController implements Initializable {
     private void handleChangedWebcameraIndex(int cameraIndex) {
         getInstance().getCamera().setWebcamIndex(cameraIndex);
         log.info("Camera cameraIndex value was changed on " + cameraIndex);
-    }
-
-    @FXML
-    private void handleChangedMarkerColor() {
-        Color selectedValue = markerColorPicker.getValue();
-        colorChangedPublisher.publish(new ColorChangedEvent(this, ColorType.MARKER,
-                selectedValue.getHue(), selectedValue.getSaturation(), selectedValue.getBrightness()));
     }
 
     private void handleChangedCOMPort() {

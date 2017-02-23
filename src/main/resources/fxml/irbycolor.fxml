@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.IRByColorController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.IRByColorController">
   <columnConstraints>
     <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="80.0" />
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="50.0" />
@@ -17,8 +17,10 @@
     <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="NEVER" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="NEVER" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="NEVER" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="NEVER" />
   </rowConstraints>
    <children>
       <Label text="Mask image:" GridPane.columnSpan="3" GridPane.halignment="CENTER" />
@@ -31,11 +33,13 @@
             <ColorPicker fx:id="colorRangeStartPicker" />
          </children>
       </HBox>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="6">
          <children>
             <Label text="Range end color: " />
             <ColorPicker fx:id="colorRangeEndPicker" />
          </children>
       </HBox>
+      <ScrollPane fx:id="rangeColorStartPane" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+      <ScrollPane fx:id="rangeColorEndPane" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="7" />
    </children>
 </GridPane>

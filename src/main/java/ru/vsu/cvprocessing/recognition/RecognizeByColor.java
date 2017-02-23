@@ -1,11 +1,8 @@
 package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.paint.Color;
-import ru.vsu.cvprocessing.event.SendingDataEvent;
-import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.application.Platform;
-import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ru.vsu.cvprocessing.observer.Observer;
@@ -28,7 +25,6 @@ import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
     private ScheduledExecutorService timer;
-    private SendingDataPublisher sendingDataPublisher;
 
     public RecognizeByColor(Camera camera) {
         super(camera);
@@ -46,8 +42,8 @@ public class RecognizeByColor extends ImageRecognition {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
-                    put("lowerb", colorToOpenCVHSB(getInstance().getColorRangeStart()));
-                    put("upperb", colorToOpenCVHSB(getInstance().getColorRangeEnd()));
+                    put("lowerb", colorToOpenCVHSB(getInstance().getColorRangeStartProperty()));
+                    put("upperb", colorToOpenCVHSB(getInstance().getColorRangeEndProperty()));
                     put("viewMaskImage", viewMaskImage);
                     put("viewMorphImage", viewMorphImage);
                 }});
@@ -72,12 +68,6 @@ public class RecognizeByColor extends ImageRecognition {
             }
         }
         return super.closeVideoCapture();
-    }
-
-    // TODO remove
-    private Scalar colorToOpenCVHSB(Slider hueSlider, Slider saturationSlider, Slider brightnessSlider) {
-        return new Scalar(hueSlider.getValue() * 0.5d, saturationSlider.getValue() * 2.56d,
-                brightnessSlider.getValue() * 2.56d);
     }
 
     private Scalar colorToOpenCVHSB(Color color) {

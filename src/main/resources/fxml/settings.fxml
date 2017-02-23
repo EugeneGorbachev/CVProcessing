@@ -37,7 +37,7 @@
       </TextArea>
       <TextField fx:id="webcameraIndexTextField" alignment="CENTER" maxWidth="150.0" promptText="0 for built-in camera" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <ChoiceBox fx:id="irMethodChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <ColorPicker fx:id="markerColorPicker" onAction="#handleChangedMarkerColor" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <ColorPicker fx:id="markerColorPicker" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <ChoiceBox fx:id="comPortChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
       <GridPane GridPane.columnSpan="2" GridPane.rowIndex="8">
         <columnConstraints>
