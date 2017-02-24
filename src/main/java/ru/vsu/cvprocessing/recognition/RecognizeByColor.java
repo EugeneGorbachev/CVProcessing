@@ -1,7 +1,6 @@
 package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.paint.Color;
-import ru.vsu.cvprocessing.holder.Camera;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,35 +14,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
-import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
-    private ScheduledExecutorService timer;
 
-    public RecognizeByColor(Camera camera) {
-        super(camera);
+    public RecognizeByColor() {
+        super();
         imageRecognitionMethod = BYCOLOR;
     }
 
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
-        ImageView viewCamera = (ImageView) parameters.get("viewCamera");
-        ImageView viewMaskImage = (ImageView) parameters.get("viewMaskImage");
-        ImageView viewMorphImage = (ImageView) parameters.get("viewMorphImage");
+        checkNotNull(camera, "Camera required");
+        ImageView viewCamera = checkNotNull((ImageView) parameters.get("viewCamera"),
+                "Camera's ImageView required");
+        ImageView viewMaskImage = checkNotNull((ImageView) parameters.get("viewMaskImage"),
+                "Mask's ImageView required");
+        ImageView viewMorphImage = checkNotNull((ImageView) parameters.get("viewMorphImage"),
+                "Morph's ImageView required");
+        Color colorRangeStart = checkNotNull((Color) parameters.get("colorRangeStart"),
+                "Color range start required");
+        Color colorRangeEnd = checkNotNull((Color) parameters.get("colorRangeEnd"),
+                "Color range end required");
 
         videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
-                    put("lowerb", colorToOpenCVHSB(getInstance().getColorRangeStartProperty()));
-                    put("upperb", colorToOpenCVHSB(getInstance().getColorRangeEndProperty()));
+                    put("lowerb", colorToOpenCVHSB(colorRangeStart));
+                    put("upperb", colorToOpenCVHSB(colorRangeEnd));
                     put("viewMaskImage", viewMaskImage);
                     put("viewMorphImage", viewMorphImage);
                 }});
@@ -55,19 +60,6 @@ public class RecognizeByColor extends ImageRecognition {
         } else {
             throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
-    }
-
-    @Override
-    public boolean closeVideoCapture() {
-        if (timer != null && !timer.isShutdown()) {
-            timer.shutdown();
-            try {
-                timer.awaitTermination(33, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return super.closeVideoCapture();
     }
 
     private Scalar colorToOpenCVHSB(Color color) {

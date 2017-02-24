@@ -28,8 +28,10 @@ public class SettingsHolder {
                     camera,
                     new Color(1, 0, 0, 1),
                     new ServoMotorControl(camera),
-                    new FakeImageRecognition(camera),
-                    new Color(1, 0, 0,1),
+                    new FakeImageRecognition() {{
+                        setCamera(camera);
+                    }},
+                    new Color(1, 0, 0, 1),
                     new Color(0, 0, 1, 1),
                     null
             );
@@ -67,6 +69,7 @@ public class SettingsHolder {
         this.imageRecognition = imageRecognition;
         this.camera = camera;
         this.markerColorProperty = new ColorProperty(markerColor, "Marker color");
+        this.markerColorProperty.addListener(((observable, oldValue, newValue) -> imageRecognition.setMarkerColor(newValue)));
         this.colorRangeStartProperty = new ColorProperty(colorRangeStart, "Image recognition color range start");
         this.colorRangeEndProperty = new ColorProperty(colorRangeEnd, "Image recognition color range end");
         this.haarCascadeConfigFilename = haarCascadeConfigFilename;

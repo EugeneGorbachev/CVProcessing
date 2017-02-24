@@ -133,7 +133,9 @@ public class MainFormController implements Initializable {
     private void handleSwitchToFake() throws Exception {
         getInstance().getImageRecognition().closeVideoCapture();
         log.info("Video capture for image recognition closed");
-        getInstance().setImageRecognition(new FakeImageRecognition(getInstance().getCamera()));
+        getInstance().setImageRecognition(new FakeImageRecognition() {{
+            setCamera(getInstance().getCamera());
+        }});
         log.info(String.format("Video capture for image recognition method %s opened", FAKE));
 
         recognitionSettingPane.setContent(FXMLLoader.load(getClass()
@@ -147,7 +149,9 @@ public class MainFormController implements Initializable {
     private void handleSwitchToRecognizeByColor() throws Exception {
         getInstance().getImageRecognition().closeVideoCapture();
         log.info("Video capture for image recognition closed");
-        getInstance().setImageRecognition(new RecognizeByColor(getInstance().getCamera()));
+        getInstance().setImageRecognition(new RecognizeByColor() {{
+            setCamera(getInstance().getCamera());
+        }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
@@ -160,6 +164,8 @@ public class MainFormController implements Initializable {
             put("viewCamera", cameraImageView);
             put("viewMaskImage", irByColorController.getMaskImageView());
             put("viewMorphImage", irByColorController.getMorphImageView());
+            put("colorRangeStart", getInstance().getColorRangeStartProperty());
+            put("colorRangeEnd", getInstance().getColorRangeEndProperty());
         }});
     }
 
@@ -171,10 +177,11 @@ public class MainFormController implements Initializable {
             File haarCascadesDirectory = new File(getClass().getResource(SettingsHolder.CASCADE_FILE_PREF).getPath());
             getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[0].getName());
         }
-        getInstance().setImageRecognition(new RecognizeByCascade(
-                getInstance().getCamera(),
-                getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath())
-        );
+
+        String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath();
+        getInstance().setImageRecognition(new RecognizeByCascade(filePath) {{
+            setCamera(getInstance().getCamera());
+        }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
 
         recognitionSettingPane.setContent(FXMLLoader.load(getClass()

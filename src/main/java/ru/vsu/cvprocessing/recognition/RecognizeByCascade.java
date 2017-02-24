@@ -1,6 +1,5 @@
 package ru.vsu.cvprocessing.recognition;
 
-import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ru.vsu.cvprocessing.observer.Observer;
@@ -14,21 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class RecognizeByCascade extends ImageRecognition {
     private List<Observer> observers = new ArrayList<>();
-    private ScheduledExecutorService timer;
 
     private int absoluteFaceSize;
     private CascadeClassifier cascadeClassifier;
 
-    public RecognizeByCascade(Camera camera, String filePath) {
-        super(camera);
+    public RecognizeByCascade(String filePath) {
+        super();
         imageRecognitionMethod = BYCASCADE;
         absoluteFaceSize = 0;
         cascadeClassifier = new CascadeClassifier(filePath);
@@ -36,7 +34,9 @@ public class RecognizeByCascade extends ImageRecognition {
 
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
-        ImageView viewCamera = (ImageView) parameters.get("viewCamera");
+        checkNotNull(camera, "Camera required");
+        ImageView viewCamera = checkNotNull((ImageView) parameters.get("viewCamera"),
+                "Camera's ImageView required");
 
         videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
@@ -51,19 +51,6 @@ public class RecognizeByCascade extends ImageRecognition {
         } else {
             throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
-    }
-
-    @Override
-    public boolean closeVideoCapture() {
-        if (timer != null && !timer.isShutdown()) {
-            this.timer.shutdown();
-            try {
-                timer.awaitTermination(33, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return super.closeVideoCapture();
     }
 
     @Override

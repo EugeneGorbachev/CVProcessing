@@ -49,7 +49,6 @@ public class IRByColorController implements Initializable {
             rangeColorEndPane.setContent(fxmlLoader.load());
             ((HSBColorPickerController) fxmlLoader.getController()).bindColorProperty(getInstance().colorRangeEndPropertyProperty());
         } catch (IOException e) {
-            e.printStackTrace();
             log.error(e);
         }
     }

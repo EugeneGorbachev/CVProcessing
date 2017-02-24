@@ -1,5 +1,6 @@
 package ru.vsu.cvprocessing.recognition;
 
+import org.apache.log4j.Logger;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -7,26 +8,30 @@ import ru.vsu.cvprocessing.observer.Observable;
 import org.opencv.videoio.VideoCapture;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class ImageRecognition implements Observable {
-    ImageRecognitionMethod imageRecognitionMethod;
-    VideoCapture videoCapture;
-    Camera camera;
+    private static final Logger log = Logger.getLogger(ImageRecognition.class);
+
+    protected ImageRecognitionMethod imageRecognitionMethod;
+    protected final VideoCapture videoCapture;
+    protected ScheduledExecutorService timer;
+    protected Camera camera;
 
     //  Tracked object's center coordinate
-    int xCoordinate;
-    int yCoordinate;
-    boolean objectDetected;
-    int prevXCoordinate;
-    int prevYCoordinate;
-    Color markerColor;
+    protected int xCoordinate;
+    protected int yCoordinate;
+    protected boolean objectDetected;
+    protected int prevXCoordinate;
+    protected int prevYCoordinate;
+    protected Color markerColor;
 
     private int coordinateChangeCounter;
     private int refreshPrevCoordinateFrequency;
 
-    public ImageRecognition(Camera camera) {
+    public ImageRecognition() {
         videoCapture = new VideoCapture();
-        this.camera = camera;
 
         coordinateChangeCounter = 0;
         refreshPrevCoordinateFrequency = 5;
@@ -40,6 +45,14 @@ public abstract class ImageRecognition implements Observable {
     public boolean closeVideoCapture() {
         if (videoCapture.isOpened()) {
             videoCapture.release();
+        }
+        if (timer != null && !timer.isShutdown()) {
+            timer.shutdown();
+            try {
+                timer.awaitTermination(33, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
         }
         return videoCapture.isOpened();
     }
@@ -62,27 +75,30 @@ public abstract class ImageRecognition implements Observable {
 
     public void setRefreshPrevCoordinateFrequency(int refreshPrevCoordinateFrequency) {
         if (refreshPrevCoordinateFrequency <= 0) {
-            System.err.println("Wrong refreshPrevCoordinateFrequency value");
+            log.error(String.format("Wrong refresh previous coordinate frequency value (%s)", refreshPrevCoordinateFrequency));
         } else {
             this.refreshPrevCoordinateFrequency = refreshPrevCoordinateFrequency;
         }
     }
 
-    /* Getters and setters */
+    /* Getters */
     public ImageRecognitionMethod getImageRecognitionMethod() {
         return imageRecognitionMethod;
     }
+    /* Getters */
 
-    public void setImageRecognitionMethod(ImageRecognitionMethod imageRecognitionMethod) {
-        this.imageRecognitionMethod = imageRecognitionMethod;
+    /* Getters and setters */
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    protected void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
     public boolean isObjectDetected() {
         return objectDetected;
-    }
-
-    public void setObjectDetected(boolean objectDetected) {
-        this.objectDetected = objectDetected;
     }
 
     /* Getters for tracked object's center coordinate */
