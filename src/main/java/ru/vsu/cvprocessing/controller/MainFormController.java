@@ -110,7 +110,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
     }
 
     @FXML
@@ -184,8 +184,9 @@ public class MainFormController implements Initializable {
         }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
 
-        recognitionSettingPane.setContent(FXMLLoader.load(getClass()
-                .getResource(SettingsHolder.FXML_FILE_PREF + "irbycascade.fxml")));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(SettingsHolder.FXML_FILE_PREF + "irbycascade.fxml"));
+        fxmlLoader.setControllerFactory(Launcher.springContext::getBean);
+        recognitionSettingPane.setContent(fxmlLoader.load());
 
         getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
             put("viewCamera", cameraImageView);
