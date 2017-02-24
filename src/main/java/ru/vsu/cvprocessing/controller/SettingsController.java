@@ -82,9 +82,9 @@ public class SettingsController implements Initializable {
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
+                new SendingDataEvent(true, false, getInstance().isJoystickControl(), (int) horizontalAngleSlider.getValue())));
         verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, true, (int) verticalAngleSlider.getValue())
+                new SendingDataEvent(true, true, getInstance().isJoystickControl(), (int) verticalAngleSlider.getValue())
         )));
     }
 

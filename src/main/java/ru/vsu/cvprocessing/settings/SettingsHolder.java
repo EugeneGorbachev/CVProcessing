@@ -59,6 +59,7 @@ public class SettingsHolder {
 
     /* Other */
     private BooleanProperty showSelectedPixelColor;
+    private BooleanProperty joystickControl;
     /* Other */
 
     private SettingsHolder(Camera camera, Color markerColor, CameraHolder cameraHolder, ImageRecognition imageRecognition,
@@ -71,6 +72,7 @@ public class SettingsHolder {
         this.colorRangeEndProperty = new ColorProperty(colorRangeEnd, "Image recognition color range end");
         this.haarCascadeConfigFilename = haarCascadeConfigFilename;
         this.showSelectedPixelColor = new SimpleBooleanProperty(true);
+        this.joystickControl = new SimpleBooleanProperty(false);
     }
 
     /* Property Getters */
@@ -104,6 +106,14 @@ public class SettingsHolder {
 
     public BooleanProperty showSelectedPixelColorProperty() {
         return showSelectedPixelColor;
+    }
+
+    public boolean isJoystickControl() {
+        return joystickControl.get();
+    }
+
+    public BooleanProperty joystickControlProperty() {
+        return joystickControl;
     }
     /* Property Getters */
 

@@ -53,9 +53,11 @@ public class MainFormController implements Initializable {
     @FXML
     private ImageView cameraImageView;
     @FXML
+    private Label selectedPixelColorLabel;
+    @FXML
     private CheckBox showPixelColorCheckBox;
     @FXML
-    private Label selectedPixelColorLabel;
+    private CheckBox joystickControlCheckBox;
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
@@ -65,8 +67,11 @@ public class MainFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        showPixelColorCheckBox.selectedProperty().bindBidirectional(getInstance().showSelectedPixelColorProperty());
         selectedPixelColorLabel.visibleProperty().bind(getInstance().showSelectedPixelColorProperty());
+        showPixelColorCheckBox.selectedProperty().bindBidirectional(getInstance().showSelectedPixelColorProperty());
+
+        joystickControlCheckBox.selectedProperty().bindBidirectional(getInstance().joystickControlProperty());
+
         cameraImageView.setOnMouseMoved(event -> {
             if (!fixShownSelectedPixelColor) {
                 Color pixelColor = cameraImageView.getImage().getPixelReader()
