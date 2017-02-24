@@ -81,8 +81,13 @@ public class SettingsController implements Initializable {
         );
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
+        horizontalAngleSlider.setMin(getInstance().getCameraHolder().getHorizontalAngleMinValue());
+        horizontalAngleSlider.setMax(getInstance().getCameraHolder().getHorizontalAngleMaxValue());
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
                 new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
+
+        verticalAngleSlider.setMin(getInstance().getCameraHolder().getVerticalAngleMinValue());
+        verticalAngleSlider.setMax(getInstance().getCameraHolder().getVerticalAngleMaxValue());
         verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
                 new SendingDataEvent(true, true, (int) verticalAngleSlider.getValue())
         )));
