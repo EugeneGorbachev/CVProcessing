@@ -12,7 +12,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.util.StringConverter;
 import org.apache.log4j.Logger;
 
 import java.net.URL;
@@ -40,7 +39,7 @@ public class HSBColorPickerController implements Initializable {
     @FXML
     private TextField brightnessTextField;
 
-    private Property<Color> colorProperty = new SimpleObjectProperty<>(Color.hsb(0d, 0d, 0d));
+    private Property<Color> colorProperty = new SimpleObjectProperty<>();
     private DoubleProperty hue = new SimpleDoubleProperty();
     private DoubleProperty saturation = new SimpleDoubleProperty();
     private DoubleProperty brightness = new SimpleDoubleProperty();
@@ -59,30 +58,22 @@ public class HSBColorPickerController implements Initializable {
         /* Bind currentColorPane's background to colorProperty */
 
         /* Bind double properties to Sliders and TextFields*/
-        StringConverter<Number> converter = new StringConverter<Number>() {
-            @Override
-            public String toString(Number object) {
-                return Integer.toString(object.intValue());
-            }
-
-            @Override
-            public Number fromString(String string) {
-                Double doubleValue = 0d;
-                try {
-                     doubleValue = Double.parseDouble(string);
-                } catch (NumberFormatException e) {
-                    log.error(e);
-                }
-                return doubleValue;
-            }
-        };
-
-        hue.bindBidirectional(hueSlider.valueProperty());
-        Bindings.bindBidirectional(hueTextField.textProperty(), hue, converter);
-        saturation.bindBidirectional(saturationSlider.valueProperty());
-        Bindings.bindBidirectional(saturationTextField.textProperty(), saturation, converter);
-        brightness.bindBidirectional(brightnessSlider.valueProperty());
-        Bindings.bindBidirectional(brightnessTextField.textProperty(), brightness, converter);
+        ValidationStringConverter hueConverter = new ValidationStringConverter(val ->
+                val.doubleValue() >= hueSlider.getMin() && val.doubleValue() <= hueSlider.getMax(),
+                "hue slider", false);
+        ValidationStringConverter saturationConverter = new ValidationStringConverter(val ->
+                val.doubleValue() >= saturationSlider.getMin() && val.doubleValue()<= saturationSlider.getMax(),
+                "hue slider", false);
+        try {
+            hue.bindBidirectional(hueSlider.valueProperty());
+            Bindings.bindBidirectional(hueTextField.textProperty(), hue, hueConverter);
+            saturation.bindBidirectional(saturationSlider.valueProperty());
+            Bindings.bindBidirectional(saturationTextField.textProperty(), saturation, saturationConverter);
+            brightness.bindBidirectional(brightnessSlider.valueProperty());
+            Bindings.bindBidirectional(brightnessTextField.textProperty(), brightness, saturationConverter);
+        } catch (Exception e) {
+            log.error(e);
+        }
         /* Bind double properties to Sliders and TextFields*/
 
         /* Bind newColorPane's background to double properties */
@@ -136,5 +127,4 @@ public class HSBColorPickerController implements Initializable {
     private double convertValue(double convertibleValue) {
         return convertibleValue / 100d;
     }
-
 }

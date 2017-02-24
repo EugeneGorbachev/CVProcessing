@@ -1,6 +1,11 @@
 package ru.vsu.cvprocessing.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +34,12 @@ public class SettingsController implements Initializable {
     private TextField webcameraIndexTextField;
     @FXML
     private Button saveWebcameraIndexButton;
+
+    @FXML
+    private TextField refreshCoordinatesFreqTextField;
+    @FXML
+    private Slider refreshCoordinatesFreqSlider;
+
     @FXML
     private ChoiceBox irMethodChoiceBox;
     @FXML
@@ -36,10 +47,17 @@ public class SettingsController implements Initializable {
 
     @FXML
     private ChoiceBox comPortChoiceBox;
+
+    @FXML
+    private TextField horizontalAngleTextField;
     @FXML
     private Slider horizontalAngleSlider;
+
+    @FXML
+    private TextField verticalAngleTextField;
     @FXML
     private Slider verticalAngleSlider;
+
     @FXML
     private Button establishConnectionButton;
     @FXML
@@ -50,9 +68,19 @@ public class SettingsController implements Initializable {
     @Autowired
     private SendingDataPublisher sendingDataPublisher;
 
+    private IntegerProperty refreshCoordinatesFreq = new SimpleIntegerProperty(5);
+    private DoubleProperty horizontalAngle = new SimpleDoubleProperty(0);
+    private DoubleProperty verticalAngle = new SimpleDoubleProperty(0);
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         saveWebcameraIndexButton.setDisable(true);
+        establishConnectionButton.setDisable(true);
+        closeConnectionButton.setDisable(true);
+        horizontalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
+        horizontalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
+        verticalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
+        verticalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
 
         webcameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebcamIndex()));
         webcameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
@@ -63,6 +91,20 @@ public class SettingsController implements Initializable {
                 saveWebcameraIndexButton.setDisable(true);
             }
         }));
+
+        refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
+        try {
+            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
+                    new ValidationStringConverter((val) ->
+                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
+                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
+                            "Refresh previous coordinates frequency", true
+                    ));
+        } catch (Exception e) {
+            log.error(e);
+        }
+        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
+                getInstance().getImageRecognition().setRefreshPrevCoordinateFrequency(newValue.intValue())));
 
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
         irMethodChoiceBox.setValue(getInstance().getImageRecognition().getImageRecognitionMethod());
@@ -83,11 +125,33 @@ public class SettingsController implements Initializable {
 
         horizontalAngleSlider.setMin(getInstance().getCameraHolder().getHorizontalAngleMinValue());
         horizontalAngleSlider.setMax(getInstance().getCameraHolder().getHorizontalAngleMaxValue());
+        try {
+            horizontalAngle.bindBidirectional(horizontalAngleSlider.valueProperty());
+            Bindings.bindBidirectional(horizontalAngleTextField.textProperty(), horizontalAngle,
+                    new ValidationStringConverter(val ->
+                            val.doubleValue() >= horizontalAngleSlider.getMin() &&
+                                    val.doubleValue() <= horizontalAngleSlider.getMax(),
+                            "Horizontal angle", false
+                    ));
+        } catch (Exception e) {
+            log.error(e);
+        }
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
                 new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
 
         verticalAngleSlider.setMin(getInstance().getCameraHolder().getVerticalAngleMinValue());
         verticalAngleSlider.setMax(getInstance().getCameraHolder().getVerticalAngleMaxValue());
+        try {
+            verticalAngle.bindBidirectional(verticalAngleSlider.valueProperty());
+            Bindings.bindBidirectional(verticalAngleTextField.textProperty(), verticalAngle,
+                    new ValidationStringConverter(val ->
+                            val.doubleValue() >= verticalAngleSlider.getMin() &&
+                                    val.doubleValue() <= verticalAngleSlider.getMax(),
+                            "Horizontal angle", false
+                    ));
+        } catch (Exception e) {
+            log.error(e);
+        }
         verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
                 new SendingDataEvent(true, true, (int) verticalAngleSlider.getValue())
         )));
@@ -117,8 +181,6 @@ public class SettingsController implements Initializable {
     private void handleEstablishConnection() {
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(false);
-        horizontalAngleSlider.setDisable(false);
-        verticalAngleSlider.setDisable(false);
 
         try {
             getInstance().getCameraHolder().setUpConnection(new HashMap<String, Object>() {{
@@ -127,8 +189,7 @@ public class SettingsController implements Initializable {
             getInstance().getCameraHolder().setHorizontalAngle(getInstance().getCameraHolder().getHorizontalAngleMaxValue() / 2);
         } catch (Exception e) {
             log.error(e);
-            horizontalAngleSlider.setDisable(true);
-            verticalAngleSlider.setDisable(true);
+            closeConnectionButton.setDisable(true);
         }
     }
 
@@ -136,8 +197,6 @@ public class SettingsController implements Initializable {
     private void handleCloseConnection() {
         establishConnectionButton.setDisable(false);
         closeConnectionButton.setDisable(true);
-        horizontalAngleSlider.setDisable(true);
-        verticalAngleSlider.setDisable(true);
 
         if (getInstance().getCameraHolder().closeConnection()) {
             log.info("Connection with COM port was closed");
