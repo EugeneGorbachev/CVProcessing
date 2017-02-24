@@ -32,11 +32,6 @@ public class RecognizeByCascade extends ImageRecognition {
         imageRecognitionMethod = BYCASCADE;
         absoluteFaceSize = 0;
         cascadeClassifier = new CascadeClassifier(filePath);
-//        loadCascade(filePath);
-    }
-
-    private void loadCascade(String filePath) {
-        cascadeClassifier.load(filePath);
     }
 
     @Override
