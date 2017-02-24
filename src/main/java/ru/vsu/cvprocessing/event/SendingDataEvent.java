@@ -19,6 +19,7 @@ public class SendingDataEvent {
         if (vertical) {
             preferences = preferences | (1 << 1);
         }
+        preferences = preferences | (1 << 2);
         return preferences;
     }
     public boolean isDetected() {
