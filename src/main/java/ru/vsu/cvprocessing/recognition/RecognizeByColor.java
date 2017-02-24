@@ -164,6 +164,7 @@ public class RecognizeByColor extends ImageRecognition {
         return frame;
     }
 
+    // TODO replace with events
     @Override
     public void addObserver(Observer o) {
         observers.add(o);

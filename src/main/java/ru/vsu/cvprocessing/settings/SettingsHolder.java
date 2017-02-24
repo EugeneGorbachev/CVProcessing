@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 
 public class SettingsHolder {
     public final static String FXML_FILE_PREF = "../../../../fxml/";
+    public final static String CASCADE_FILE_PREF = "../../../../haarcascades/";
 
     /* Singleton */
     private static SettingsHolder instance = null;

@@ -19,7 +19,7 @@ public class ServoMotorControl extends CameraHolder {
     private OutputStream outputStream;
 
     public ServoMotorControl(Camera camera) {
-        super(0, 180, 0, 0);
+        super(0, 180, 0, 180);
         this.camera = camera;
     }
 
@@ -28,7 +28,7 @@ public class ServoMotorControl extends CameraHolder {
         connected = false;
 
         String portName = (String) parameters.get("portName");
-        checkNotNull(portName, "There is no 'portName' value in parameters.");
+        checkNotNull(portName, "Port name required");
         ArrayList<String> portNames = new ArrayList<>();
         for (SerialPort serialPort : SerialPort.getCommPorts()) {
             portNames.add(serialPort.getSystemPortName());
@@ -64,7 +64,7 @@ public class ServoMotorControl extends CameraHolder {
     }
 
     @Override
-    public void update(boolean isDetected, int x, int y) {
+    public void update(boolean isDetected, int x, int y) {// TODO replace with event
         byte sendingValue = 0;
         try {
             if (getHorizontalAngleMaxValue() > 0) {// TODO send anyway

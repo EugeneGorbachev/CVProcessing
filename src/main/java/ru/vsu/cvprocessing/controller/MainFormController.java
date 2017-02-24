@@ -1,10 +1,14 @@
 package ru.vsu.cvprocessing.controller;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,19 +69,26 @@ public class MainFormController implements Initializable {
         selectedPixelColorLabel.visibleProperty().bind(getInstance().showSelectedPixelColorProperty());
         cameraImageView.setOnMouseMoved(event -> {
             if (!fixShownSelectedPixelColor) {
-                Color pixelColor = cameraImageView.getImage().getPixelReader().getColor(((int) event.getX()), ((int) event.getY()));
+                Color pixelColor = cameraImageView.getImage().getPixelReader()
+                        .getColor((int) (event.getX()), (int) (event.getY()));
                 selectedPixelColorLabel.setText(
                         String.format("Pixel color: H:%1.1f S:%1.1f B:%1.1f",
                                 pixelColor.getHue(),
                                 pixelColor.getSaturation() * 100,
                                 pixelColor.getBrightness() * 100
                         ));
+                selectedPixelColorLabel.setBackground(new Background(new BackgroundFill(
+                        pixelColor,
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY
+                )));
             }
         });
 
         Platform.runLater(() -> {
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(SettingsHolder.FXML_FILE_PREF + "settings.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass()
+                        .getResource(SettingsHolder.FXML_FILE_PREF + "settings.fxml"));
                 fxmlLoader.setControllerFactory(Launcher.springContext::getBean);
                 Parent root = fxmlLoader.load();
                 settingsStage = new Stage();
@@ -124,7 +135,8 @@ public class MainFormController implements Initializable {
         getInstance().setImageRecognition(new FakeImageRecognition(getInstance().getCamera()));
         log.info(String.format("Video capture for image recognition method %s opened", FAKE));
 
-        recognitionSettingPane.setContent(FXMLLoader.load(getClass().getResource("../../../../fxml/irfake.fxml")));
+        recognitionSettingPane.setContent(FXMLLoader.load(getClass()
+                .getResource(SettingsHolder.FXML_FILE_PREF + "irfake.fxml")));
 
         getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
             put("viewCamera", cameraImageView);
@@ -137,7 +149,8 @@ public class MainFormController implements Initializable {
         getInstance().setImageRecognition(new RecognizeByColor(getInstance().getCamera()));
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../../../../fxml/irbycolor.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass()
+                .getResource(SettingsHolder.FXML_FILE_PREF + "irbycolor.fxml"));
         fxmlLoader.setControllerFactory(getInstance().getApplicationContext()::getBean);
         recognitionSettingPane.setContent(fxmlLoader.load());
 
@@ -154,16 +167,17 @@ public class MainFormController implements Initializable {
         log.info("Video capture for image recognition closed");
 
         if (getInstance().getHaarCascadeConfigFilename() == null) {
-            File haarCascadesDirectory = new File(getClass().getResource("../../../../haarcascades").getPath());
+            File haarCascadesDirectory = new File(getClass().getResource(SettingsHolder.CASCADE_FILE_PREF).getPath());
             getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[0].getName());
         }
         getInstance().setImageRecognition(new RecognizeByCascade(
                 getInstance().getCamera(),
-                getClass().getResource("../../../../haarcascades/" + getInstance().getHaarCascadeConfigFilename()).getPath())
+                getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath())
         );
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
 
-        recognitionSettingPane.setContent(FXMLLoader.load(getClass().getResource("../../../../fxml/irbycascade.fxml")));
+        recognitionSettingPane.setContent(FXMLLoader.load(getClass()
+                .getResource(SettingsHolder.FXML_FILE_PREF + "irbycascade.fxml")));
 
         getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
             put("viewCamera", cameraImageView);

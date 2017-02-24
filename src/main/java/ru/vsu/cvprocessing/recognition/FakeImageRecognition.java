@@ -25,17 +25,14 @@ public class FakeImageRecognition extends ImageRecognition {
 
     @Override
     public void addObserver(Observer o) {
-
     }
 
     @Override
     public void removeObserver(Observer o) {
-
     }
 
     @Override
     public void notifyObservers() {
-
     }
 
     @Override

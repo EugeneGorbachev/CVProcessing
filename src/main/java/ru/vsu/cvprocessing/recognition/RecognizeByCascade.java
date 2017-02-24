@@ -31,11 +31,11 @@ public class RecognizeByCascade extends ImageRecognition {
         super(camera);
         imageRecognitionMethod = BYCASCADE;
         absoluteFaceSize = 0;
-        cascadeClassifier = new CascadeClassifier();
-        loadCascade(filePath);
+        cascadeClassifier = new CascadeClassifier(filePath);
+//        loadCascade(filePath);
     }
 
-    public void loadCascade(String filePath) {
+    private void loadCascade(String filePath) {
         cascadeClassifier.load(filePath);
     }
 
@@ -133,6 +133,7 @@ public class RecognizeByCascade extends ImageRecognition {
         return frame;
     }
 
+    // TODO replace with events
     @Override
     public void addObserver(Observer o) {
         observers.add(o);

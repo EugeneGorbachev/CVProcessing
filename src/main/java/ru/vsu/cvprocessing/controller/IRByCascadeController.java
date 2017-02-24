@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import org.apache.log4j.Logger;
+import ru.vsu.cvprocessing.settings.SettingsHolder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class IRByCascadeController implements Initializable {
-    Logger log = Logger.getLogger(IRByCascadeController.class);
+    private static final Logger log = Logger.getLogger(IRByCascadeController.class);
 
     @FXML
     private ChoiceBox haarCascadeChooseBox;
@@ -31,7 +32,7 @@ public class IRByCascadeController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         List<String> haarCascades = new ArrayList<>();
         File haarCascadesDirectory = new File(
-                getClass().getResource("../../../../haarcascades").getPath());
+                getClass().getResource(SettingsHolder.CASCADE_FILE_PREF).getPath());
 
         for (File file : checkNotNull(haarCascadesDirectory.listFiles())) {
             haarCascades.add(file.getName());
