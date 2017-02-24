@@ -60,32 +60,34 @@ void loop() {
       
       if (isDetected) {
         digitalWrite(LED_BUILTIN,HIGH);
-      } 
-      else {
-        digitalWrite(LED_BUILTIN,LOW);
-      }
-      
-      lcd.setCursor(0,1);
-      lcd.print("            ");
-      lcd.setCursor(0,1);
-      if (isDetected){
+
+        lcd.setCursor(0,1);
+        lcd.print("            ");
+        lcd.setCursor(0,1);
+
         lcd.print("I see you");
           // включить синию лампу
         digitalWrite(ledBlue,HIGH);
         digitalWrite(ledRed,LOW);
+
+        if (isVertical) {
+          verticalServo.write(sendedValue);
+        } else {
+          i = map(sendedValue,0,180,0,16);
+          horizontalServo.write(sendedValue);
+        }
       } 
       else {
+        digitalWrite(LED_BUILTIN,LOW);
+
+        lcd.setCursor(0,1);
+        lcd.print("            ");
+        lcd.setCursor(0,1);
+
         lcd.print("I feel you");
         // включить красную лампу
         digitalWrite(ledRed,HIGH);
         digitalWrite(ledBlue,LOW);
-      }
-      
-      if (isVertical) {
-        verticalServo.write(sendedValue);
-      } else {
-        i = map(sendedValue,0,180,0,16);
-        horizontalServo.write(sendedValue);
       }
       
       // from "i" depend left or right
