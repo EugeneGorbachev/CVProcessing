@@ -7,23 +7,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class ServoMotorControl extends CameraHolder {
     private static final Logger log = Logger.getLogger(ServoMotorControl.class);
 
-    private Camera camera;
-
     private SerialPort commPort;
     private OutputStream outputStream;
 
-    public ServoMotorControl(Camera camera) {
-        super(0, 180, 80, 140);
-        this.camera = camera;
+    public ServoMotorControl() {
+        super(0, 180, 80, 130);
     }
 
     @Override
@@ -57,43 +51,30 @@ public class ServoMotorControl extends CameraHolder {
         return !isConnected();
     }
 
-    public void moveHorizontal(boolean detected, int value) {
-        int preferences = convertToInt(detected, false);
+    public void moveServo(boolean detected, boolean vertical, int value) {
+        int preferences = convertToInt(detected, vertical);
         sendInt(preferences);
-        log.info(String.format("Sent preferences detected = %s, horizontal to Arduino as %8s",
+        log.info(String.format("Preferences sent detected = %s, %s to COM port as %8s",
                 Boolean.toString(detected),
+                vertical ? "vertical" : "horizontal",
                 Integer.toBinaryString((preferences & 0xFF) + 0x100).substring(1)
         ));
 
         try {
-            setHorizontalAngle(value);
+            if (vertical) {
+                setVerticalAngle(value);
+            } else {
+                setHorizontalAngle(value);
+            }
         } catch (Exception e) {
             log.error(e);
         }
-        sendInt(getHorizontalAngle());
-        log.info(String.format("Sent %d horizontal angle to Arduino as %8s",
-                getHorizontalAngle(),
-                Integer.toBinaryString((getHorizontalAngle() & 0xFF) + 0x100).substring(1)
-        ));
-    }
 
-    public void moveVertical(boolean detected, int value) {
-        int preferences = convertToInt(detected, true);
-        sendInt(preferences);
-        log.info(String.format("Sent preferences detected = %s, vertical to Arduino as %8s",
-                Boolean.toString(detected),
-                Integer.toBinaryString((preferences & 0xFF) + 0x100).substring(1)
-        ));
-
-        try {
-            setVerticalAngle(value);
-        } catch (Exception e) {
-            log.error(e);
-        }
-        sendInt(getVerticalAngle());
-        log.info(String.format("Sent %d vertical angle to Arduino as %8s",
-                getVerticalAngle(),
-                Integer.toBinaryString((getVerticalAngle() & 0xFF) + 0x100).substring(1)
+        sendInt(vertical ? getVerticalAngle() : getHorizontalAngle());
+        log.info(String.format("%s angle %d sent to COM port as %8s",
+                vertical ? "Vertical" : "Horizontal",
+                value,
+                Integer.toBinaryString((value & 0xFF) + 0x100).substring(1)
         ));
     }
 
@@ -116,18 +97,4 @@ public class ServoMotorControl extends CameraHolder {
             log.error(e);
         }
     }
-
-    /* Getters and setters */
-    public Camera getCamera() {
-        return camera;
-    }
-    /* Getters and setters */
-
-    /* Static methods */
-    public static byte mapIntToByteValue(int value) {
-        if (value == 0)
-            return 0;
-        return (byte) Math.round((value * 127d) / 180d);
-    }
-    /* Static methods */
 }

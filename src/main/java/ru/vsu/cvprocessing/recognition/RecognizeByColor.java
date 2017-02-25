@@ -4,8 +4,6 @@ import javafx.scene.paint.Color;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ru.vsu.cvprocessing.event.SendingDataEvent;
-import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -20,11 +18,8 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
-import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
-    private SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
-
     public RecognizeByColor() {
         super();
         imageRecognitionMethod = BYCOLOR;
@@ -46,6 +41,8 @@ public class RecognizeByColor extends ImageRecognition {
 
         videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
+            videoCapture.set(3, camera.getWidth());
+            videoCapture.set(4, camera.getHeight());
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
@@ -58,7 +55,6 @@ public class RecognizeByColor extends ImageRecognition {
             };
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
-//            setRefreshPrevCoordinateFrequency(5);
         } else {
             throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
@@ -138,16 +134,14 @@ public class RecognizeByColor extends ImageRecognition {
                 validPointCount++;
             }
         }
-        savePrevCoordinate();
 
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
 
-        publishCoordinates();
-//        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false,
-//                (int) Math.round((double) -(xCoordinate - prevXCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
-//        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true,
-//                (int) Math.round((double) -(yCoordinate - prevYCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
+        if (coordinateChangeCounter == 0) {
+            publishCoordinates();
+        }
+        coordinateChangeCounter = ++coordinateChangeCounter % refreshCoordinateFrequency;
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }

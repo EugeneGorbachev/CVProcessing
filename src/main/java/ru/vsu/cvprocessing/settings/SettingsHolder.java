@@ -22,14 +22,14 @@ public class SettingsHolder {
 
     public static SettingsHolder getInstance() {
         if (instance == null) {
-            Camera camera = new Camera(0, 70, 35, 340d, 495d);
+            Camera cam = new Camera(0, 40, 20, 480, 640);
 
             instance = new SettingsHolder(
-                    camera,
+                    cam,
                     new Color(1, 0, 0, 1),
-                    new ServoMotorControl(camera),
+                    new ServoMotorControl(),
                     new FakeImageRecognition() {{
-                        setCamera(camera);
+                        setCamera(cam);
                     }},
                     new Color(1, 0, 0, 1),
                     new Color(0, 0, 1, 1),

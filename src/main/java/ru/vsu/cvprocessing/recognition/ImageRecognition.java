@@ -26,37 +26,35 @@ public abstract class ImageRecognition {
     protected int xCoordinate;
     protected int yCoordinate;
     protected boolean objectDetected;
-    protected int prevXCoordinate;
-    protected int prevYCoordinate;
     protected Color markerColor;
 
-    private int coordinateChangeCounter;
-    private int refreshPrevCoordinateFrequency;
+    protected int coordinateChangeCounter;
+    protected int refreshCoordinateFrequency;
 
     public ImageRecognition() {
         videoCapture = new VideoCapture();
 
         coordinateChangeCounter = 0;
-        refreshPrevCoordinateFrequency = 30;
-        prevXCoordinate = xCoordinate = 0;
-        prevYCoordinate = yCoordinate = 0;
-        markerColor = new Color(1,0,0,1);
+        refreshCoordinateFrequency = 1;
+        xCoordinate = 0;
+        yCoordinate = 0;
+        markerColor = new Color(1, 0, 0, 1);
     }
 
     protected void publishCoordinates() {
         SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
 
-        int horizontalShift = (int) Math.round((prevXCoordinate - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth());
-        if (horizontalShift > 10) {
-            int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
-            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
-        }
+        int horizontalShift = (int) Math.round(
+                (camera.getWidth() / 2 - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth()
+        );
+        int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
 
-        int verticalShift = (int) Math.round((yCoordinate - prevYCoordinate) * camera.getVerticalFieldOfView() / camera.getHeight());
-        if (verticalShift > 10) {
-            int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
-            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
-        }
+        int verticalShift = (int) Math.round(
+                (yCoordinate - camera.getHeight() / 2) * camera.getVerticalFieldOfView() / camera.getHeight()
+        );
+        int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
     }
 
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;
@@ -78,25 +76,24 @@ public abstract class ImageRecognition {
 
     abstract Image grabFrame(Map<String, Object> parameters);
 
-    boolean savePrevCoordinate() {
-        if (++coordinateChangeCounter >= getRefreshPrevCoordinateFrequency()) {
-            prevXCoordinate = xCoordinate;
-            prevYCoordinate = yCoordinate;
-            coordinateChangeCounter %= getRefreshPrevCoordinateFrequency();
-            return true;
-        }
-        return false;
+    public int getCoordinateChangeCounter() {
+        return coordinateChangeCounter;
     }
 
-    public int getRefreshPrevCoordinateFrequency() {
-        return refreshPrevCoordinateFrequency;
+    public void setCoordinateChangeCounter(int coordinateChangeCounter) {
+        this.coordinateChangeCounter = coordinateChangeCounter;
     }
 
-    public void setRefreshPrevCoordinateFrequency(int refreshPrevCoordinateFrequency) {
-        if (refreshPrevCoordinateFrequency <= 0) {
-            log.error(String.format("Wrong refresh previous coordinate frequency value (%s)", refreshPrevCoordinateFrequency));
+    public int getRefreshCoordinateFrequency() {
+        return refreshCoordinateFrequency;
+    }
+
+    public void setRefreshCoordinateFrequency(int refreshCoordinateFrequency) {
+        if (refreshCoordinateFrequency <= 0) {
+            log.error(String.format("Wrong refresh coordinate frequency value (%s)", refreshCoordinateFrequency));
         } else {
-            this.refreshPrevCoordinateFrequency = refreshPrevCoordinateFrequency;
+            this.refreshCoordinateFrequency = refreshCoordinateFrequency;
+            log.info("Refresh coordinate frequency set to " + refreshCoordinateFrequency);
         }
     }
 

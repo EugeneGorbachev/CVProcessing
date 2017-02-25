@@ -27,6 +27,9 @@ public class FakeImageRecognition extends ImageRecognition {
 
         videoCapture.open(camera.getWebcamIndex());
 
+        videoCapture.set(3, camera.getWidth());
+        videoCapture.set(4, camera.getHeight());
+
         Runnable frameGrabber = () -> viewCamera.setImage(grabFrame(new HashMap<>()));
         timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);

@@ -92,19 +92,19 @@ public class SettingsController implements Initializable {
             }
         }));
 
-//        refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
-//        try {
-//            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
-//                    new ValidationStringConverter((val) ->
-//                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
-//                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
-//                            "Refresh previous coordinates frequency", true
-//                    ));
-//        } catch (Exception e) {
-//            log.error(e);
-//        }
-//        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
-//                getInstance().getImageRecognition().setRefreshPrevCoordinateFrequency(newValue.intValue())));
+        refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
+        try {
+            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
+                    new ValidationStringConverter((val) ->
+                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
+                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
+                            "Refresh previous coordinates frequency", true
+                    ));
+        } catch (Exception e) {
+            log.error(e);
+        }
+        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->// todo here
+                getInstance().getImageRecognition().setRefreshCoordinateFrequency(newValue.intValue())));
 
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
         irMethodChoiceBox.setValue(getInstance().getImageRecognition().getImageRecognitionMethod());
@@ -125,6 +125,8 @@ public class SettingsController implements Initializable {
 
         horizontalAngleSlider.setMin(getInstance().getCameraHolder().getHorizontalAngleMinValue());
         horizontalAngleSlider.setMax(getInstance().getCameraHolder().getHorizontalAngleMaxValue());
+        horizontalAngleSlider.setValue((int) (horizontalAngleSlider.getMin() +
+                (horizontalAngleSlider.getMax() - horizontalAngleSlider.getMin()) / 2));
         try {
             horizontalAngle.bindBidirectional(horizontalAngleSlider.valueProperty());
             Bindings.bindBidirectional(horizontalAngleTextField.textProperty(), horizontalAngle,
@@ -141,6 +143,8 @@ public class SettingsController implements Initializable {
 
         verticalAngleSlider.setMin(getInstance().getCameraHolder().getVerticalAngleMinValue());
         verticalAngleSlider.setMax(getInstance().getCameraHolder().getVerticalAngleMaxValue());
+        verticalAngleSlider.setValue((int) (verticalAngleSlider.getMin() +
+                (verticalAngleSlider.getMax() - verticalAngleSlider.getMin()) / 2));
         try {
             verticalAngle.bindBidirectional(verticalAngleSlider.valueProperty());
             Bindings.bindBidirectional(verticalAngleTextField.textProperty(), verticalAngle,
@@ -208,11 +212,7 @@ public class SettingsController implements Initializable {
         ServoMotorControl servoMotorControl = (ServoMotorControl) getInstance().getCameraHolder();
         if (getInstance().getSendDetectionData()) {
             if (servoMotorControl.isConnected()) {
-                if (event.isVertical()) {
-                    servoMotorControl.moveVertical(event.isDetected(), event.getValue());
-                } else {
-                    servoMotorControl.moveHorizontal(event.isDetected(), event.getValue());
-                }
+                servoMotorControl.moveServo(event.isDetected(), event.isVertical(), event.getValue());
             } else {
                 log.error("Cannot send data. COM port connection not established.");
             }

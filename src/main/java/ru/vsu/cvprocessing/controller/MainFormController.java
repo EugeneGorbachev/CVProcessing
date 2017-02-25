@@ -105,7 +105,7 @@ public class MainFormController implements Initializable {
         });
 
         cameraImageView.setPreserveRatio(true);
-        setImageViewDimension(cameraImageView, getInstance().getCamera().getHeight(), getInstance().getCamera().getWidth());
+        setImageViewDimension(cameraImageView, 340d, 495d);
 
         contentSplitPane.getDividers().get(0).positionProperty().addListener(observable -> {
             if (contentGridPane.getHeight() > 0 && contentGridPane.getWidth() > 0) {
@@ -179,7 +179,7 @@ public class MainFormController implements Initializable {
 
         if (getInstance().getHaarCascadeConfigFilename() == null) {
             File haarCascadesDirectory = new File(getClass().getResource(SettingsHolder.CASCADE_FILE_PREF).getPath());
-            getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[0].getName());
+            getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[4].getName());
         }
 
         String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath();

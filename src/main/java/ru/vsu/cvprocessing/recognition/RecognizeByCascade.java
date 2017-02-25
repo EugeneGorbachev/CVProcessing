@@ -2,8 +2,6 @@ package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ru.vsu.cvprocessing.event.SendingDataEvent;
-import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
@@ -18,11 +16,8 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
-import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByCascade extends ImageRecognition {
-    private SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
-
     private int absoluteFaceSize;
     private CascadeClassifier cascadeClassifier;
 
@@ -41,6 +36,8 @@ public class RecognizeByCascade extends ImageRecognition {
 
         videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
+            videoCapture.set(3, camera.getWidth());
+            videoCapture.set(4, camera.getHeight());
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<>());
@@ -48,7 +45,6 @@ public class RecognizeByCascade extends ImageRecognition {
             };
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
-//            setRefreshPrevCoordinateFrequency(5);
         } else {
             throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }
@@ -64,11 +60,10 @@ public class RecognizeByCascade extends ImageRecognition {
         if (!frame.empty()) {
             objectDetected = findFaces(frame);
             image = matToImage(frame);
-            publishCoordinates();
-//            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false,
-//                    (int) Math.round((double) -(xCoordinate - prevXCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
-//            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true,
-//                    (int) Math.round((double) -(yCoordinate - prevYCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
+            if (coordinateChangeCounter == 0) {
+                publishCoordinates();
+            }
+            coordinateChangeCounter = ++coordinateChangeCounter % refreshCoordinateFrequency;
         }
 
         return image;
@@ -98,7 +93,7 @@ public class RecognizeByCascade extends ImageRecognition {
         if (faces.elemSize() == 0) {
             return false;
         }
-        savePrevCoordinate();
+
         Rect firstFace = faces.toList().get(0);
         xCoordinate = (int) (firstFace.br().x - (firstFace.br().x - firstFace.tl().x) / 2);
         yCoordinate = (int) (firstFace.br().y - (firstFace.br().y - firstFace.tl().y) / 2);
