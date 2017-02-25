@@ -36,12 +36,15 @@ public abstract class CameraHolder {
         return horizontalAngle;
     }
 
+    //TODO remove duplicate
     public void setHorizontalAngle(int horizontalAngle) throws Exception {
-        if (horizontalAngle < horizontalAngleMinValue || horizontalAngle > horizontalAngleMaxValue) {
-            log.error("Received horizontal angle's value is out of bound");
-        } else {
-            this.horizontalAngle = horizontalAngle;
+        if (horizontalAngle < horizontalAngleMinValue) {
+            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) less than min", horizontalAngle));
         }
+        if (horizontalAngle > horizontalAngleMaxValue) {
+            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) greater than max", horizontalAngle));
+        }
+        this.horizontalAngle = horizontalAngle;
     }
 
     public int getVerticalAngle() {
@@ -49,11 +52,13 @@ public abstract class CameraHolder {
     }
 
     public void setVerticalAngle(int verticalAngle) throws Exception {
-        if (verticalAngle < verticalAngleMinValue || verticalAngle > verticalAngleMaxValue) {
-            log.error("Received vertical angle's value is out of bound");
-        } else {
-            this.verticalAngle = verticalAngle;
+        if (verticalAngle < verticalAngleMinValue) {
+            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than min", verticalAngle));
         }
+        if (verticalAngle > verticalAngleMaxValue) {
+            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than min", verticalAngle));
+        }
+        this.verticalAngle = verticalAngle;
     }
 
     /* Final fields getters */

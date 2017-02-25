@@ -37,7 +37,7 @@ public abstract class ImageRecognition {
         videoCapture = new VideoCapture();
 
         coordinateChangeCounter = 0;
-        refreshPrevCoordinateFrequency = 15;
+        refreshPrevCoordinateFrequency = 30;
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
         markerColor = new Color(1,0,0,1);
@@ -47,12 +47,16 @@ public abstract class ImageRecognition {
         SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
 
         int horizontalShift = (int) Math.round((prevXCoordinate - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth());
-        int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
+        if (horizontalShift > 10) {
+            int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
+            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
+        }
 
         int verticalShift = (int) Math.round((yCoordinate - prevYCoordinate) * camera.getVerticalFieldOfView() / camera.getHeight());
-        int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
+        if (verticalShift > 10) {
+            int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
+            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
+        }
     }
 
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;

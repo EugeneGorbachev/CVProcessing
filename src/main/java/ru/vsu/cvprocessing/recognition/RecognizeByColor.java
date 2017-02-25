@@ -58,7 +58,7 @@ public class RecognizeByColor extends ImageRecognition {
             };
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
-            setRefreshPrevCoordinateFrequency(5);
+//            setRefreshPrevCoordinateFrequency(5);
         } else {
             throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
         }

@@ -22,7 +22,7 @@ public class ServoMotorControl extends CameraHolder {
     private OutputStream outputStream;
 
     public ServoMotorControl(Camera camera) {
-        super(0, 180, 0, 180);
+        super(0, 180, 80, 140);
         this.camera = camera;
     }
 
@@ -60,7 +60,10 @@ public class ServoMotorControl extends CameraHolder {
     public void moveHorizontal(boolean detected, int value) {
         int preferences = convertToInt(detected, false);
         sendInt(preferences);
-        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(preferences)));
+        log.info(String.format("Sent preferences detected = %s, horizontal to Arduino as %8s",
+                Boolean.toString(detected),
+                Integer.toBinaryString((preferences & 0xFF) + 0x100).substring(1)
+        ));
 
         try {
             setHorizontalAngle(value);
@@ -68,13 +71,19 @@ public class ServoMotorControl extends CameraHolder {
             log.error(e);
         }
         sendInt(getHorizontalAngle());
-        log.info(String.format("Sent %d horizontal angle to Arduino as %s", getHorizontalAngle(), Integer.toBinaryString(getHorizontalAngle())));
+        log.info(String.format("Sent %d horizontal angle to Arduino as %8s",
+                getHorizontalAngle(),
+                Integer.toBinaryString((getHorizontalAngle() & 0xFF) + 0x100).substring(1)
+        ));
     }
 
     public void moveVertical(boolean detected, int value) {
         int preferences = convertToInt(detected, true);
         sendInt(preferences);
-        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(preferences)));
+        log.info(String.format("Sent preferences detected = %s, vertical to Arduino as %8s",
+                Boolean.toString(detected),
+                Integer.toBinaryString((preferences & 0xFF) + 0x100).substring(1)
+        ));
 
         try {
             setVerticalAngle(value);
@@ -82,7 +91,10 @@ public class ServoMotorControl extends CameraHolder {
             log.error(e);
         }
         sendInt(getVerticalAngle());
-        log.info(String.format("Sent %d vertical angle to Arduino as %s", getVerticalAngle(), Integer.toBinaryString(getVerticalAngle())));
+        log.info(String.format("Sent %d vertical angle to Arduino as %8s",
+                getVerticalAngle(),
+                Integer.toBinaryString((getVerticalAngle() & 0xFF) + 0x100).substring(1)
+        ));
     }
 
     private int convertToInt(boolean detected, boolean vertical) {

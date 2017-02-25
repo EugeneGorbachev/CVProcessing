@@ -92,19 +92,19 @@ public class SettingsController implements Initializable {
             }
         }));
 
-        refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
-        try {
-            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
-                    new ValidationStringConverter((val) ->
-                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
-                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
-                            "Refresh previous coordinates frequency", true
-                    ));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
-                getInstance().getImageRecognition().setRefreshPrevCoordinateFrequency(newValue.intValue())));
+//        refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
+//        try {
+//            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
+//                    new ValidationStringConverter((val) ->
+//                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
+//                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
+//                            "Refresh previous coordinates frequency", true
+//                    ));
+//        } catch (Exception e) {
+//            log.error(e);
+//        }
+//        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
+//                getInstance().getImageRecognition().setRefreshPrevCoordinateFrequency(newValue.intValue())));
 
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
         irMethodChoiceBox.setValue(getInstance().getImageRecognition().getImageRecognitionMethod());
