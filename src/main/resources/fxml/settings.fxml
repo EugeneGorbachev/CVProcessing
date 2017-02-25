@@ -90,7 +90,7 @@
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </TextField>
-            <Slider fx:id="refreshCoordinatesFreqSlider" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" value="5.0" GridPane.columnIndex="1">
+            <Slider fx:id="refreshCoordinatesFreqSlider" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" value="15.0" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin>

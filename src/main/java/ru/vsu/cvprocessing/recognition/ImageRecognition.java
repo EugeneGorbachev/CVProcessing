@@ -37,7 +37,7 @@ public abstract class ImageRecognition {
         videoCapture = new VideoCapture();
 
         coordinateChangeCounter = 0;
-        refreshPrevCoordinateFrequency = 5;
+        refreshPrevCoordinateFrequency = 15;
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
         markerColor = new Color(1,0,0,1);
@@ -46,11 +46,11 @@ public abstract class ImageRecognition {
     protected void publishCoordinates() {
         SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
 
-        int horizontalShift = (int) Math.round((prevXCoordinate - xCoordinate) * camera.getFieldOfView() / camera.getWidth());
+        int horizontalShift = (int) Math.round((prevXCoordinate - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth());
         int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
         sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
 
-        int verticalShift = (int) Math.round((prevYCoordinate - yCoordinate) * camera.getFieldOfView() / camera.getWidth());
+        int verticalShift = (int) Math.round((yCoordinate - prevYCoordinate) * camera.getVerticalFieldOfView() / camera.getHeight());
         int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
         sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
     }
