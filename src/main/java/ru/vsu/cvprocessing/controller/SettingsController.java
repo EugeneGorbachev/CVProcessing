@@ -215,7 +215,7 @@ public class SettingsController implements Initializable {
                 servoMotorControl.sendInt(event.getValue());
                 log.info(String.format("Sent %d to Arduino as %s", event.getValue(), Integer.toBinaryString(event.getValue())));
             } else {
-                log.error("Cannot send data. Arduino connection closed.");
+                log.error("Cannot send data. COM port connection not established.");
             }
         }
     }
