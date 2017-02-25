@@ -1,10 +1,8 @@
 package ru.vsu.cvprocessing.holder;
 
-import ru.vsu.cvprocessing.observer.Observer;
-
 import java.util.Map;
 
-public abstract class CameraHolder implements Observer {
+public abstract class CameraHolder {
     private final int horizontalAngleMinValue;
     private final int horizontalAngleMaxValue;
     private final int verticalAngleMinValue;

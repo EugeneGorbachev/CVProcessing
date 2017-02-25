@@ -63,44 +63,6 @@ public class ServoMotorControl extends CameraHolder {
         }
     }
 
-    @Override
-    public void update(boolean isDetected, int x, int y) {// TODO replace with event
-        byte sendingValue = 0;
-        try {
-            if (getHorizontalAngleMaxValue() > 0) {// TODO send anyway
-                if (getHorizontalAngle() != x) {
-                    setHorizontalAngle(getHorizontalAngle() +
-                            (int) Math.round((double) x / (camera.getWidth() / camera.getFieldOfView()))
-                    );
-                    sendingValue = mapIntToByteValue(getHorizontalAngle());
-                    if (isDetected) {
-                        sendingValue = (byte) (sendingValue | (1 << 7));// set unused bit to 1
-                    }
-                }
-                sendInt(sendingValue);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        sendingValue = 0;
-        try {
-            if (getVerticalAngleMaxValue() > 0) {// TODO send anyway
-                if (getVerticalAngle() != y) {
-                    setVerticalAngle(getVerticalAngle() +
-                            (int) Math.round((double) y / (camera.getWidth() / camera.getFieldOfView()))
-                    );
-                    sendingValue = mapIntToByteValue(getVerticalAngle());
-                    if (isDetected) {
-                        sendingValue = (byte) (sendingValue | (1 << 7));// set unused bit to 1
-                    }
-                }
-                sendInt(sendingValue);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /* Getters and setters */
     public Camera getCamera() {
         return camera;

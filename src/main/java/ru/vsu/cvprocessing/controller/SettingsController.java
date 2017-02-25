@@ -206,11 +206,18 @@ public class SettingsController implements Initializable {
 
     @EventListener
     public void handleSendingData(SendingDataEvent event) {
-        ((ServoMotorControl) getInstance().getCameraHolder()).sendInt(event.getPreferences());
-        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(event.getPreferences())));
+        ServoMotorControl servoMotorControl = (ServoMotorControl) getInstance().getCameraHolder();
+        if (getInstance().getSendDetectionData()) {
+            if (servoMotorControl.isConnected()) {
+                servoMotorControl.sendInt(event.getPreferences());
+                log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(event.getPreferences())));
 
-        ((ServoMotorControl) getInstance().getCameraHolder()).sendInt(event.getValue());
-        log.info(String.format("Sent %d to Arduino as %s", event.getValue(), Integer.toBinaryString(event.getValue())));
+                servoMotorControl.sendInt(event.getValue());
+                log.info(String.format("Sent %d to Arduino as %s", event.getValue(), Integer.toBinaryString(event.getValue())));
+            } else {
+                log.error("Cannot send data. Arduino connection closed.");
+            }
+        }
     }
 
 

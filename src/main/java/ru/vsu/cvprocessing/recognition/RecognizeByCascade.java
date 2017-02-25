@@ -2,13 +2,13 @@ package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ru.vsu.cvprocessing.observer.Observer;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,10 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByCascade extends ImageRecognition {
-    private List<Observer> observers = new ArrayList<>();
+    private SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
 
     private int absoluteFaceSize;
     private CascadeClassifier cascadeClassifier;
@@ -63,6 +64,8 @@ public class RecognizeByCascade extends ImageRecognition {
         if (!frame.empty()) {
             objectDetected = findFaces(frame);
             image = matToImage(frame);
+            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, -(xCoordinate - prevXCoordinate)));
+            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, -(yCoordinate - prevYCoordinate)));
         }
 
         return image;
@@ -90,16 +93,13 @@ public class RecognizeByCascade extends ImageRecognition {
                 new Size(absoluteFaceSize, absoluteFaceSize), new Size());
 
         if (faces.elemSize() == 0) {
-            notifyObservers();
             return false;
         }
-        // TODO somehow call notifyObservers after savePrevCoordinate
         savePrevCoordinate();
         Rect firstFace = faces.toList().get(0);
         xCoordinate = (int) (firstFace.br().x - (firstFace.br().x - firstFace.tl().x) / 2);
         yCoordinate = (int) (firstFace.br().y - (firstFace.br().y - firstFace.tl().y) / 2);
         drawRectangles(faces.toList(), frame, new Scalar(0, 255, 0), new Scalar(255, 0, 0));
-        notifyObservers();
 
         return true;
     }
@@ -113,23 +113,5 @@ public class RecognizeByCascade extends ImageRecognition {
                 new Scalar(markerColor.getBlue() * 255, markerColor.getGreen() * 255, markerColor.getRed() * 255),
                 0, 50, 2, 4);
         return frame;
-    }
-
-    // TODO replace with events
-    @Override
-    public void addObserver(Observer o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-        observers.remove(o);
-    }
-
-    @Override
-    public void notifyObservers() {
-        observers.forEach(observer -> observer.update(objectDetected,
-                -(xCoordinate - prevXCoordinate), -(yCoordinate - prevYCoordinate))
-        );
     }
 }

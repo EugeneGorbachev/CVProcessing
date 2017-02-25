@@ -4,14 +4,13 @@ import org.apache.log4j.Logger;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import ru.vsu.cvprocessing.observer.Observable;
 import org.opencv.videoio.VideoCapture;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ImageRecognition implements Observable {
+public abstract class ImageRecognition {
     private static final Logger log = Logger.getLogger(ImageRecognition.class);
 
     protected ImageRecognitionMethod imageRecognitionMethod;

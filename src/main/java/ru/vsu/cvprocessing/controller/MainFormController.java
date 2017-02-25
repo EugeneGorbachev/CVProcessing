@@ -56,6 +56,8 @@ public class MainFormController implements Initializable {
     private Label selectedPixelColorLabel;
     @FXML
     private CheckBox showPixelColorCheckBox;
+    @FXML
+    private CheckBox sendDetectionDataCheckBox;
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
@@ -67,6 +69,7 @@ public class MainFormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         selectedPixelColorLabel.visibleProperty().bind(getInstance().showSelectedPixelColorProperty());
         showPixelColorCheckBox.selectedProperty().bindBidirectional(getInstance().showSelectedPixelColorProperty());
+        sendDetectionDataCheckBox.selectedProperty().bindBidirectional(getInstance().sendDetectionDataProperty());
 
         cameraImageView.setOnMouseMoved(event -> {
             if (!fixShownSelectedPixelColor) {
@@ -110,7 +113,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
     }
 
     @FXML
@@ -133,10 +136,10 @@ public class MainFormController implements Initializable {
     private void handleSwitchToFake() throws Exception {
         getInstance().getImageRecognition().closeVideoCapture();
         log.info("Video capture for image recognition closed");
+
         getInstance().setImageRecognition(new FakeImageRecognition() {{
             setCamera(getInstance().getCamera());
         }});
-        log.info(String.format("Video capture for image recognition method %s opened", FAKE));
 
         recognitionSettingPane.setContent(FXMLLoader.load(getClass()
                 .getResource(SettingsHolder.FXML_FILE_PREF + "irfake.fxml")));
@@ -144,6 +147,7 @@ public class MainFormController implements Initializable {
         getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
             put("viewCamera", cameraImageView);
         }});
+        log.info(String.format("Video capture for image recognition method %s opened", FAKE));
     }
 
     private void handleSwitchToRecognizeByColor() throws Exception {
@@ -152,7 +156,6 @@ public class MainFormController implements Initializable {
         getInstance().setImageRecognition(new RecognizeByColor() {{
             setCamera(getInstance().getCamera());
         }});
-        log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource(SettingsHolder.FXML_FILE_PREF + "irbycolor.fxml"));
@@ -167,6 +170,7 @@ public class MainFormController implements Initializable {
             put("colorRangeStart", getInstance().getColorRangeStartProperty());
             put("colorRangeEnd", getInstance().getColorRangeEndProperty());
         }});
+        log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
     }
 
     private void handleSwitchToRecognizeByCascade() throws Exception {
@@ -182,7 +186,6 @@ public class MainFormController implements Initializable {
         getInstance().setImageRecognition(new RecognizeByCascade(filePath) {{
             setCamera(getInstance().getCamera());
         }});
-        log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(SettingsHolder.FXML_FILE_PREF + "irbycascade.fxml"));
         fxmlLoader.setControllerFactory(Launcher.springContext::getBean);
@@ -191,6 +194,7 @@ public class MainFormController implements Initializable {
         getInstance().getImageRecognition().openVideoCapture(new HashMap<String, Object>() {{
             put("viewCamera", cameraImageView);
         }});
+        log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
     }
     /* Handles for switch recognition type */
 
@@ -221,6 +225,10 @@ public class MainFormController implements Initializable {
     @EventListener
     public void handleChangeIRMethod(IRMethodChangedEvent event) {
         try {
+            StringBuilder logMessage = new StringBuilder("Image recognition method was");
+            logMessage.append(event.getOldValue() == null ? " set " : " changed from " + event.getOldValue());
+            logMessage.append(" to ").append(event.getNewValue());
+            log.info(logMessage);
             switch (event.getNewValue()) {
                 case FAKE:
                     handleSwitchToFake();
@@ -232,10 +240,6 @@ public class MainFormController implements Initializable {
                     handleSwitchToRecognizeByCascade();
                     break;
             }
-            StringBuilder logMessage = new StringBuilder("Image recognition method was");
-            logMessage.append(event.getOldValue() == null ? " set " : " changed from " + event.getOldValue());
-            logMessage.append(" to ").append(event.getNewValue());
-            log.info(logMessage);
         } catch (Exception e) {
             log.error(e);
         }

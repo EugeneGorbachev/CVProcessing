@@ -2,7 +2,6 @@ package ru.vsu.cvprocessing.recognition;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ru.vsu.cvprocessing.observer.Observer;
 import org.opencv.core.Mat;
 
 import java.util.HashMap;
@@ -18,18 +17,6 @@ public class FakeImageRecognition extends ImageRecognition {
     public FakeImageRecognition() {
         super();
         imageRecognitionMethod = FAKE;
-    }
-
-    @Override
-    public void addObserver(Observer o) {
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-    }
-
-    @Override
-    public void notifyObservers() {
     }
 
     @Override

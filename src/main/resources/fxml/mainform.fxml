@@ -43,6 +43,7 @@
             <GridPane fx:id="contentGridPane" minWidth="260.0">
               <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -54,6 +55,7 @@
                   <GridPane GridPane.rowIndex="1">
                     <columnConstraints>
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
@@ -61,7 +63,8 @@
                     </rowConstraints>
                      <children>
                         <CheckBox fx:id="showPixelColorCheckBox" mnemonicParsing="false" text="Show pixel color" />
-                        <Button fx:id="openSettingsButton" mnemonicParsing="false" onAction="#handleOpenSettings" text="Open settings" GridPane.columnIndex="1" />
+                        <Button fx:id="openSettingsButton" mnemonicParsing="false" onAction="#handleOpenSettings" text="Open settings" GridPane.columnIndex="2" />
+                        <CheckBox fx:id="sendDetectionDataCheckBox" mnemonicParsing="false" text="Send detection data" GridPane.columnIndex="1" />
                      </children>
                   </GridPane>
                </children>

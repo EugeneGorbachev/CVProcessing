@@ -4,7 +4,8 @@ import javafx.scene.paint.Color;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ru.vsu.cvprocessing.observer.Observer;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -19,9 +20,10 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
-    private List<Observer> observers = new ArrayList<>();
+    private SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
 
     public RecognizeByColor() {
         super();
@@ -136,12 +138,12 @@ public class RecognizeByColor extends ImageRecognition {
                 validPointCount++;
             }
         }
-        // TODO somehow call notifyObservers after savePrevCoordinate
         savePrevCoordinate();
+
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, -(xCoordinate - prevXCoordinate)));
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
-//        sendingDataPublisher.publish(new SendingDataEvent());
-        notifyObservers();
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, -(yCoordinate - prevYCoordinate)));
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }
@@ -154,23 +156,5 @@ public class RecognizeByColor extends ImageRecognition {
                 new Scalar(markerColor.getBlue() * 255, markerColor.getGreen() * 255, markerColor.getRed() * 255),
                 0, 50, 2, 4);
         return frame;
-    }
-
-    // TODO replace with events
-    @Override
-    public void addObserver(Observer o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void notifyObservers() {
-        observers.forEach(observer -> observer.update(objectDetected,
-                -(xCoordinate - prevXCoordinate), -(yCoordinate - prevYCoordinate))
-        );
     }
 }
