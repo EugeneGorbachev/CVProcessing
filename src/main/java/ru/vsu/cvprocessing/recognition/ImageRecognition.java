@@ -1,6 +1,8 @@
 package ru.vsu.cvprocessing.recognition;
 
 import org.apache.log4j.Logger;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -9,6 +11,8 @@ import org.opencv.videoio.VideoCapture;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public abstract class ImageRecognition {
     private static final Logger log = Logger.getLogger(ImageRecognition.class);
@@ -37,6 +41,18 @@ public abstract class ImageRecognition {
         prevXCoordinate = xCoordinate = 0;
         prevYCoordinate = yCoordinate = 0;
         markerColor = new Color(1,0,0,1);
+    }
+
+    protected void publishCoordinates() {
+        SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
+
+        int horizontalShift = (int) Math.round((prevXCoordinate - xCoordinate) * camera.getFieldOfView() / camera.getWidth());
+        int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
+
+        int verticalShift = (int) Math.round((prevYCoordinate - yCoordinate) * camera.getFieldOfView() / camera.getWidth());
+        int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
     }
 
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;

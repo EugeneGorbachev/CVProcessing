@@ -113,7 +113,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, FAKE));
     }
 
     @FXML

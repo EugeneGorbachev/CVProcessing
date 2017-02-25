@@ -11,16 +11,6 @@ public class SendingDataEvent {
         this.value = value;
     }
 
-    public int getPreferences() {
-        int preferences = 0;
-        if (detected) {
-            preferences = preferences | (1 << 0);
-        }
-        if (vertical) {
-            preferences = preferences | (1 << 1);
-        }
-        return preferences;
-    }
     public boolean isDetected() {
         return detected;
     }

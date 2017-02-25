@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class ServoMotorControl extends CameraHolder {
     private static final Logger log = Logger.getLogger(ServoMotorControl.class);
@@ -54,7 +57,46 @@ public class ServoMotorControl extends CameraHolder {
         return !isConnected();
     }
 
-    public void sendInt(int intValue) {
+    public void moveHorizontal(boolean detected, int value) {
+        int preferences = convertToInt(detected, false);
+        sendInt(preferences);
+        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(preferences)));
+
+        try {
+            setHorizontalAngle(value);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        sendInt(getHorizontalAngle());
+        log.info(String.format("Sent %d horizontal angle to Arduino as %s", getHorizontalAngle(), Integer.toBinaryString(getHorizontalAngle())));
+    }
+
+    public void moveVertical(boolean detected, int value) {
+        int preferences = convertToInt(detected, true);
+        sendInt(preferences);
+        log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(preferences)));
+
+        try {
+            setVerticalAngle(value);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        sendInt(getVerticalAngle());
+        log.info(String.format("Sent %d vertical angle to Arduino as %s", getVerticalAngle(), Integer.toBinaryString(getVerticalAngle())));
+    }
+
+    private int convertToInt(boolean detected, boolean vertical) {
+        int preferences = 0;
+        if (detected) {
+            preferences = preferences | (1 << 0);
+        }
+        if (vertical) {
+            preferences = preferences | (1 << 1);
+        }
+        return preferences;
+    }
+
+    private void sendInt(int intValue) {
         try {
             outputStream.write(intValue);
             outputStream.flush();

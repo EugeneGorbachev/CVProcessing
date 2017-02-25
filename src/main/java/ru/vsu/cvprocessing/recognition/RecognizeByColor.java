@@ -141,9 +141,13 @@ public class RecognizeByColor extends ImageRecognition {
         savePrevCoordinate();
 
         xCoordinate = (int) Math.round(averagePoint.x / validPointCount);
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, -(xCoordinate - prevXCoordinate)));
         yCoordinate = (int) Math.round(averagePoint.y / validPointCount);
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, -(yCoordinate - prevYCoordinate)));
+
+        publishCoordinates();
+//        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false,
+//                (int) Math.round((double) -(xCoordinate - prevXCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
+//        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true,
+//                (int) Math.round((double) -(yCoordinate - prevYCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
 
         return hierarchy.size().height > 0 && hierarchy.size().width > 0;
     }

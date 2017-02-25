@@ -68,9 +68,9 @@ public class SettingsController implements Initializable {
     @Autowired
     private SendingDataPublisher sendingDataPublisher;
 
-    private IntegerProperty refreshCoordinatesFreq = new SimpleIntegerProperty(5);
-    private DoubleProperty horizontalAngle = new SimpleDoubleProperty(0);
-    private DoubleProperty verticalAngle = new SimpleDoubleProperty(0);
+    private IntegerProperty refreshCoordinatesFreq = new SimpleIntegerProperty();
+    private DoubleProperty horizontalAngle = new SimpleDoubleProperty();
+    private DoubleProperty verticalAngle = new SimpleDoubleProperty();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -137,7 +137,7 @@ public class SettingsController implements Initializable {
             log.error(e);
         }
         horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, false, (int) horizontalAngleSlider.getValue())));
+                new SendingDataEvent(true, false, newValue.intValue())));
 
         verticalAngleSlider.setMin(getInstance().getCameraHolder().getVerticalAngleMinValue());
         verticalAngleSlider.setMax(getInstance().getCameraHolder().getVerticalAngleMaxValue());
@@ -153,7 +153,7 @@ public class SettingsController implements Initializable {
             log.error(e);
         }
         verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, true, (int) verticalAngleSlider.getValue())
+                new SendingDataEvent(true, true, newValue.intValue())
         )));
     }
 
@@ -186,7 +186,6 @@ public class SettingsController implements Initializable {
             getInstance().getCameraHolder().setUpConnection(new HashMap<String, Object>() {{
                 put("portName", comPortChoiceBox.getValue());
             }});
-            getInstance().getCameraHolder().setHorizontalAngle(getInstance().getCameraHolder().getHorizontalAngleMaxValue() / 2);
         } catch (Exception e) {
             log.error(e);
             closeConnectionButton.setDisable(true);
@@ -209,11 +208,11 @@ public class SettingsController implements Initializable {
         ServoMotorControl servoMotorControl = (ServoMotorControl) getInstance().getCameraHolder();
         if (getInstance().getSendDetectionData()) {
             if (servoMotorControl.isConnected()) {
-                servoMotorControl.sendInt(event.getPreferences());
-                log.info(String.format("Sent preferences to Arduino as %s", Integer.toBinaryString(event.getPreferences())));
-
-                servoMotorControl.sendInt(event.getValue());
-                log.info(String.format("Sent %d to Arduino as %s", event.getValue(), Integer.toBinaryString(event.getValue())));
+                if (event.isVertical()) {
+                    servoMotorControl.moveVertical(event.isDetected(), event.getValue());
+                } else {
+                    servoMotorControl.moveHorizontal(event.isDetected(), event.getValue());
+                }
             } else {
                 log.error("Cannot send data. COM port connection not established.");
             }

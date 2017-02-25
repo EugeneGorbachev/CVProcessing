@@ -64,8 +64,11 @@ public class RecognizeByCascade extends ImageRecognition {
         if (!frame.empty()) {
             objectDetected = findFaces(frame);
             image = matToImage(frame);
-            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, -(xCoordinate - prevXCoordinate)));
-            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, -(yCoordinate - prevYCoordinate)));
+            publishCoordinates();
+//            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false,
+//                    (int) Math.round((double) -(xCoordinate - prevXCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
+//            sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true,
+//                    (int) Math.round((double) -(yCoordinate - prevYCoordinate) / (camera.getWidth() / camera.getFieldOfView()))));
         }
 
         return image;

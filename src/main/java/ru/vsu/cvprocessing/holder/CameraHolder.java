@@ -1,8 +1,12 @@
 package ru.vsu.cvprocessing.holder;
 
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 
 public abstract class CameraHolder {
+    private static final Logger log = Logger.getLogger(CameraHolder.class);
+
     private final int horizontalAngleMinValue;
     private final int horizontalAngleMaxValue;
     private final int verticalAngleMinValue;
@@ -34,7 +38,7 @@ public abstract class CameraHolder {
 
     public void setHorizontalAngle(int horizontalAngle) throws Exception {
         if (horizontalAngle < horizontalAngleMinValue || horizontalAngle > horizontalAngleMaxValue) {
-            throw new Exception("Received angle's value is out of bound");
+            log.error("Received horizontal angle's value is out of bound");
         } else {
             this.horizontalAngle = horizontalAngle;
         }
@@ -46,7 +50,7 @@ public abstract class CameraHolder {
 
     public void setVerticalAngle(int verticalAngle) throws Exception {
         if (verticalAngle < verticalAngleMinValue || verticalAngle > verticalAngleMaxValue) {
-            throw new Exception("Received angle's value is out of bound");
+            log.error("Received vertical angle's value is out of bound");
         } else {
             this.verticalAngle = verticalAngle;
         }
