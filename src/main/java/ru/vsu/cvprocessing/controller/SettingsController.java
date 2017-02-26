@@ -103,7 +103,8 @@ public class SettingsController implements Initializable {
         } catch (Exception e) {
             log.error(e);
         }
-        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->// todo here
+        refreshCoordinatesFreq.setValue(7);
+        refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
                 getInstance().getImageRecognition().setRefreshCoordinateFrequency(newValue.intValue())));
 
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
