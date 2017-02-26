@@ -51,10 +51,8 @@
               </rowConstraints>
                <children>
                   <ImageView fx:id="cameraImageView" fitHeight="200.0" fitWidth="200.0" onMouseClicked="#handleCameraImageViewClick" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" />
-                  <Label fx:id="selectedPixelColorLabel" text="Pixel color: " GridPane.halignment="LEFT" GridPane.valignment="BOTTOM" />
                   <GridPane GridPane.rowIndex="1">
                     <columnConstraints>
-                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
@@ -62,9 +60,8 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckBox fx:id="showPixelColorCheckBox" mnemonicParsing="false" text="Show pixel color" />
-                        <Button fx:id="openSettingsButton" mnemonicParsing="false" onAction="#handleOpenSettings" text="Open settings" GridPane.columnIndex="2" />
-                        <CheckBox fx:id="sendDetectionDataCheckBox" mnemonicParsing="false" text="Send detection data" GridPane.columnIndex="1" />
+                        <Button fx:id="openSettingsButton" mnemonicParsing="false" onAction="#handleOpenSettings" text="Open settings" GridPane.columnIndex="1" />
+                        <CheckBox fx:id="sendDetectionDataCheckBox" mnemonicParsing="false" text="Send detection data" />
                      </children>
                   </GridPane>
                </children>

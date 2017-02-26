@@ -53,10 +53,6 @@ public class MainFormController implements Initializable {
     @FXML
     private ImageView cameraImageView;
     @FXML
-    private Label selectedPixelColorLabel;
-    @FXML
-    private CheckBox showPixelColorCheckBox;
-    @FXML
     private CheckBox sendDetectionDataCheckBox;
 
     @Autowired
@@ -67,27 +63,7 @@ public class MainFormController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        selectedPixelColorLabel.visibleProperty().bind(getInstance().showSelectedPixelColorProperty());
-        showPixelColorCheckBox.selectedProperty().bindBidirectional(getInstance().showSelectedPixelColorProperty());
         sendDetectionDataCheckBox.selectedProperty().bindBidirectional(getInstance().sendDetectionDataProperty());
-
-        cameraImageView.setOnMouseMoved(event -> {
-            if (!fixShownSelectedPixelColor) {
-                Color pixelColor = cameraImageView.getImage().getPixelReader()
-                        .getColor((int) (event.getX()), (int) (event.getY()));
-                selectedPixelColorLabel.setText(
-                        String.format("Pixel color: H:%1.1f S:%1.1f B:%1.1f",
-                                pixelColor.getHue(),
-                                pixelColor.getSaturation() * 100,
-                                pixelColor.getBrightness() * 100
-                        ));
-                selectedPixelColorLabel.setBackground(new Background(new BackgroundFill(
-                        pixelColor,
-                        CornerRadii.EMPTY,
-                        Insets.EMPTY
-                )));
-            }
-        });
 
         Platform.runLater(() -> {
             try {
@@ -113,7 +89,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
     }
 
     @FXML
@@ -167,8 +143,6 @@ public class MainFormController implements Initializable {
             put("viewCamera", cameraImageView);
             put("viewMaskImage", irByColorController.getMaskImageView());
             put("viewMorphImage", irByColorController.getMorphImageView());
-            put("colorRangeStart", getInstance().getColorRangeStartProperty());
-            put("colorRangeEnd", getInstance().getColorRangeEndProperty());
         }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCOLOR));
     }
@@ -202,9 +176,6 @@ public class MainFormController implements Initializable {
     @FXML
     private void handleCameraImageViewClick() {
         fixShownSelectedPixelColor = !fixShownSelectedPixelColor;
-        if (fixShownSelectedPixelColor) {
-            selectedPixelColorLabel.setText(selectedPixelColorLabel.getText() + " (fixed)");
-        }
     }
 
     @FXML

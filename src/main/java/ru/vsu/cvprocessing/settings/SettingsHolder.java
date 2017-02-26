@@ -22,7 +22,7 @@ public class SettingsHolder {
 
     public static SettingsHolder getInstance() {
         if (instance == null) {
-            Camera cam = new Camera(1, 40, 20, 340d, 495d);
+            Camera cam = new Camera(0, 40, 20, 340d, 495d);
 
             instance = new SettingsHolder(
                     cam,

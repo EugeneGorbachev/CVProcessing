@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
+import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
     public RecognizeByColor() {
@@ -34,10 +35,6 @@ public class RecognizeByColor extends ImageRecognition {
                 "Mask's ImageView required");
         ImageView viewMorphImage = checkNotNull((ImageView) parameters.get("viewMorphImage"),
                 "Morph's ImageView required");
-        Color colorRangeStart = checkNotNull((Color) parameters.get("colorRangeStart"),
-                "Color range start required");
-        Color colorRangeEnd = checkNotNull((Color) parameters.get("colorRangeEnd"),
-                "Color range end required");
 
         videoCapture.open(camera.getWebcamIndex());
         if (videoCapture.isOpened()) {
@@ -46,8 +43,8 @@ public class RecognizeByColor extends ImageRecognition {
             // grab a frame every 33 ms (30 frames/sec)
             Runnable frameGrabber = () -> {
                 Image image = grabFrame(new HashMap<String, Object>() {{
-                    put("lowerb", colorToOpenCVHSB(colorRangeStart));
-                    put("upperb", colorToOpenCVHSB(colorRangeEnd));
+                    put("lowerb", colorToOpenCVHSB(getInstance().getColorRangeStartProperty()));
+                    put("upperb", colorToOpenCVHSB(getInstance().getColorRangeEndProperty()));
                     put("viewMaskImage", viewMaskImage);
                     put("viewMorphImage", viewMorphImage);
                 }});
