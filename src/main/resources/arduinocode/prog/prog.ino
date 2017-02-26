@@ -62,7 +62,7 @@ void loop() {
           sent_value = (int)Serial.read();
 
           if (is_detected) {
-            digitalWrite(LED_BUILTIN,HIGH);
+            
 
             lcd.setCursor(0, 1);
             lcd.print("            ");
@@ -73,7 +73,7 @@ void loop() {
             digitalWrite(led_red, LOW);
           }
           else {
-            digitalWrite(LED_BUILTIN,LOW);
+            
 
             lcd.setCursor(0, 1);
             lcd.print("            ");
@@ -92,9 +92,10 @@ void loop() {
           }
 
           // depending on "lcd_cursor_pos" move cursor left or right
+          
           lcd.setCursor(lcd_cursor_pos,0);
           lcd.write(4);// paints with black
-          delay(10);
+          //delay(10);
           lcd.setCursor(lcd_cursor_pos,0);
           lcd.write(1);// paint with white
 
