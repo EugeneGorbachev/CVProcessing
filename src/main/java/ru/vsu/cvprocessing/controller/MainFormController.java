@@ -89,7 +89,7 @@ public class MainFormController implements Initializable {
             }
         });
 
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
     }
 
     @FXML
@@ -156,7 +156,7 @@ public class MainFormController implements Initializable {
             getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[4].getName());
         }
 
-        String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath();
+        String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath().substring(1);
         getInstance().setImageRecognition(new RecognizeByCascade(filePath) {{
             setCamera(getInstance().getCamera());
         }});

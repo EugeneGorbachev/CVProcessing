@@ -103,7 +103,7 @@ public class SettingsController implements Initializable {
         } catch (Exception e) {
             log.error(e);
         }
-        refreshCoordinatesFreq.setValue(7);
+        refreshCoordinatesFreq.setValue(12);
         refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
                 getInstance().getImageRecognition().setRefreshCoordinateFrequency(newValue.intValue())));
 

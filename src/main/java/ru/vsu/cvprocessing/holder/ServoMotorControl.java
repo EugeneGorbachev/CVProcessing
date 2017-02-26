@@ -17,7 +17,7 @@ public class ServoMotorControl extends CameraHolder {
     private OutputStream outputStream;
 
     public ServoMotorControl() {
-        super(0, 180, 80, 130);
+        super(50, 180, 90, 110);
     }
 
     @Override
