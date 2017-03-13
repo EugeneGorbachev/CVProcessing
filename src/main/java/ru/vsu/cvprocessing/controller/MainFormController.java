@@ -156,7 +156,7 @@ public class MainFormController implements Initializable {
             getInstance().setHaarCascadeConfigFilename(checkNotNull(haarCascadesDirectory.listFiles())[4].getName());
         }
 
-        String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath().substring(1);
+        String filePath = getClass().getResource(SettingsHolder.CASCADE_FILE_PREF + getInstance().getHaarCascadeConfigFilename()).getPath();
         getInstance().setImageRecognition(new RecognizeByCascade(filePath) {{
             setCamera(getInstance().getCamera());
         }});
