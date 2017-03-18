@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
-import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 
 public class RecognizeByCascade extends ImageRecognition {
     private int absoluteFaceSize;
@@ -28,6 +27,7 @@ public class RecognizeByCascade extends ImageRecognition {
         cascadeClassifier = new CascadeClassifier(filePath);
     }
 
+    /* Open video capture method implementation */
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
         checkNotNull(camera, "Camera required");
@@ -50,8 +50,9 @@ public class RecognizeByCascade extends ImageRecognition {
         }
     }
 
+    /* Accessory methods */
     @Override
-    Image grabFrame(Map<String, Object> parameters) {
+    protected Image grabFrame(Map<String, Object> parameters) {
         Image image = null;
 
         Mat frame = new Mat();
