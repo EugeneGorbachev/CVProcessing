@@ -13,7 +13,7 @@ class ValidationStringConverter extends StringConverter<Number> {
     private String valueName;
     private boolean logging;
 
-    public ValidationStringConverter(Function<Number, Boolean> validator, String valueName, boolean logging) {
+    ValidationStringConverter(Function<Number, Boolean> validator, String valueName, boolean logging) {
         this.validator = validator;
         this.valueName = valueName;
         this.logging = logging;

@@ -162,15 +162,7 @@ public class SettingsController implements Initializable {
         )));
     }
 
-    private void handleChangedCOMPort() {
-        if (comPortChoiceBox.getSelectionModel().getSelectedItem() != null) {
-            establishConnectionButton.setDisable(false);
-        } else {
-            establishConnectionButton.setDisable(true);
-        }
-        handleCloseConnection();
-    }
-
+    /* Form operations handlers */
     @FXML
     private void handleSaveWebcameraIndex() {
         int webcamIndex = Integer.parseInt(webcameraIndexTextField.getText());
@@ -206,8 +198,10 @@ public class SettingsController implements Initializable {
             log.info("Connection with COM port was closed");
         }
     }
+    /* Form operations handlers */
 
 
+    /* Event handling */
     @EventListener
     public void handleSendingData(SendingDataEvent event) {
         ServoMotorControl servoMotorControl = (ServoMotorControl) getInstance().getCameraHolder();
@@ -226,5 +220,15 @@ public class SettingsController implements Initializable {
         if (irMethodChoiceBox != null) {
             irMethodChoiceBox.setValue(event.getNewValue());
         }
+    }
+    /* Event handling */
+
+    private void handleChangedCOMPort() {
+        if (comPortChoiceBox.getSelectionModel().getSelectedItem() != null) {
+            establishConnectionButton.setDisable(false);
+        } else {
+            establishConnectionButton.setDisable(true);
+        }
+        handleCloseConnection();
     }
 }
