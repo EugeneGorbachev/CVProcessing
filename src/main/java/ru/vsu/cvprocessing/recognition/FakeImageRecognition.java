@@ -25,7 +25,7 @@ public class FakeImageRecognition extends ImageRecognition {
         ImageView viewCamera = checkNotNull((ImageView) parameters.get("viewCamera"),
                 "Camera's ImageView required");
 
-        videoCapture.open(camera.getWebcamIndex());
+        videoCapture.open(camera.getWebCamIndex());
 
         videoCapture.set(3, camera.getWidth());
         videoCapture.set(4, camera.getHeight());

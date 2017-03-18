@@ -103,7 +103,6 @@ public class MainFormController implements Initializable {
         settingsStage.close();
         Platform.exit();
     }
-    /* Form operations handlers */
 
     /* Event publishing and handling */
     @FXML
@@ -148,7 +147,6 @@ public class MainFormController implements Initializable {
             log.error(e);
         }
     }
-    /* Event publishing and handling */
 
     /* Handles for switch recognition type */
     private void handleSwitchToFake() throws Exception {
@@ -212,12 +210,10 @@ public class MainFormController implements Initializable {
         }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
     }
-    /* Handles for switch recognition type */
 
     /* Static methods */
     private static void setImageViewDimension(ImageView imageView, double height, double width) {
         imageView.setFitHeight(height);
         imageView.setFitWidth(width);
     }
-    /* Static methods */
 }

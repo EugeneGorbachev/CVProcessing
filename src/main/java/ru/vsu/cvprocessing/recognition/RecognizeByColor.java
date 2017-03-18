@@ -36,7 +36,7 @@ public class RecognizeByColor extends ImageRecognition {
         ImageView viewMorphImage = checkNotNull((ImageView) parameters.get("viewMorphImage"),
                 "Morph's ImageView required");
 
-        videoCapture.open(camera.getWebcamIndex());
+        videoCapture.open(camera.getWebCamIndex());
         if (videoCapture.isOpened()) {
             videoCapture.set(3, camera.getWidth());
             videoCapture.set(4, camera.getHeight());
@@ -53,7 +53,7 @@ public class RecognizeByColor extends ImageRecognition {
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
         } else {
-            throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
+            throw new Exception("Can't open camera with index " + camera.getWebCamIndex() + ".");
         }
     }
 

@@ -61,5 +61,4 @@ public class IRByColorController implements Initializable {
     public ImageView getMorphImageView() {
         return morphImageView;
     }
-    /* Getters and setters */
 }
