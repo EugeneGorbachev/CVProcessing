@@ -1,31 +1,28 @@
 package ru.vsu.cvprocessing.controller;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.vsu.cvprocessing.app.Launcher;
 import ru.vsu.cvprocessing.event.IRMethodChangedEvent;
 import ru.vsu.cvprocessing.event.IRMethodPublisher;
-import ru.vsu.cvprocessing.recognition.*;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import org.apache.log4j.Logger;
+import ru.vsu.cvprocessing.recognition.FakeImageRecognition;
+import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
+import ru.vsu.cvprocessing.recognition.RecognizeByCascade;
+import ru.vsu.cvprocessing.recognition.RecognizeByColor;
 import ru.vsu.cvprocessing.settings.SettingsHolder;
 
 import java.io.File;
@@ -35,9 +32,7 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.BYCASCADE;
-import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.BYCOLOR;
-import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.FAKE;
+import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
 import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 @Component
@@ -92,6 +87,7 @@ public class MainFormController implements Initializable {
         irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
     }
 
+    /* Form operations handlers */
     @FXML
     private void handleOpenSettings() {
         if (settingsStage.isShowing()) {
@@ -106,6 +102,50 @@ public class MainFormController implements Initializable {
     public void handleClose() {
         settingsStage.close();
         Platform.exit();
+    }
+
+    /* Event publishing and handling */
+    @FXML
+    private void handleCameraImageViewClick() {
+        fixShownSelectedPixelColor = !fixShownSelectedPixelColor;
+    }
+
+    @FXML
+    private void handleChangeIRFakeClick() {
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, FAKE));
+    }
+
+    @FXML
+    private void handleChangeIRByColorClick() {
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
+    }
+
+    @FXML
+    private void handleChangeIRByCascadeClick() {
+        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
+    }
+
+    @EventListener
+    public void handleChangeIRMethod(IRMethodChangedEvent event) {
+        try {
+            StringBuilder logMessage = new StringBuilder("Image recognition method was");
+            logMessage.append(event.getOldValue() == null ? " set " : " changed from " + event.getOldValue());
+            logMessage.append(" to ").append(event.getNewValue());
+            log.info(logMessage);
+            switch (event.getNewValue()) {
+                case FAKE:
+                    handleSwitchToFake();
+                    break;
+                case BYCOLOR:
+                    handleSwitchToRecognizeByColor();
+                    break;
+                case BYCASCADE:
+                    handleSwitchToRecognizeByCascade();
+                    break;
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
     }
 
     /* Handles for switch recognition type */
@@ -170,57 +210,10 @@ public class MainFormController implements Initializable {
         }});
         log.info(String.format("Video capture for image recognition method %s opened", ImageRecognitionMethod.BYCASCADE));
     }
-    /* Handles for switch recognition type */
-
-    /* Event publishing and handling */
-    @FXML
-    private void handleCameraImageViewClick() {
-        fixShownSelectedPixelColor = !fixShownSelectedPixelColor;
-    }
-
-    @FXML
-    private void handleChangeIRFakeClick() {
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, FAKE));
-    }
-
-    @FXML
-    private void handleChangeIRByColorClick() {
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCOLOR));
-    }
-
-    @FXML
-    private void handleChangeIRByCascadeClick() {
-        irMethodPublisher.publish(new IRMethodChangedEvent(this, null, BYCASCADE));
-    }
-
-    @EventListener
-    public void handleChangeIRMethod(IRMethodChangedEvent event) {
-        try {
-            StringBuilder logMessage = new StringBuilder("Image recognition method was");
-            logMessage.append(event.getOldValue() == null ? " set " : " changed from " + event.getOldValue());
-            logMessage.append(" to ").append(event.getNewValue());
-            log.info(logMessage);
-            switch (event.getNewValue()) {
-                case FAKE:
-                    handleSwitchToFake();
-                    break;
-                case BYCOLOR:
-                    handleSwitchToRecognizeByColor();
-                    break;
-                case BYCASCADE:
-                    handleSwitchToRecognizeByCascade();
-                    break;
-            }
-        } catch (Exception e) {
-            log.error(e);
-        }
-    }
-    /* Event publishing and handling */
 
     /* Static methods */
     private static void setImageViewDimension(ImageView imageView, double height, double width) {
         imageView.setFitHeight(height);
         imageView.setFitWidth(width);
     }
-    /* Static methods */
 }

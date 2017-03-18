@@ -22,46 +22,10 @@ public abstract class CameraHolder {
         this.verticalAngle = verticalAngleMinValue;
     }
 
+    /* Open/Close connection methods */
     public abstract void setUpConnection(Map<String, Object> parameters) throws Exception;
 
     public abstract boolean closeConnection();
-
-    /* Getters and setters */
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public int getHorizontalAngle() {
-        return horizontalAngle;
-    }
-
-    public void setHorizontalAngle(int horizontalAngle) throws Exception {
-        if (horizontalAngle < horizontalAngleMinValue) {
-            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) less than min (%d)",
-                    horizontalAngle, horizontalAngleMinValue));
-        }
-        if (horizontalAngle > horizontalAngleMaxValue) {
-            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) greater than max (%d)",
-                    horizontalAngle, horizontalAngleMaxValue));
-        }
-        this.horizontalAngle = horizontalAngle;
-    }
-
-    public int getVerticalAngle() {
-        return verticalAngle;
-    }
-
-    public void setVerticalAngle(int verticalAngle) throws Exception {
-        if (verticalAngle < verticalAngleMinValue) {
-            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than min (%d)",
-                    verticalAngle, verticalAngleMinValue));
-        }
-        if (verticalAngle > verticalAngleMaxValue) {
-            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than max (%d)",
-                    verticalAngle, verticalAngleMaxValue));
-        }
-        this.verticalAngle = verticalAngle;
-    }
 
     /* Final fields getters */
     public int getHorizontalAngleMinValue() {
@@ -80,4 +44,40 @@ public abstract class CameraHolder {
         return verticalAngleMaxValue;
     }
 
+    /* Getters and setters */
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public int getHorizontalAngle() {
+        return horizontalAngle;
+    }
+
+    public int getVerticalAngle() {
+        return verticalAngle;
+    }
+
+    protected void setHorizontalAngle(int horizontalAngle) throws IndexOutOfBoundsException {
+        if (horizontalAngle < horizontalAngleMinValue) {
+            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) less than min (%d)",
+                    horizontalAngle, horizontalAngleMinValue));
+        }
+        if (horizontalAngle > horizontalAngleMaxValue) {
+            throw new IndexOutOfBoundsException(String.format("Received horizontal angle's value (%d) greater than max (%d)",
+                    horizontalAngle, horizontalAngleMaxValue));
+        }
+        this.horizontalAngle = horizontalAngle;
+    }
+
+    protected void setVerticalAngle(int verticalAngle) throws IndexOutOfBoundsException {
+        if (verticalAngle < verticalAngleMinValue) {
+            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than min (%d)",
+                    verticalAngle, verticalAngleMinValue));
+        }
+        if (verticalAngle > verticalAngleMaxValue) {
+            throw new IndexOutOfBoundsException(String.format("Received vertical angle's value (%d) less than max (%d)",
+                    verticalAngle, verticalAngleMaxValue));
+        }
+        this.verticalAngle = verticalAngle;
+    }
 }

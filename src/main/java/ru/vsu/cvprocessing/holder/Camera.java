@@ -1,14 +1,14 @@
 package ru.vsu.cvprocessing.holder;
 
 public class Camera {
-    private int webcamIndex;
+    private int webCamIndex;
     private int horizontalFieldOfView;
     private int verticalFieldOfView;
     private double height;
     private double width;
 
-    public Camera(int webcamIndex, int horizontalFieldOfView, int verticalFieldOfView, double height, double width) {
-        this.webcamIndex = webcamIndex;
+    public Camera(int webCamIndex, int horizontalFieldOfView, int verticalFieldOfView, double height, double width) {
+        this.webCamIndex = webCamIndex;
         this.horizontalFieldOfView = horizontalFieldOfView;
         this.verticalFieldOfView = verticalFieldOfView;
         this.height = height;
@@ -16,12 +16,12 @@ public class Camera {
     }
 
     /* Getters and setters */
-    public int getWebcamIndex() {
-        return webcamIndex;
+    public int getWebCamIndex() {
+        return webCamIndex;
     }
 
-    public void setWebcamIndex(int webcamIndex) {
-        this.webcamIndex = webcamIndex;
+    public void setWebCamIndex(int webCamIndex) {
+        this.webCamIndex = webCamIndex;
     }
 
     public int getHorizontalFieldOfView() {

@@ -106,8 +106,8 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="saveWebcameraIndexButton" mnemonicParsing="false" onAction="#handleSaveWebcameraIndex" prefWidth="100.0" text="Save" GridPane.columnIndex="1" />
-            <TextField fx:id="webcameraIndexTextField" alignment="CENTER" promptText="0 for built-in">
+            <Button fx:id="saveWebCameraIndexButton" mnemonicParsing="false" onAction="#handleSaveWebcameraIndex" prefWidth="100.0" text="Save" GridPane.columnIndex="1" />
+            <TextField fx:id="webCameraIndexTextField" alignment="CENTER" promptText="0 for built-in">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>

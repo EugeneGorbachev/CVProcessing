@@ -31,9 +31,9 @@ public class SettingsController implements Initializable {
     private static final Logger log = Logger.getLogger(SettingsController.class);
 
     @FXML
-    private TextField webcameraIndexTextField;
+    private TextField webCameraIndexTextField;
     @FXML
-    private Button saveWebcameraIndexButton;
+    private Button saveWebCameraIndexButton;
 
     @FXML
     private TextField refreshCoordinatesFreqTextField;
@@ -74,7 +74,7 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        saveWebcameraIndexButton.setDisable(true);
+        saveWebCameraIndexButton.setDisable(true);
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(true);
         horizontalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
@@ -82,13 +82,13 @@ public class SettingsController implements Initializable {
         verticalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
         verticalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
 
-        webcameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebcamIndex()));
-        webcameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+        webCameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebCamIndex()));
+        webCameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
             try {
                 Integer.parseInt(newValue);
-                saveWebcameraIndexButton.setDisable(false);
+                saveWebCameraIndexButton.setDisable(false);
             } catch (NumberFormatException e) {
-                saveWebcameraIndexButton.setDisable(true);
+                saveWebCameraIndexButton.setDisable(true);
             }
         }));
 
@@ -162,19 +162,11 @@ public class SettingsController implements Initializable {
         )));
     }
 
-    private void handleChangedCOMPort() {
-        if (comPortChoiceBox.getSelectionModel().getSelectedItem() != null) {
-            establishConnectionButton.setDisable(false);
-        } else {
-            establishConnectionButton.setDisable(true);
-        }
-        handleCloseConnection();
-    }
-
+    /* Form operations handlers */
     @FXML
     private void handleSaveWebcameraIndex() {
-        int webcamIndex = Integer.parseInt(webcameraIndexTextField.getText());
-        getInstance().getCamera().setWebcamIndex(webcamIndex);
+        int webcamIndex = Integer.parseInt(webCameraIndexTextField.getText());
+        getInstance().getCamera().setWebCamIndex(webcamIndex);
         irMethodPublisher.publish(new IRMethodChangedEvent(this,
                 (ImageRecognitionMethod) irMethodChoiceBox.getValue(),
                 (ImageRecognitionMethod) irMethodChoiceBox.getValue()
@@ -207,7 +199,17 @@ public class SettingsController implements Initializable {
         }
     }
 
+    private void handleChangedCOMPort() {
+        if (comPortChoiceBox.getSelectionModel().getSelectedItem() != null) {
+            establishConnectionButton.setDisable(false);
+        } else {
+            establishConnectionButton.setDisable(true);
+        }
+        handleCloseConnection();
+    }
 
+
+    /* Event handling */
     @EventListener
     public void handleSendingData(SendingDataEvent event) {
         ServoMotorControl servoMotorControl = (ServoMotorControl) getInstance().getCameraHolder();

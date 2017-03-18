@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.vsu.cvprocessing.recognition.ImageRecognitionMethod.*;
-import static ru.vsu.cvprocessing.recognition.OpenCVUtils.matToImage;
 import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 
 public class RecognizeByColor extends ImageRecognition {
@@ -26,6 +25,7 @@ public class RecognizeByColor extends ImageRecognition {
         imageRecognitionMethod = BYCOLOR;
     }
 
+    /* Open video capture method implementation */
     @Override
     public void openVideoCapture(Map<String, Object> parameters) throws Exception {
         checkNotNull(camera, "Camera required");
@@ -36,7 +36,7 @@ public class RecognizeByColor extends ImageRecognition {
         ImageView viewMorphImage = checkNotNull((ImageView) parameters.get("viewMorphImage"),
                 "Morph's ImageView required");
 
-        videoCapture.open(camera.getWebcamIndex());
+        videoCapture.open(camera.getWebCamIndex());
         if (videoCapture.isOpened()) {
             videoCapture.set(3, camera.getWidth());
             videoCapture.set(4, camera.getHeight());
@@ -53,16 +53,17 @@ public class RecognizeByColor extends ImageRecognition {
             timer = Executors.newSingleThreadScheduledExecutor();
             timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MICROSECONDS);
         } else {
-            throw new Exception("Can't open camera with index " + camera.getWebcamIndex() + ".");
+            throw new Exception("Can't open camera with index " + camera.getWebCamIndex() + ".");
         }
     }
 
+    /* Accessory methods */
     private Scalar colorToOpenCVHSB(Color color) {
         return new Scalar(color.getHue() * 256d / 360d, color.getSaturation() * 256d, color.getBrightness() * 256d);
     }
 
     @Override
-    Image grabFrame(Map<String, Object> parameters) {
+    protected Image grabFrame(Map<String, Object> parameters) {
         Scalar lowerb = (Scalar) parameters.get("lowerb");
         Scalar upperb = (Scalar) parameters.get("upperb");
         ImageView viewMaskImage = (ImageView) parameters.get("viewMaskImage");

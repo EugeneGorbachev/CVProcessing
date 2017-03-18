@@ -1,6 +1,9 @@
 package ru.vsu.cvprocessing.recognition;
 
 import org.apache.log4j.Logger;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 import ru.vsu.cvprocessing.event.SendingDataEvent;
 import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.Camera;
@@ -8,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.opencv.videoio.VideoCapture;
 
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,22 +45,7 @@ public abstract class ImageRecognition {
         markerColor = new Color(1, 0, 0, 1);
     }
 
-    protected void publishCoordinates() {
-        SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
-
-        int horizontalShift = (int) Math.round(
-                (camera.getWidth() / 2 - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth()
-        );
-        int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
-
-        int verticalShift = (int) Math.round(
-                (yCoordinate - camera.getHeight() / 2) * camera.getVerticalFieldOfView() / camera.getHeight()
-        );
-        int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
-        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
-    }
-
+    /* Open/Close video capture methods */
     public abstract void openVideoCapture(Map<String, Object> parameters) throws Exception;
 
     public boolean closeVideoCapture() {
@@ -74,18 +63,74 @@ public abstract class ImageRecognition {
         return videoCapture.isOpened();
     }
 
-    abstract Image grabFrame(Map<String, Object> parameters);
+    protected void publishCoordinates() {
+        SendingDataPublisher sendingDataPublisher = getInstance().getApplicationContext().getBean(SendingDataPublisher.class);
+
+        int horizontalShift = (int) Math.round(
+                (camera.getWidth() / 2 - xCoordinate) * camera.getHorizontalFieldOfView() / camera.getWidth()
+        );
+        int horizontalAngle = getInstance().getCameraHolder().getHorizontalAngle() + horizontalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, false, horizontalAngle));
+
+        int verticalShift = (int) Math.round(
+                (yCoordinate - camera.getHeight() / 2) * camera.getVerticalFieldOfView() / camera.getHeight()
+        );
+        int verticalAngle = getInstance().getCameraHolder().getVerticalAngle() + verticalShift;
+        sendingDataPublisher.publish(new SendingDataEvent(objectDetected, true, verticalAngle));
+    }
+
+    /* Accessory method */
+    abstract protected Image grabFrame(Map<String, Object> parameters);
+
+    protected static Image matToImage(Mat frame) {
+        MatOfByte buffer = new MatOfByte();// create a temporary buffer
+        Imgcodecs.imencode(".png", frame, buffer);// encode the frame in the buffer, according to the PNG format
+        return new Image(new ByteArrayInputStream(buffer.toArray()));// build and return an Image
+    }
+
+    /* Getters and setters  */
+    public ImageRecognitionMethod getImageRecognitionMethod() {
+        return imageRecognitionMethod;
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public int getxCoordinate() {
+        return xCoordinate;
+    }
+
+    public int getyCoordinate() {
+        return yCoordinate;
+    }
+
+    public boolean isObjectDetected() {
+        return objectDetected;
+    }
+
+    public Color getMarkerColor() {
+        return markerColor;
+    }
 
     public int getCoordinateChangeCounter() {
         return coordinateChangeCounter;
     }
 
-    public void setCoordinateChangeCounter(int coordinateChangeCounter) {
-        this.coordinateChangeCounter = coordinateChangeCounter;
-    }
-
     public int getRefreshCoordinateFrequency() {
         return refreshCoordinateFrequency;
+    }
+
+    protected void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public void setMarkerColor(Color markerColor) {
+        this.markerColor = markerColor;
+    }
+
+    public void setCoordinateChangeCounter(int coordinateChangeCounter) {
+        this.coordinateChangeCounter = coordinateChangeCounter;
     }
 
     public void setRefreshCoordinateFrequency(int refreshCoordinateFrequency) {
@@ -95,42 +140,5 @@ public abstract class ImageRecognition {
             this.refreshCoordinateFrequency = refreshCoordinateFrequency;
             log.info("Refresh coordinate frequency set to " + refreshCoordinateFrequency);
         }
-    }
-
-    /* Getters */
-    public ImageRecognitionMethod getImageRecognitionMethod() {
-        return imageRecognitionMethod;
-    }
-    /* Getters */
-
-    /* Getters and setters */
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    protected void setCamera(Camera camera) {
-        this.camera = camera;
-    }
-
-    public boolean isObjectDetected() {
-        return objectDetected;
-    }
-
-    /* Getters for tracked object's center coordinate */
-    public int getxCoordinate() {
-        return xCoordinate;
-    }
-
-    public int getyCoordinate() {
-        return yCoordinate;
-    }
-
-    public Color getMarkerColor() {
-        return markerColor;
-    }
-
-    public void setMarkerColor(Color markerColor) {
-        this.markerColor = markerColor;
     }
 }

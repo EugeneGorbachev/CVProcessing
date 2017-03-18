@@ -55,7 +55,6 @@ public class HSBColorPickerController implements Initializable {
                 currentColorPane.setBackground(
                         new Background(new BackgroundFill(newValue, CornerRadii.EMPTY, Insets.EMPTY)))
         ));
-        /* Bind currentColorPane's background to colorProperty */
 
         /* Bind double properties to Sliders and TextFields*/
         ValidationStringConverter hueConverter = new ValidationStringConverter(val ->
@@ -74,7 +73,6 @@ public class HSBColorPickerController implements Initializable {
         } catch (Exception e) {
             log.error(e);
         }
-        /* Bind double properties to Sliders and TextFields*/
 
         /* Bind newColorPane's background to double properties */
         hue.addListener(((observable, oldValue, newValue) ->
@@ -113,7 +111,6 @@ public class HSBColorPickerController implements Initializable {
                         ))
                 )
         ));
-        /* Bind newColorPane's background to double properties */
     }
 
     @FXML

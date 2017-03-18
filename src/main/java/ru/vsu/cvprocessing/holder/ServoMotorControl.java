@@ -17,9 +17,10 @@ public class ServoMotorControl extends CameraHolder {
     private OutputStream outputStream;
 
     public ServoMotorControl() {
-        super(50, 180, 90, 110);
+        super(50, 180, 90, 110);// TODO hardcode
     }
 
+    /* Open/Close connection methods */
     @Override
     public void setUpConnection(Map<String, Object> parameters) throws Exception {
         connected = false;
@@ -51,6 +52,7 @@ public class ServoMotorControl extends CameraHolder {
         return !isConnected();
     }
 
+    /* Send moving signal and accessory methods */
     public void moveServo(boolean detected, boolean vertical, int value) {
         int preferences = convertToInt(detected, vertical);
         sendInt(preferences);
@@ -66,8 +68,8 @@ public class ServoMotorControl extends CameraHolder {
             } else {
                 setHorizontalAngle(value);
             }
-        } catch (Exception e) {
-            log.error(e);
+        } catch (IndexOutOfBoundsException e) {
+            log.warn(e);
         }
 
         sendInt(vertical ? getVerticalAngle() : getHorizontalAngle());

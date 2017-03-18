@@ -2,16 +2,14 @@ package ru.vsu.cvprocessing.settings;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.apache.log4j.Logger;
+import javafx.scene.paint.Color;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.vsu.cvprocessing.holder.Camera;
 import ru.vsu.cvprocessing.holder.CameraHolder;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
 import ru.vsu.cvprocessing.recognition.FakeImageRecognition;
 import ru.vsu.cvprocessing.recognition.ImageRecognition;
-import javafx.scene.paint.Color;
 
 public class SettingsHolder {
     public final static String FXML_FILE_PREF = "../../../../fxml/";
@@ -38,31 +36,27 @@ public class SettingsHolder {
         }
         return instance;
     }
-    /* Singleton */
 
     private ConfigurableApplicationContext applicationContext;
 
     /* Image preferences */
     private Camera camera;
     private ObjectProperty<Color> markerColorProperty;
-    /* Image preferences */
 
+    /* Abstract classes fields */
     private CameraHolder cameraHolder;
     private ImageRecognition imageRecognition;
 
     /* Recognize by color preferences */
     private ObjectProperty<Color> colorRangeStartProperty;
     private ObjectProperty<Color> colorRangeEndProperty;
-    /* Recognize by color preferences */
 
     /* Recognize by cascade preferences */
     private String haarCascadeConfigFilename;
-    /* Recognize by cascade preferences */
 
-    /* Other */
+    /* Others */
     private BooleanProperty showSelectedPixelColor;
     private BooleanProperty sendDetectionData;
-    /* Other */
 
     private SettingsHolder(Camera camera, Color markerColor, CameraHolder cameraHolder, ImageRecognition imageRecognition,
                            Color colorRangeStart, Color colorRangeEnd, String haarCascadeConfigFilename) {
@@ -118,7 +112,6 @@ public class SettingsHolder {
     public BooleanProperty sendDetectionDataProperty() {
         return sendDetectionData;
     }
-    /* Property Getters */
 
     /* Getters and setters */
     public ConfigurableApplicationContext getApplicationContext() {
@@ -159,36 +152,5 @@ public class SettingsHolder {
 
     public void setHaarCascadeConfigFilename(String haarCascadeConfigFilename) {
         this.haarCascadeConfigFilename = haarCascadeConfigFilename;
-    }
-    /* Getters and setters */
-}
-
-class ColorProperty extends ObjectPropertyBase<Color> {
-    private static final Logger log = Logger.getLogger(ColorProperty.class);
-
-    private String propertyName;
-
-    ColorProperty(Color initialValue, String propertyName) {
-        super(initialValue);
-        this.propertyName = propertyName;
-    }
-
-    @Override
-    public void set(Color newValue) {
-        Color oldValue = get();
-        super.set(newValue);
-        log.info(String.format("%s value was changed from ", getName()) +
-                String.format("H:%1.2f S:%1.2f B:%1.2f", oldValue.getHue(), oldValue.getSaturation(), oldValue.getBrightness()) +
-                String.format(" to H:%1.2f S:%1.2f B:%1.2f", newValue.getHue(), newValue.getSaturation(), newValue.getBrightness()));
-    }
-
-    @Override
-    public Object getBean() {
-        return this;
-    }
-
-    @Override
-    public String getName() {
-        return propertyName;
     }
 }
