@@ -14,7 +14,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import ru.vsu.cvprocessing.event.*;
+import ru.vsu.cvprocessing.event.IRMethodChangedEvent;
+import ru.vsu.cvprocessing.event.IRMethodPublisher;
+import ru.vsu.cvprocessing.event.SendingDataEvent;
+import ru.vsu.cvprocessing.event.SendingDataPublisher;
 import ru.vsu.cvprocessing.holder.ServoMotorControl;
 import ru.vsu.cvprocessing.recognition.ImageRecognitionMethod;
 
@@ -30,28 +33,9 @@ import static ru.vsu.cvprocessing.settings.SettingsHolder.getInstance;
 public class SettingsController implements Initializable {
     private static final Logger log = Logger.getLogger(SettingsController.class);
 
-    @FXML
-    private TextField webCameraIndexTextField;
-    @FXML
-    private Button saveWebCameraIndexButton;
-
-    @FXML
-    private TextField refreshCoordinatesFreqTextField;
-    @FXML
-    private Slider refreshCoordinatesFreqSlider;
-
-    @FXML
-    private ChoiceBox irMethodChoiceBox;
-    @FXML
-    private ColorPicker markerColorPicker;
-
+    /* Test connection tab */
     @FXML
     private ChoiceBox comPortChoiceBox;
-
-    @FXML
-    private TextField horizontalAngleTextField;
-    @FXML
-    private Slider horizontalAngleSlider;
 
     @FXML
     private TextField verticalAngleTextField;
@@ -59,9 +43,52 @@ public class SettingsController implements Initializable {
     private Slider verticalAngleSlider;
 
     @FXML
+    private TextField horizontalAngleTextField;
+    @FXML
+    private Slider horizontalAngleSlider;
+
+    @FXML
     private Button establishConnectionButton;
     @FXML
     private Button closeConnectionButton;
+
+    /* Max and min value tab */
+    @FXML
+    private TextField verticalAngleMinTextField;
+    @FXML
+    private Button verticalAngleMinSaveButton;
+
+    @FXML
+    private TextField verticalAngleMaxTextField;
+    @FXML
+    private Button verticalAngleMaxSaveButton;
+
+    @FXML
+    private TextField horizontalAngleMinTextField;
+    @FXML
+    private Button horizontalAngleMinSaveButton;
+
+    @FXML
+    private TextField horizontalAngleMaxTextField;
+    @FXML
+    private Button horizontalAngleMaxSaveButton;
+
+    /* Camera settings tab */
+    @FXML
+    private TextField webCameraIndexTextField;
+    @FXML
+    private Button saveWebCameraIndexSaveButton;
+
+    /* Image recognition settings tab */
+    @FXML
+    private ChoiceBox irMethodChoiceBox;
+    @FXML
+    private ColorPicker markerColorPicker;
+
+    @FXML
+    private TextField refreshCoordinatesFreqTextField;
+    @FXML
+    private Slider refreshCoordinatesFreqSlider;
 
     @Autowired
     private IRMethodPublisher irMethodPublisher;
@@ -74,7 +101,7 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        saveWebCameraIndexButton.setDisable(true);
+        saveWebCameraIndexSaveButton.setDisable(true);
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(true);
         horizontalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
@@ -83,12 +110,12 @@ public class SettingsController implements Initializable {
         verticalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
 
         webCameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebCamIndex()));
-        webCameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+        webCameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {// TODO replace with some kind of boolean property
             try {
                 Integer.parseInt(newValue);
-                saveWebCameraIndexButton.setDisable(false);
+                saveWebCameraIndexSaveButton.setDisable(false);
             } catch (NumberFormatException e) {
-                saveWebCameraIndexButton.setDisable(true);
+                saveWebCameraIndexSaveButton.setDisable(true);
             }
         }));
 
@@ -162,9 +189,18 @@ public class SettingsController implements Initializable {
         )));
     }
 
+    /* Auxiliary  */
+    private Integer tryParseInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     /* Form operations handlers */
     @FXML
-    private void handleSaveWebcameraIndex() {
+    private void handleSaveWebCameraIndex() {
         int webcamIndex = Integer.parseInt(webCameraIndexTextField.getText());
         getInstance().getCamera().setWebCamIndex(webcamIndex);
         irMethodPublisher.publish(new IRMethodChangedEvent(this,
@@ -172,6 +208,26 @@ public class SettingsController implements Initializable {
                 (ImageRecognitionMethod) irMethodChoiceBox.getValue()
         ));
         log.info("Camera cameraIndex value was changed on " + webcamIndex);
+    }
+
+    @FXML
+    private void handleSaveVerticalAngleMin() {
+
+    }
+
+    @FXML
+    private void handleSaveVerticalAngleMax() {
+
+    }
+
+    @FXML
+    private void handleSaveHorizontalAngleMin() {
+
+    }
+
+    @FXML
+    private void handleSaveHorizontalAngleMax() {
+
     }
 
     @FXML

@@ -1,160 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.SettingsController">
-  <columnConstraints>
-    <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
-    <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="300.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
-   <children>
-      <Label text="Main settings:" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
-      <Label text="Webcamera index: " GridPane.rowIndex="1">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <Label text="Choose IR method: " GridPane.rowIndex="3">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <Label text="Choose marker color: " GridPane.rowIndex="4">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <Label text="Servo settings:" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
-      <Label text="Choose COM port: " GridPane.rowIndex="6">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <Label text="Set horizontal angle: " GridPane.rowIndex="7">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="10">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </GridPane.margin>
-      </TextArea>
-      <ChoiceBox fx:id="irMethodChoiceBox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <ColorPicker fx:id="markerColorPicker" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <ChoiceBox fx:id="comPortChoiceBox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <GridPane GridPane.columnSpan="2" GridPane.rowIndex="9">
-        <columnConstraints>
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Button fx:id="establishConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleEstablishConnection" prefWidth="150.0" text="Establish connection" />
-            <Button fx:id="closeConnectionButton" disable="true" mnemonicParsing="false" onAction="#handleCloseConnection" prefWidth="150.0" text="Close connection" GridPane.columnIndex="1" />
-         </children>
-      </GridPane>
-      <Label text="Set vertical angle: " GridPane.rowIndex="8">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin></Label>
-      <Label text="Refresh coords freq: " GridPane.rowIndex="2">
-         <GridPane.margin>
-            <Insets left="10.0" />
-         </GridPane.margin>
-      </Label>
-      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
-        <columnConstraints>
-          <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="70.0" />
-          <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <TextField fx:id="refreshCoordinatesFreqTextField">
-               <GridPane.margin>
-                  <Insets left="10.0" right="10.0" />
-               </GridPane.margin>
-            </TextField>
-            <Slider fx:id="refreshCoordinatesFreqSlider" blockIncrement="3.0" majorTickUnit="3.0" max="30.0" min="1.0" showTickLabels="true" showTickMarks="true" value="1.0" GridPane.columnIndex="1">
-               <GridPane.margin>
-                  <Insets right="10.0" />
-               </GridPane.margin>
-            </Slider>
-         </children>
-      </GridPane>
-      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="120.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Button fx:id="saveWebCameraIndexButton" mnemonicParsing="false" onAction="#handleSaveWebcameraIndex" prefWidth="100.0" text="Save" GridPane.columnIndex="1" />
-            <TextField fx:id="webCameraIndexTextField" alignment="CENTER" promptText="0 for built-in">
-               <GridPane.margin>
-                  <Insets left="10.0" />
-               </GridPane.margin>
-            </TextField>
-         </children>
-      </GridPane>
-      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7">
-        <columnConstraints>
-          <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="70.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Slider fx:id="horizontalAngleSlider" blockIncrement="1.0" disable="true" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1">
-               <GridPane.margin>
-                  <Insets right="10.0" />
-               </GridPane.margin>
-            </Slider>
-            <TextField fx:id="horizontalAngleTextField">
-               <GridPane.margin>
-                  <Insets left="10.0" right="10.0" />
-               </GridPane.margin>
-            </TextField>
-         </children>
-      </GridPane>
-      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="8">
-        <columnConstraints>
-          <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="70.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Slider fx:id="verticalAngleSlider" blockIncrement="1.0" disable="true" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1">
-               <GridPane.margin>
-                  <Insets right="10.0" />
-               </GridPane.margin>
-            </Slider>
-            <TextField fx:id="verticalAngleTextField">
-               <GridPane.margin>
-                  <Insets left="10.0" right="10.0" />
-               </GridPane.margin>
-            </TextField>
-         </children>
-      </GridPane>
-   </children>
-</GridPane>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vsu.cvprocessing.controller.SettingsController">
+    <tabs>
+        <Tab text="Test connection">
+            <content>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="120.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Choose COM port: ">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Set vertical angle: " GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Set horizontal angle: " GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="4">
+                            <GridPane.margin>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </GridPane.margin>
+                        </TextArea>
+                        <TextField fx:id="verticalAngleTextField" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" right="10.0" />
+                            </GridPane.margin>
+                        </TextField>
+                        <TextField fx:id="horizontalAngleTextField" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0" right="10.0" />
+                            </GridPane.margin>
+                        </TextField>
+                        <ChoiceBox fx:id="comPortChoiceBox" prefWidth="300.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+                        <Slider fx:id="verticalAngleSlider" blockIncrement="1.0" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" right="10.0" />
+                            </GridPane.margin>
+                        </Slider>
+                        <Slider fx:id="horizontalAngleSlider" blockIncrement="1.0" majorTickUnit="30.0" max="180.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0" right="10.0" />
+                            </GridPane.margin>
+                        </Slider>
+                        <GridPane GridPane.columnSpan="3" GridPane.rowIndex="3">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Button fx:id="establishConnectionButton" mnemonicParsing="false" prefWidth="200.0" text="Establish connection" GridPane.halignment="CENTER" />
+                                <Button fx:id="closeConnectionButton" mnemonicParsing="false" prefWidth="200.0" text="Close connection" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </GridPane>
+            </content>
+        </Tab>
+        <Tab text="Max and min value">
+            <content>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="170.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                    </rowConstraints>
+               <children>
+                  <Label text="Vertical angle min: ">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <Label text="Vertical angle max: " GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Horizontal angle min: " GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Horizontal angle max: " GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextField fx:id="verticalAngleMinTextField" promptText="Integer from 0 to 180" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <TextField fx:id="verticalAngleMaxTextField" promptText="Integer from 0 to 180" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <TextField fx:id="horizontalAngleMinTextField" promptText="Integer from 0 to 180" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <TextField fx:id="horizontalAngleMaxTextField" promptText="Integer from 0 to 180" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></TextField>
+                  <Button fx:id="verticalAngleMinSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
+                  <Button fx:id="verticalAngleMaxSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Button fx:id="horizontalAngleMinSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Button fx:id="horizontalAngleMaxSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+               </children>
+                </GridPane>
+            </content>
+        </Tab>
+        <Tab text="Camera settings">
+            <content>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" prefWidth="170.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                    </rowConstraints>
+               <children>
+                  <Label text="Webcamera index: ">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="webCameraIndexTextField" promptText="Enter 0 for built-in camera" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <Button fx:id="saveWebCameraIndexSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
+               </children>
+                </GridPane>
+            </content>
+        </Tab>
+        <Tab text="Image recognition settings">
+            <content>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="120.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                    </rowConstraints>
+               <children>
+                  <Label text="Refresh coords freq: " GridPane.rowIndex="2">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="refreshCoordinatesFreqTextField" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <Slider fx:id="refreshCoordinatesFreqSlider" blockIncrement="1.0" majorTickUnit="3.0" max="30.0" min="1.0" showTickLabels="true" showTickMarks="true" value="1.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </Slider>
+                  <Label text="Choose IR method: ">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="Choose marker color: " GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <ChoiceBox fx:id="irMethodChoiceBox" prefWidth="300.0" GridPane.columnIndex="2" />
+                  <ColorPicker fx:id="markerColorPicker" prefWidth="300.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+               </children>
+                </GridPane>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>
