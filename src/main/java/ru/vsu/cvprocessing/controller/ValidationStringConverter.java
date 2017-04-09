@@ -10,11 +10,13 @@ class ValidationStringConverter extends StringConverter<Number> {
     private static final Logger log = Logger.getLogger(ValidationStringConverter.class);
 
     private Function<Number, Boolean> validator;
+    private Number defaultValue;
     private String valueName;
     private boolean logging;
 
-    ValidationStringConverter(Function<Number, Boolean> validator, String valueName, boolean logging) {
+    ValidationStringConverter(Function<Number, Boolean> validator, Number defaultValue, String valueName, boolean logging) {
         this.validator = validator;
+        this.defaultValue = defaultValue;
         this.valueName = valueName;
         this.logging = logging;
     }
@@ -38,7 +40,7 @@ class ValidationStringConverter extends StringConverter<Number> {
             }
         } catch (Exception e) {
             log.error(e);
-            return 0;
+            return defaultValue;
         }
         if (logging) {
             log.info(String.format("%s value was changed on %d", valueName, integerValue));

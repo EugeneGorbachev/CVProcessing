@@ -2,10 +2,7 @@ package ru.vsu.cvprocessing.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -77,7 +74,7 @@ public class SettingsController implements Initializable {
     @FXML
     private TextField webCameraIndexTextField;
     @FXML
-    private Button saveWebCameraIndexSaveButton;
+    private Button webCameraIndexSaveButton;
 
     /* Image recognition settings tab */
     @FXML
@@ -95,44 +92,94 @@ public class SettingsController implements Initializable {
     @Autowired
     private SendingDataPublisher sendingDataPublisher;
 
-    private IntegerProperty refreshCoordinatesFreq = new SimpleIntegerProperty();
-    private DoubleProperty horizontalAngle = new SimpleDoubleProperty();
-    private DoubleProperty verticalAngle = new SimpleDoubleProperty();
+    private IntegerProperty refreshCoordinatesFreq = new SimpleIntegerProperty(12);
+    private DoubleProperty horizontalAngleValue = new SimpleDoubleProperty();
+    private DoubleProperty verticalAngleValue = new SimpleDoubleProperty();
+    private IntegerProperty verticalAngleMinValue = new SimpleIntegerProperty(getInstance().getCameraHolder().getVerticalAngleMinValue());
+    private IntegerProperty verticalAngleMaxValue = new SimpleIntegerProperty(getInstance().getCameraHolder().getVerticalAngleMaxValue());
+    private IntegerProperty horizontalAngleMinValue = new SimpleIntegerProperty(getInstance().getCameraHolder().getHorizontalAngleMinValue());
+    private IntegerProperty horizontalAngleMaxValue = new SimpleIntegerProperty(getInstance().getCameraHolder().getHorizontalAngleMaxValue());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        saveWebCameraIndexSaveButton.setDisable(true);
         establishConnectionButton.setDisable(true);
         closeConnectionButton.setDisable(true);
+
         horizontalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
         horizontalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
         verticalAngleTextField.disableProperty().bind(closeConnectionButton.disabledProperty());
         verticalAngleSlider.disableProperty().bind(closeConnectionButton.disabledProperty());
 
         webCameraIndexTextField.setText(String.valueOf(getInstance().getCamera().getWebCamIndex()));
-        webCameraIndexTextField.textProperty().addListener(((observable, oldValue, newValue) -> {// TODO replace with some kind of boolean property
-            try {
-                Integer.parseInt(newValue);
-                saveWebCameraIndexSaveButton.setDisable(false);
-            } catch (NumberFormatException e) {
-                saveWebCameraIndexSaveButton.setDisable(true);
-            }
-        }));
+        webCameraIndexSaveButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                !tryParseInt(webCameraIndexTextField.textProperty().get()), webCameraIndexTextField.textProperty()));
 
+        verticalAngleMinSaveButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            String value = verticalAngleMinTextField.textProperty().get();
+            if (tryParseInt(value)) {
+                int parsedInt = Integer.parseInt(value);
+                return !(validateAngleValue(parsedInt) && parsedInt < verticalAngleMaxValue.get());
+            }
+            return true;
+        }, verticalAngleMinTextField.textProperty()));
+        verticalAngleMaxSaveButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            String value = verticalAngleMaxTextField.textProperty().get();
+            if (tryParseInt(value)) {
+                int parsedInt = Integer.parseInt(value);
+                return !(validateAngleValue(parsedInt) && parsedInt > verticalAngleMinValue.get());
+            }
+            return true;
+        }, verticalAngleMaxTextField.textProperty()));
+        horizontalAngleMinSaveButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            String value = horizontalAngleMinTextField.textProperty().get();
+            if (!tryParseInt(value)) {
+                return true;
+            }
+            int parsedInt = Integer.parseInt(value);
+            return !(validateAngleValue(parsedInt) && parsedInt < horizontalAngleMaxValue.get());
+        }, horizontalAngleMinTextField.textProperty()));
+        horizontalAngleMaxSaveButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            String value = horizontalAngleMaxTextField.textProperty().get();
+            if (!tryParseInt(value)) {
+                return true;
+            }
+            int parsedInt = Integer.parseInt(value);
+            return !(validateAngleValue(parsedInt) && parsedInt > horizontalAngleMinValue.get());
+        }, horizontalAngleMaxTextField.textProperty()));
+
+        /* Binding Slider with Textfield */
+        ValidationStringConverter verticalAngleConverter = new ValidationStringConverter((val) ->
+                val.doubleValue() >= verticalAngleSlider.getMin() && val.doubleValue() <= verticalAngleSlider.getMax(),
+                0, "Vertical angle", true);
+        ValidationStringConverter horizontalAngleConverter = new ValidationStringConverter((val) ->
+                val.doubleValue() >= horizontalAngleSlider.getMin() && val.doubleValue() <= horizontalAngleSlider.getMax(),
+                0, "Horizontal angle", true);
+        ValidationStringConverter refreshCoordinatesFreqConverter = new ValidationStringConverter((val) ->
+                val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() && val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
+                1, "Refresh previous coordinates frequency", true);
+        ValidationStringConverter angleMinMaxConverter =
+                new ValidationStringConverter((val) -> true, 0, "Vertical or horizontal angle", false);
+
+        //TODO may be needs try catch
+        verticalAngleValue.bindBidirectional(verticalAngleSlider.valueProperty());
+        Bindings.bindBidirectional(verticalAngleTextField.textProperty(), verticalAngleValue, verticalAngleConverter);
+        horizontalAngleValue.bindBidirectional(horizontalAngleSlider.valueProperty());
+        Bindings.bindBidirectional(horizontalAngleTextField.textProperty(), horizontalAngleValue, horizontalAngleConverter);
         refreshCoordinatesFreq.bindBidirectional(refreshCoordinatesFreqSlider.valueProperty());
-        try {
-            Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq,
-                    new ValidationStringConverter((val) ->
-                            val.doubleValue() >= refreshCoordinatesFreqSlider.getMin() &&
-                                    val.doubleValue() <= refreshCoordinatesFreqSlider.getMax(),
-                            "Refresh previous coordinates frequency", true
-                    ));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        refreshCoordinatesFreq.setValue(12);
+        Bindings.bindBidirectional(refreshCoordinatesFreqTextField.textProperty(), refreshCoordinatesFreq, refreshCoordinatesFreqConverter);
+
+        Bindings.bindBidirectional(verticalAngleMinTextField.textProperty(), verticalAngleMinValue, angleMinMaxConverter);
+        Bindings.bindBidirectional(verticalAngleMaxTextField.textProperty(), verticalAngleMaxValue, angleMinMaxConverter);
+        Bindings.bindBidirectional(horizontalAngleMinTextField.textProperty(), horizontalAngleMinValue, angleMinMaxConverter);
+        Bindings.bindBidirectional(horizontalAngleMaxTextField.textProperty(), horizontalAngleMaxValue, angleMinMaxConverter);
+
         refreshCoordinatesFreq.addListener(((observable, oldValue, newValue) ->
                 getInstance().getImageRecognition().setRefreshCoordinateFrequency(newValue.intValue())));
+        horizontalAngleValue.addListener(((observable, oldValue, newValue) ->
+                sendingDataPublisher.publish(new SendingDataEvent(true, false, newValue.intValue()))));
+        verticalAngleValue.addListener(((observable, oldValue, newValue) ->
+                sendingDataPublisher.publish(new SendingDataEvent(true, true, newValue.intValue()))));
+        /* Binding Slider with Textfield */
 
         irMethodChoiceBox.setItems(FXCollections.observableArrayList(ImageRecognitionMethod.values()));
         irMethodChoiceBox.setValue(getInstance().getImageRecognition().getImageRecognitionMethod());
@@ -151,50 +198,23 @@ public class SettingsController implements Initializable {
         );
         comPortChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> handleChangedCOMPort());
 
-        horizontalAngleSlider.setMin(getInstance().getCameraHolder().getHorizontalAngleMinValue());
-        horizontalAngleSlider.setMax(getInstance().getCameraHolder().getHorizontalAngleMaxValue());
         horizontalAngleSlider.setValue((int) (horizontalAngleSlider.getMin() +
                 (horizontalAngleSlider.getMax() - horizontalAngleSlider.getMin()) / 2));
-        try {
-            horizontalAngle.bindBidirectional(horizontalAngleSlider.valueProperty());
-            Bindings.bindBidirectional(horizontalAngleTextField.textProperty(), horizontalAngle,
-                    new ValidationStringConverter(val ->
-                            val.doubleValue() >= horizontalAngleSlider.getMin() &&
-                                    val.doubleValue() <= horizontalAngleSlider.getMax(),
-                            "Horizontal angle", false
-                    ));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        horizontalAngleSlider.valueProperty().addListener((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, false, newValue.intValue())));
-
-        verticalAngleSlider.setMin(getInstance().getCameraHolder().getVerticalAngleMinValue());
-        verticalAngleSlider.setMax(getInstance().getCameraHolder().getVerticalAngleMaxValue());
         verticalAngleSlider.setValue((int) (verticalAngleSlider.getMin() +
                 (verticalAngleSlider.getMax() - verticalAngleSlider.getMin()) / 2));
-        try {
-            verticalAngle.bindBidirectional(verticalAngleSlider.valueProperty());
-            Bindings.bindBidirectional(verticalAngleTextField.textProperty(), verticalAngle,
-                    new ValidationStringConverter(val ->
-                            val.doubleValue() >= verticalAngleSlider.getMin() &&
-                                    val.doubleValue() <= verticalAngleSlider.getMax(),
-                            "Horizontal angle", false
-                    ));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        verticalAngleSlider.valueProperty().addListener(((observable, oldValue, newValue) -> sendingDataPublisher.publish(
-                new SendingDataEvent(true, true, newValue.intValue())
-        )));
     }
 
     /* Auxiliary  */
-    private Integer tryParseInt(String value) {
+    private boolean validateAngleValue(int val) {
+        return val >= 0 && val <= 360;
+    }
+
+    private boolean tryParseInt(String value) {
         try {
-            return Integer.parseInt(value);
+            Integer.parseInt(value);
+            return true;
         } catch (NumberFormatException e) {
-            return null;
+            return false;
         }
     }
 
@@ -212,22 +232,46 @@ public class SettingsController implements Initializable {
 
     @FXML
     private void handleSaveVerticalAngleMin() {
-
+        verticalAngleSlider.setMin(verticalAngleMinValue.doubleValue());
+        getInstance().setCameraHolder(new ServoMotorControl.ServoMotorControlBuilder()
+                .fromObject(getInstance().getCameraHolder())
+                .setVerticalAngleMinValue(verticalAngleMinValue.get())
+                .build()
+        );
+        log.info("Vertical angle's min was changed on " + verticalAngleMinValue.get());
     }
 
     @FXML
     private void handleSaveVerticalAngleMax() {
-
+        verticalAngleSlider.setMax(verticalAngleMaxValue.doubleValue());
+        getInstance().setCameraHolder(new ServoMotorControl.ServoMotorControlBuilder()
+                .fromObject(getInstance().getCameraHolder())
+                .setVerticalAngleMaxValue(verticalAngleMaxValue.get())
+                .build()
+        );
+        log.info("Vertical angle's max was changed on " + verticalAngleMaxValue.get());
     }
 
     @FXML
     private void handleSaveHorizontalAngleMin() {
-
+        horizontalAngleSlider.setMin(horizontalAngleMinValue.doubleValue());
+        getInstance().setCameraHolder(new ServoMotorControl.ServoMotorControlBuilder()
+                .fromObject(getInstance().getCameraHolder())
+                .setHorizontalAngleMinValue(horizontalAngleMinValue.get())
+                .build()
+        );
+        log.info("Horizontal angle's min was changed on " + horizontalAngleMinValue.get());
     }
 
     @FXML
     private void handleSaveHorizontalAngleMax() {
-
+        horizontalAngleSlider.setMax(horizontalAngleMaxValue.doubleValue());
+        getInstance().setCameraHolder(new ServoMotorControl.ServoMotorControlBuilder()
+                .fromObject(getInstance().getCameraHolder())
+                .setHorizontalAngleMaxValue(horizontalAngleMaxValue.get())
+                .build()
+        );
+        log.info("Horizontal angle's max was changed on " + horizontalAngleMaxValue.get());
     }
 
     @FXML

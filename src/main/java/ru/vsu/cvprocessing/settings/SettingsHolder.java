@@ -25,7 +25,12 @@ public class SettingsHolder {
             instance = new SettingsHolder(
                     cam,
                     new Color(1, 0, 0, 1),
-                    new ServoMotorControl(),
+                    new ServoMotorControl.ServoMotorControlBuilder()
+                            .setHorizontalAngleMinValue(0)
+                            .setHorizontalAngleMaxValue(180)
+                            .setVerticalAngleMinValue(0)
+                            .setVerticalAngleMaxValue(180)
+                            .build(),
                     new FakeImageRecognition() {{
                         setCamera(cam);
                     }},

@@ -12,7 +12,7 @@ public abstract class CameraHolder {
     private int verticalAngle;
     boolean connected;
 
-    CameraHolder(int horizontalAngleMinValue, int horizontalAngleMaxValue, int verticalAngleMinValue, int verticalAngleMaxValue) {
+    protected CameraHolder(int horizontalAngleMinValue, int horizontalAngleMaxValue, int verticalAngleMinValue, int verticalAngleMaxValue) {
         this.horizontalAngleMinValue = horizontalAngleMinValue;
         this.horizontalAngleMaxValue = horizontalAngleMaxValue;
         this.horizontalAngle = horizontalAngleMinValue;

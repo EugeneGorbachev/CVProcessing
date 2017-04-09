@@ -73,8 +73,8 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="establishConnectionButton" mnemonicParsing="false" prefWidth="200.0" text="Establish connection" GridPane.halignment="CENTER" />
-                                <Button fx:id="closeConnectionButton" mnemonicParsing="false" prefWidth="200.0" text="Close connection" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                <Button fx:id="establishConnectionButton" mnemonicParsing="false" onAction="#handleEstablishConnection" prefWidth="200.0" text="Establish connection" GridPane.halignment="CENTER" />
+                                <Button fx:id="closeConnectionButton" mnemonicParsing="false" onAction="#handleCloseConnection" prefWidth="200.0" text="Close connection" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
                             </children>
                         </GridPane>
                     </children>
@@ -135,10 +135,10 @@
                      <GridPane.margin>
                         <Insets left="10.0" right="10.0" />
                      </GridPane.margin></TextField>
-                  <Button fx:id="verticalAngleMinSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
-                  <Button fx:id="verticalAngleMaxSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <Button fx:id="horizontalAngleMinSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                  <Button fx:id="horizontalAngleMaxSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Button fx:id="verticalAngleMinSaveButton" mnemonicParsing="false" onAction="#handleSaveVerticalAngleMin" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
+                  <Button fx:id="verticalAngleMaxSaveButton" mnemonicParsing="false" onAction="#handleSaveVerticalAngleMax" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Button fx:id="horizontalAngleMinSaveButton" mnemonicParsing="false" onAction="#handleSaveHorizontalAngleMin" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Button fx:id="horizontalAngleMaxSaveButton" mnemonicParsing="false" onAction="#handleSaveHorizontalAngleMax" prefWidth="150.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                </children>
                 </GridPane>
             </content>
@@ -165,7 +165,7 @@
                         <Insets left="10.0" right="10.0" />
                      </GridPane.margin>
                   </TextField>
-                  <Button fx:id="saveWebCameraIndexSaveButton" mnemonicParsing="false" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
+                  <Button fx:id="webCameraIndexSaveButton" mnemonicParsing="false" onAction="#handleSaveWebCameraIndex" prefWidth="150.0" text="Save" GridPane.columnIndex="2" />
                </children>
                 </GridPane>
             </content>

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ServoMotorControl extends CameraHolder {
@@ -16,8 +17,9 @@ public class ServoMotorControl extends CameraHolder {
     private SerialPort commPort;
     private OutputStream outputStream;
 
-    public ServoMotorControl() {
-        super(50, 180, 90, 110);// TODO hardcode
+    private ServoMotorControl(int horizontalAngleMinValue, int horizontalAngleMaxValue, int verticalAngleMinValue, int verticalAngleMaxValue) {
+        super(horizontalAngleMinValue, horizontalAngleMaxValue, verticalAngleMinValue, verticalAngleMaxValue);
+//        super(50, 180, 90, 110);// TODO hardcode
     }
 
     /* Open/Close connection methods */
@@ -98,5 +100,54 @@ public class ServoMotorControl extends CameraHolder {
         } catch (IOException e) {
             log.error(e);
         }
+    }
+
+    public static class ServoMotorControlBuilder {
+        private int horizontalAngleMinValue;
+        private int horizontalAngleMaxValue;
+        private int verticalAngleMinValue;
+        private int verticalAngleMaxValue;
+
+        public ServoMotorControlBuilder fromObject(CameraHolder cameraHolder) {
+            this.horizontalAngleMinValue = cameraHolder.getHorizontalAngleMinValue();
+            this.horizontalAngleMaxValue = cameraHolder.getHorizontalAngleMaxValue();
+            this.verticalAngleMinValue = cameraHolder.getVerticalAngleMinValue();
+            this.verticalAngleMaxValue = cameraHolder.getVerticalAngleMaxValue();
+            return this;
+        }
+
+        public ServoMotorControlBuilder setHorizontalAngleMinValue(int horizontalAngleMinValue) {
+            this.horizontalAngleMinValue = horizontalAngleMinValue;
+            return this;
+        }
+
+        public ServoMotorControlBuilder setHorizontalAngleMaxValue(int horizontalAngleMaxValue) {
+            this.horizontalAngleMaxValue = horizontalAngleMaxValue;
+            return this;
+        }
+
+        public ServoMotorControlBuilder setVerticalAngleMinValue(int verticalAngleMinValue) {
+            this.verticalAngleMinValue = verticalAngleMinValue;
+            return this;
+        }
+
+        public ServoMotorControlBuilder setVerticalAngleMaxValue(int verticalAngleMaxValue) {
+            this.verticalAngleMaxValue = verticalAngleMaxValue;
+            return this;
+        }
+
+        public CameraHolder build() {
+            checkArgument(horizontalAngleMinValue >= 0, String.format("horizontalAngleMinValue(%d) should be greater than 0", horizontalAngleMinValue));
+            checkArgument(horizontalAngleMaxValue <= 360, String.format("horizontalAngleMaxValue(%d) should be less than 360", horizontalAngleMaxValue));
+            checkArgument(verticalAngleMinValue >= 0, String.format("verticalAngleMinValue(%d) should be greater than 0", verticalAngleMinValue));
+            checkArgument(verticalAngleMaxValue <= 360, String.format("verticalAngleMaxValue(%d) should be less than 360", verticalAngleMaxValue));
+
+            checkArgument(horizontalAngleMinValue <= horizontalAngleMaxValue,
+                    String.format("horizontalAngleMinValue(%d) should less than horizontalAngleMaxValue(%d)", horizontalAngleMinValue, horizontalAngleMaxValue));
+            checkArgument(verticalAngleMinValue <= verticalAngleMaxValue,
+                    String.format("verticalAngleMinValue(%d) should less than verticalAngleMaxValue(%d)", verticalAngleMinValue, verticalAngleMaxValue));
+            return new ServoMotorControl(horizontalAngleMinValue, horizontalAngleMaxValue, verticalAngleMinValue, verticalAngleMaxValue);
+        }
+
     }
 }

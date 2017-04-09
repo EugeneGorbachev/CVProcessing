@@ -59,20 +59,18 @@ public class HSBColorPickerController implements Initializable {
         /* Bind double properties to Sliders and TextFields*/
         ValidationStringConverter hueConverter = new ValidationStringConverter(val ->
                 val.doubleValue() >= hueSlider.getMin() && val.doubleValue() <= hueSlider.getMax(),
-                "hue slider", false);
+                0, "hue slider", false);
         ValidationStringConverter saturationConverter = new ValidationStringConverter(val ->
-                val.doubleValue() >= saturationSlider.getMin() && val.doubleValue()<= saturationSlider.getMax(),
-                "hue slider", false);
-        try {
-            hue.bindBidirectional(hueSlider.valueProperty());
-            Bindings.bindBidirectional(hueTextField.textProperty(), hue, hueConverter);
-            saturation.bindBidirectional(saturationSlider.valueProperty());
-            Bindings.bindBidirectional(saturationTextField.textProperty(), saturation, saturationConverter);
-            brightness.bindBidirectional(brightnessSlider.valueProperty());
-            Bindings.bindBidirectional(brightnessTextField.textProperty(), brightness, saturationConverter);
-        } catch (Exception e) {
-            log.error(e);
-        }
+                val.doubleValue() >= saturationSlider.getMin() && val.doubleValue() <= saturationSlider.getMax(),
+                0, "hue slider", false);
+
+        //TODO may be needs try catch
+        hue.bindBidirectional(hueSlider.valueProperty());
+        Bindings.bindBidirectional(hueTextField.textProperty(), hue, hueConverter);
+        saturation.bindBidirectional(saturationSlider.valueProperty());
+        Bindings.bindBidirectional(saturationTextField.textProperty(), saturation, saturationConverter);
+        brightness.bindBidirectional(brightnessSlider.valueProperty());
+        Bindings.bindBidirectional(brightnessTextField.textProperty(), brightness, saturationConverter);
 
         /* Bind newColorPane's background to double properties */
         hue.addListener(((observable, oldValue, newValue) ->
